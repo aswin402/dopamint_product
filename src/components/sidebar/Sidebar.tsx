@@ -4,9 +4,9 @@ import {
   Plus,
   Search,
   Trophy,
-  Bell,
+  Bot,
   Settings,
-  Sparkles,
+  Coins,
   Command,
   X,
 } from 'lucide-react';
@@ -26,7 +26,7 @@ export const Sidebar: React.FC = () => {
   const activeConversationId = useCryptoStore((s) => s.activeConversationId);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
-  const alerts = useCryptoStore((s) => s.alerts);
+  const agents = useCryptoStore((s) => s.agents);
 
   // Filter conversations
   const filtered = conversations.filter((c) =>
@@ -38,6 +38,8 @@ export const Sidebar: React.FC = () => {
   const yesterdayList = filtered.filter((c) => !c.isPinned && c.group === 'yesterday');
   const last7DaysList = filtered.filter((c) => !c.isPinned && c.group === 'last7days');
   const olderList = filtered.filter((c) => !c.isPinned && c.group === 'older');
+
+  const activeAgentsCount = agents.filter((a) => a.status === 'running' || a.status === 'active').length;
 
   return (
     <aside
@@ -70,7 +72,7 @@ export const Sidebar: React.FC = () => {
           {/* Close drawer on mobile */}
           <button
             onClick={toggleSidebar}
-            className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)]"
+            className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)] cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -166,15 +168,16 @@ export const Sidebar: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setModalState('isAlertsModalOpen', true)}
+          onClick={() => setModalState('isActiveAgentsModalOpen', true)}
           className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <Bell className="w-4 h-4 text-[var(--text-muted)]" />
-            <span>Alerts</span>
+            <Bot className="w-4 h-4 text-emerald-500" />
+            <span>Active Agents</span>
           </div>
-          <span className="text-[11px] px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] font-semibold rounded-md">
-            {alerts.filter((a) => a.isActive).length} Active
+          <span className="text-[11px] px-1.5 py-0.2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold rounded-md flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            {activeAgentsCount} Active
           </span>
         </button>
 
@@ -191,11 +194,11 @@ export const Sidebar: React.FC = () => {
           className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-semibold text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <Sparkles className="w-4 h-4 text-[var(--primary)]" />
-            <span>Upgrade to Pro</span>
+            <Coins className="w-4 h-4 text-[var(--primary)]" />
+            <span>Buy Credits</span>
           </div>
           <span className="text-[10px] px-1.5 py-0.5 bg-[var(--primary)] text-white font-bold rounded-md">
-            PRO
+            TOP UP
           </span>
         </button>
 

@@ -11,11 +11,13 @@ import type {
   TimeframeOption,
   UserProfile,
   LeaderboardEntry,
+  AIAgent,
 } from '../types/crypto';
 import { INITIAL_COINS, INITIAL_MARKET_OVERVIEW } from '../data/cryptoData';
 import { INITIAL_CONVERSATIONS, INITIAL_MESSAGES } from '../data/conversations';
 import { INITIAL_NEWS } from '../data/newsData';
 import { INITIAL_LEADERBOARD } from '../data/leaderboardData';
+import { INITIAL_AGENTS } from '../data/agentsData';
 import { generateCryptoResponse } from '../lib/aiResponseGenerator';
 import { formatTimestamp } from '../lib/formatters';
 
@@ -102,6 +104,10 @@ interface CryptoStoreState {
   leaderboard: LeaderboardEntry[];
   topupTestnet: (amountEth: number) => void;
 
+  // Active AI Agents & Subagents
+  agents: AIAgent[];
+  toggleAgentStatus: (agentId: string) => void;
+
   // Modals
   isCommandPaletteOpen: boolean;
   isPortfolioModalOpen: boolean;
@@ -112,6 +118,7 @@ interface CryptoStoreState {
   isUpgradeProModalOpen: boolean;
   isAuthModalOpen: boolean;
   isLeaderboardModalOpen: boolean;
+  isActiveAgentsModalOpen: boolean;
   modalTargetChatId: string | null;
   isRenameModalOpen: boolean;
   isDeleteModalOpen: boolean;
@@ -119,6 +126,7 @@ interface CryptoStoreState {
   openDeleteModal: (chatId: string) => void;
   openAuthModal: () => void;
   openLeaderboardModal: () => void;
+  openActiveAgentsModal: () => void;
   setModalState: (modalName: string, isOpen: boolean) => void;
 
   // Live Jitter Simulation
@@ -717,6 +725,21 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     set({ leaderboard: updatedList });
   },
 
+  // Active AI Agents & Subagents
+  agents: INITIAL_AGENTS,
+  toggleAgentStatus: (agentId: string) => {
+    const { agents } = get();
+    set({
+      agents: agents.map((agent) => {
+        if (agent.id === agentId) {
+          const newStatus = agent.status === 'paused' ? 'active' : 'paused';
+          return { ...agent, status: newStatus };
+        }
+        return agent;
+      }),
+    });
+  },
+
   // Modals
   isCommandPaletteOpen: false,
   isPortfolioModalOpen: false,
@@ -727,6 +750,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isUpgradeProModalOpen: false,
   isAuthModalOpen: false,
   isLeaderboardModalOpen: false,
+  isActiveAgentsModalOpen: false,
   modalTargetChatId: null,
   isRenameModalOpen: false,
   isDeleteModalOpen: false,
@@ -735,6 +759,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   openDeleteModal: (chatId) => set({ isDeleteModalOpen: true, modalTargetChatId: chatId }),
   openAuthModal: () => set({ isAuthModalOpen: true }),
   openLeaderboardModal: () => set({ isLeaderboardModalOpen: true }),
+  openActiveAgentsModal: () => set({ isActiveAgentsModalOpen: true }),
   setModalState: (modalName, isOpen) =>
     set((state) => ({
       ...state,

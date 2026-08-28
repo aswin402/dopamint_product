@@ -167,3 +167,17 @@ export interface LeaderboardEntry {
   badge?: string;
   isCurrentUser?: boolean;
 }
+
+export interface AIAgent {
+  id: string;
+  name: string;
+  role: string;
+  description: string;
+  status: 'active' | 'running' | 'idle' | 'paused';
+  model: string;
+  tasksCompleted: number;
+  uptime: string;
+  latencyMs: number;
+  iconType: 'shield' | 'trending' | 'zap' | 'globe' | 'search' | 'cpu';
+  systemPrompt: string;
+}
