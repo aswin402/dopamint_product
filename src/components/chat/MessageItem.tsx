@@ -76,7 +76,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-1.5 mt-1.5 text-[11px] text-[var(--text-muted)] select-none">
+          <div className="flex items-center justify-end gap-1.5 mt-1.5 text-[11px] text-[var(--text-muted)]">
             <span>{message.createdAt}</span>
             <CheckCheck className="w-3.5 h-3.5 text-[var(--primary)]" />
           </div>

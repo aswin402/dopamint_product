@@ -14,7 +14,7 @@ export const SuggestedPrompts: React.FC<SuggestedPromptsProps> = ({ prompts }) =
 
   return (
     <div className="mt-5 pt-3 border-t border-[var(--border-color)]">
-      <div className="flex items-center gap-1.5 mb-2.5 text-xs font-semibold text-[var(--primary)] select-none">
+      <div className="flex items-center gap-1.5 mb-2.5 text-xs font-semibold text-[var(--primary)]">
         <Sparkles className="w-3.5 h-3.5" />
         <span>Suggested Questions:</span>
       </div>

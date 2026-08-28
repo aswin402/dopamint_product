@@ -92,6 +92,7 @@ html, body {
   width: 100vw;
   max-width: 100vw;
   user-select: text;
+  -webkit-user-select: text;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -190,8 +191,13 @@ html, body {
   animation: blink 0.8s infinite;
 }
 
-/* Selection highlight */
+/* Clear, high-contrast, fully visible text selection highlight */
 ::selection {
-  background-color: var(--primary-light);
-  color: var(--text-primary);
+  background-color: rgba(72, 84, 66, 0.3) !important;
+  color: inherit !important;
+}
+
+.dark ::selection {
+  background-color: rgba(138, 158, 127, 0.45) !important;
+  color: #FFFFFF !important;
 }

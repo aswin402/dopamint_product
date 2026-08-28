@@ -20,7 +20,7 @@ export const InsightsPanel: React.FC = () => {
 
   return (
     <aside
-      className={`fixed xl:relative z-30 inset-y-0 right-0 w-[340px] h-screen bg-[var(--bg-app)] border-l border-[var(--border-color)] p-4 overflow-y-auto space-y-4 transition-all duration-250 ease-out select-none ${
+      className={`fixed xl:relative z-30 inset-y-0 right-0 w-[340px] h-screen bg-[var(--bg-app)] border-l border-[var(--border-color)] p-4 overflow-y-auto space-y-4 transition-all duration-250 ease-out ${
         isInsightsOpen ? 'translate-x-0' : 'translate-x-full xl:translate-x-0'
       } ${!isInsightsOpen ? 'xl:hidden' : ''}`}
     >

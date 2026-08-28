@@ -6,7 +6,7 @@ export const NewsFeedCard: React.FC = () => {
   const mainNews = news[0];
 
   return (
-    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card select-none">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-bold text-sm text-[var(--text-primary)] tracking-tight">Latest News</h3>
         <a

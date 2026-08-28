@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed lg:relative z-40 inset-y-0 left-0 w-[280px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex flex-col justify-between p-4 transition-all duration-250 ease-out select-none ${
+      className={`fixed lg:relative z-40 inset-y-0 left-0 w-[280px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex flex-col justify-between p-4 transition-all duration-250 ease-out ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       } ${!isSidebarOpen ? 'lg:hidden' : ''}`}
     >

@@ -65,7 +65,7 @@ export const ChatHeader: React.FC = () => {
   };
 
   return (
-    <header className="h-16 px-4 md:px-8 border-b border-[var(--border-color)] bg-[var(--bg-app)] flex items-center justify-between flex-shrink-0 select-none z-20 transition-colors duration-200">
+    <header className="h-16 px-4 md:px-8 border-b border-[var(--border-color)] bg-[var(--bg-app)] flex items-center justify-between flex-shrink-0 z-20 transition-colors duration-200">
       {/* Left side: Mobile Sidebar Toggle + Chat Title Switcher */}
       <div className="flex items-center gap-3 min-w-0">
         <button

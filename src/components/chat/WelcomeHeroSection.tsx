@@ -269,7 +269,7 @@ export const WelcomeHeroSection: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-[760px] mx-auto py-8 md:py-12 px-3 sm:px-4 flex flex-col items-center select-none space-y-5">
+    <div className="w-full max-w-[760px] mx-auto py-8 md:py-12 px-3 sm:px-4 flex flex-col items-center space-y-5">
       {/* 1. Top Centered Pill: Install Ask Dope App */}
       <motion.button
         initial={{ opacity: 0, y: -10 }}

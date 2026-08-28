@@ -37,7 +37,7 @@ export const FearGreedGauge: React.FC<FearGreedGaugeProps> = ({ value, classific
   const statusColor = getClassificationColor(clampedVal);
 
   return (
-    <div className="flex flex-col items-center justify-center select-none w-full">
+    <div className="flex flex-col items-center justify-center w-full">
       <div className="relative w-32 h-18 flex items-center justify-center">
         <svg viewBox="0 0 100 56" className="w-full h-full overflow-hidden">
           <defs>

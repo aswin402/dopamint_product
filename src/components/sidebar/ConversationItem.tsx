@@ -124,7 +124,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setActiveConversation(conversation.id)}
-      className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-180 cursor-pointer select-none ${
+      className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-180 cursor-pointer ${
         isActive
           ? 'bg-[var(--primary-light)] text-[var(--text-primary)] font-semibold shadow-xs'
           : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'

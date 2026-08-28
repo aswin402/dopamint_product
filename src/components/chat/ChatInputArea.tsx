@@ -74,7 +74,7 @@ export const ChatInputArea: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-[820px] mx-auto px-4 pb-4 pt-2 select-none">
+    <div className="w-full max-w-[820px] mx-auto px-4 pb-4 pt-2">
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -223,7 +223,7 @@ export const ChatInputArea: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-center text-[11px] text-[var(--text-muted)] mt-2.5 leading-relaxed tracking-tight select-none">
+      <p className="text-center text-[11px] text-[var(--text-muted)] mt-2.5 leading-relaxed tracking-tight">
         Crypto markets are volatile. AI answers can be wrong. Always do your own research before investing.
       </p>
     </div>

@@ -34,7 +34,7 @@ export const InteractiveChart: React.FC = () => {
   const timeframes: TimeframeOption[] = ['1H', '24H', '7D', '1M', '1Y', 'ALL'];
 
   return (
-    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card select-none">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card">
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
           <div
@@ -95,7 +95,7 @@ export const InteractiveChart: React.FC = () => {
       </div>
 
       <div className="relative w-full h-[120px] pt-1">
-        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[9.5px] font-medium text-[var(--text-muted)] select-none pointer-events-none">
+        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[9.5px] font-medium text-[var(--text-muted)] pointer-events-none">
           <span>{formatCurrency(max, 'USD', true)}</span>
           <span>{formatCurrency((max + min) / 2, 'USD', true)}</span>
           <span>{formatCurrency(min, 'USD', true)}</span>
@@ -165,7 +165,7 @@ export const InteractiveChart: React.FC = () => {
         </svg>
       </div>
 
-      <div className="flex items-center justify-between text-[10px] font-medium text-[var(--text-muted)] pt-1 px-1 border-t border-[var(--border-color)] select-none">
+      <div className="flex items-center justify-between text-[10px] font-medium text-[var(--text-muted)] pt-1 px-1 border-t border-[var(--border-color)]">
         <span>12AM</span>
         <span>6AM</span>
         <span>12PM</span>

@@ -8,7 +8,7 @@ export const MarketOverviewCard: React.FC = () => {
   const setModalState = useCryptoStore((s) => s.setModalState);
 
   return (
-    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card select-none">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card">
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5">
         <h3 className="font-bold text-sm text-[var(--text-primary)] tracking-tight">Market Overview</h3>
