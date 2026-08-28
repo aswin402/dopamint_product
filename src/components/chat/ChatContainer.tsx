@@ -28,11 +28,20 @@ export const ChatContainer: React.FC = () => {
     }
   }, []);
 
+  const isWelcomeScreen = currentMessages.length === 0;
+
   useEffect(() => {
+    if (isWelcomeScreen) {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = 0;
+      }
+      return;
+    }
+
     if (!showScrollBottom && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [currentMessages.length, isStreaming, showScrollBottom]);
+  }, [currentMessages.length, isStreaming, showScrollBottom, isWelcomeScreen]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -47,8 +56,6 @@ export const ChatContainer: React.FC = () => {
     }
   };
 
-  const isWelcomeScreen = currentMessages.length === 0;
-
   return (
     <div className="flex-1 flex flex-col h-full bg-[var(--bg-app)] relative overflow-hidden transition-colors duration-200">
       {/* Top Fixed Chat Header */}
@@ -59,7 +66,7 @@ export const ChatContainer: React.FC = () => {
         ref={scrollRef}
         onScroll={handleScroll}
         className={`flex-1 overflow-y-auto px-4 md:px-8 ${
-          isWelcomeScreen ? 'py-2' : 'py-6'
+          isWelcomeScreen ? 'py-4 md:py-8' : 'py-6'
         } scroll-smooth`}
       >
         <div className="max-w-[820px] mx-auto w-full">
