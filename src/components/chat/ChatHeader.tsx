@@ -251,11 +251,11 @@ export const ChatHeader: React.FC = () => {
           )}
         </div>
 
-        {/* Toggle Right Insights Panel */}
+        {/* Toggle Right AI Sources Panel */}
         <button
           onClick={toggleInsights}
-          title="Toggle Insights Panel (⌘I)"
-          className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+          title="Toggle AI Verified Sources (⌘I)"
+          className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
         >
           <PanelRight className="w-5 h-5" />
         </button>
