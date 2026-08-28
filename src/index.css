@@ -29,7 +29,7 @@
   --radius-input: 24px;
 }
 
-body {
+html, body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-app);
@@ -37,29 +37,59 @@ body {
   font-family: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  overflow-x: hidden;
   height: 100vh;
   width: 100vw;
+  max-width: 100vw;
   user-select: text;
 }
 
-/* Custom Minimal Scrollbar */
+/* Modern Ultra-Thin Theme Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 92, 235, 0.28) transparent;
+}
+
+/* Webkit Scrollbars (Chrome, Safari, Edge, Opera) */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
   border-radius: 9999px;
 }
 
+::-webkit-scrollbar-thumb {
+  background: rgba(91, 92, 235, 0.22);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(91, 92, 235, 0.55);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Horizontal scrollbar styling for tables and code blocks */
+pre::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+
+pre::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: rgba(91, 92, 235, 0.28);
+  border-radius: 9999px;
+}
+
+pre::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #5B5CEB;
 }
 
 /* Soft shadows & elevations */

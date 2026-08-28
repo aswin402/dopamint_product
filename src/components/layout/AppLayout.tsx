@@ -18,12 +18,12 @@ export const AppLayout: React.FC = () => {
   useKeyboardShortcuts();
 
   return (
-    <div className="flex h-screen w-screen bg-[#F7F8FA] text-[#111111] overflow-hidden antialiased font-sans">
+    <div className="flex h-screen w-screen max-w-[100vw] bg-[#F7F8FA] text-[#111111] overflow-x-hidden overflow-y-hidden antialiased font-sans">
       {/* 1. Left Sidebar (280px) */}
       <Sidebar />
 
       {/* 2. Center Chat Canvas (Flex 1, Max 820px inner) */}
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-[#FFFFFF] relative overflow-hidden">
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-[#FFFFFF] relative overflow-x-hidden overflow-y-hidden">
         <ChatContainer />
       </main>
 
