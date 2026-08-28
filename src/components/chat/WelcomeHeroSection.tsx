@@ -36,7 +36,7 @@ interface CategoryData {
 const CATEGORIES: CategoryData[] = [
   {
     name: 'Trending',
-    icon: <Flame className="w-3.5 h-3.5 text-amber-500" />,
+    icon: <Flame className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'Which tokens have big unlocks coming up next week?',
@@ -56,7 +56,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Stock',
-    icon: <TrendingUp className="w-3.5 h-3.5 text-blue-500" />,
+    icon: <TrendingUp className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'Compare NVIDIA vs AMD data center GPU revenue and moat.',
@@ -76,7 +76,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Pre-IPO',
-    icon: <TreePine className="w-3.5 h-3.5 text-emerald-500" />,
+    icon: <TreePine className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'What is the estimated secondary market valuation for OpenAI and Anthropic?',
@@ -96,7 +96,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Crypto',
-    icon: <CircleDot className="w-3.5 h-3.5 text-amber-400" />,
+    icon: <CircleDot className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'Explain the impact of institutional ETF inflows on Bitcoin supply dynamics.',
@@ -116,7 +116,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Macro',
-    icon: <Globe className="w-3.5 h-3.5 text-indigo-400" />,
+    icon: <Globe className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'How will Federal Reserve interest rate cuts affect high-beta crypto assets?',
@@ -136,7 +136,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Sentiment',
-    icon: <Heart className="w-3.5 h-3.5 text-rose-400" />,
+    icon: <Heart className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'What does today’s Crypto Fear & Greed Index score indicate?',
@@ -156,7 +156,7 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     name: 'Learn',
-    icon: <BookOpen className="w-3.5 h-3.5 text-teal-400" />,
+    icon: <BookOpen className="w-3.5 h-3.5 text-[#555850] dark:text-[#A0A0A0]" />,
     pages: [
       [
         'What is Impermanent Loss in Automated Market Makers (AMM)?',
@@ -278,9 +278,9 @@ export const WelcomeHeroSection: React.FC = () => {
           setShowInstallToast(true);
           setTimeout(() => setShowInstallToast(false), 3000);
         }}
-        className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] rounded-full text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all shadow-2xs group cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#FAF8F0] dark:bg-[#161616] border border-[#E2DFCE] dark:border-[#262626] rounded-full text-xs font-normal text-[#555850] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white transition-all shadow-soft cursor-pointer"
       >
-        <Download className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors" />
+        <Download className="w-3.5 h-3.5 text-[#7A7D75] dark:text-[#888]" />
         <span>Install Ask Dope App</span>
       </motion.button>
 
@@ -291,9 +291,9 @@ export const WelcomeHeroSection: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -10 }}
-            className="fixed top-6 z-50 px-4 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout rounded-2xl text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2"
+            className="fixed top-6 z-50 px-4 py-2 bg-[#FAF8F0] dark:bg-[#161616] border border-[#E5E2D2] dark:border-[#262626] shadow-flyout rounded-2xl text-xs font-semibold text-[#1A1A1A] dark:text-[#ECECEC] flex items-center gap-2"
           >
-            <Sparkles className="w-4 h-4 text-[var(--primary)]" />
+            <Sparkles className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />
             <span>dopamint is installed as a Progressive Web App (PWA). Add to Home Screen via browser menu!</span>
           </motion.div>
         )}
@@ -304,16 +304,14 @@ export const WelcomeHeroSection: React.FC = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center justify-center gap-3 text-center"
+        className="flex items-center justify-center gap-2.5 text-center my-1"
       >
-        <div className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center">
-          <img
-            src={crownLogo}
-            alt="dopamint crown"
-            className="w-full h-full object-contain filter drop-shadow-sm"
-          />
-        </div>
-        <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal text-[var(--text-primary)] tracking-tight leading-none">
+        <img
+          src={crownLogo}
+          alt="dopamint crown"
+          className="w-8 h-8 sm:w-9 sm:h-9 object-contain filter drop-shadow-xs flex-shrink-0"
+        />
+        <h1 className="font-serif text-[28px] sm:text-[34px] md:text-[38px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-none">
           Which Stock Or Crypto Today?
         </h1>
       </motion.div>
@@ -323,17 +321,17 @@ export const WelcomeHeroSection: React.FC = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.05 }}
-        className="w-full bg-[var(--bg-app)] rounded-3xl border border-[var(--border-color)] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[var(--primary)] focus-within:ring-4 focus-within:ring-[var(--primary)]/10"
+        className="w-full bg-[#FAF8F0] dark:bg-[#161616] rounded-[22px] border border-[#E5E2D2] dark:border-[#262626] p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#55604e]"
       >
         {/* Attachments Preview */}
         {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 pb-2 border-b border-[var(--border-color)]">
+          <div className="flex flex-wrap gap-2 pb-2 border-b border-[#E5E2D2] dark:border-[#262626]">
             {attachments.map((att) => (
               <div
                 key={att.id}
-                className="flex items-center gap-1.5 px-3 py-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl text-xs text-[var(--text-primary)]"
+                className="flex items-center gap-1.5 px-3 py-1 bg-[#F3F2E6] dark:bg-[#1C1C1C] border border-[#E5E2D2] dark:border-[#262626] rounded-xl text-xs text-[#1A1A1A] dark:text-[#ECECEC]"
               >
-                <Paperclip className="w-3 h-3 text-[var(--primary)]" />
+                <Paperclip className="w-3 h-3 text-[#485442] dark:text-[#8A9E7F]" />
                 <span className="font-medium truncate max-w-[140px]">{att.name}</span>
                 <button
                   onClick={() => setAttachments((prev) => prev.filter((a) => a.id !== att.id))}
@@ -354,12 +352,12 @@ export const WelcomeHeroSection: React.FC = () => {
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask anything about stock, crypto and more."
-          className="w-full bg-transparent text-[15px] sm:text-[16px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none resize-none overflow-y-auto leading-relaxed"
+          className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] placeholder-[#787B73] dark:placeholder-[#666666] outline-none resize-none overflow-y-auto leading-relaxed"
         />
 
         {/* Action Controls Row inside prompt card */}
         <div className="flex items-center justify-between pt-2">
-          {/* Left Buttons: + , Fast dropdown , Brainstorm ideas */}
+          {/* Left Buttons: + , Fast ▾ , Brainstorm ideas */}
           <div className="flex items-center gap-2 flex-wrap">
             <input
               type="file"
@@ -373,7 +371,7 @@ export const WelcomeHeroSection: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               title="Attach File or Image"
-              className="w-8 h-8 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border-color)] flex items-center justify-center transition-colors shadow-2xs"
+              className="w-7 h-7 rounded-full bg-transparent hover:bg-[#EAE7D8] dark:hover:bg-[#222] text-[#555] dark:text-[#AAA] border border-[#DDD9C7] dark:border-[#333] flex items-center justify-center transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -382,15 +380,15 @@ export const WelcomeHeroSection: React.FC = () => {
             <div className="relative" ref={modelDropdownRef}>
               <button
                 onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] rounded-xl text-xs font-semibold text-[var(--text-primary)] transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#333] dark:text-[#DDD] hover:bg-[#EAE7D8] dark:hover:bg-[#222] rounded-lg transition-colors cursor-pointer font-medium"
               >
-                <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <Zap className="w-3.5 h-3.5 text-[#333] dark:text-[#DDD]" />
                 <span>{selectedModel === 'dopamint-4o' ? 'Fast' : selectedModel === 'dopamint-DeepResearch' ? 'Deep' : 'Quant'}</span>
-                <ChevronDown className="w-3 h-3 text-[var(--text-muted)]" />
+                <ChevronDown className="w-3 h-3 text-[#777] dark:text-[#999]" />
               </button>
 
               {isModelDropdownOpen && (
-                <div className="absolute left-0 top-full mt-2 w-48 p-1.5 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-flyout z-30 space-y-1">
+                <div className="absolute left-0 top-full mt-2 w-48 p-1.5 bg-[#FAF8F0] dark:bg-[#161616] rounded-2xl border border-[#E5E2D2] dark:border-[#262626] shadow-flyout z-30 space-y-1">
                   <button
                     onClick={() => {
                       setSelectedModel('dopamint-4o');
@@ -398,12 +396,12 @@ export const WelcomeHeroSection: React.FC = () => {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
                       selectedModel === 'dopamint-4o'
-                        ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold'
-                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                        ? 'bg-[#E5EADF] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
+                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[#EAE7D8] dark:hover:bg-[#222]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                      <Zap className="w-3.5 h-3.5" />
                       <span>Fast (dopamint-4o)</span>
                     </div>
                   </button>
@@ -415,12 +413,12 @@ export const WelcomeHeroSection: React.FC = () => {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
                       selectedModel === 'dopamint-DeepResearch'
-                        ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold'
-                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                        ? 'bg-[#E5EADF] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
+                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[#EAE7D8] dark:hover:bg-[#222]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                      <Sparkles className="w-3.5 h-3.5" />
                       <span>Deep Research</span>
                     </div>
                   </button>
@@ -432,12 +430,12 @@ export const WelcomeHeroSection: React.FC = () => {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
                       selectedModel === 'QuantAlpha-3'
-                        ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold'
-                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                        ? 'bg-[#E5EADF] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
+                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[#EAE7D8] dark:hover:bg-[#222]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <CircleDot className="w-3.5 h-3.5 text-blue-500" />
+                      <CircleDot className="w-3.5 h-3.5" />
                       <span>QuantAlpha-3</span>
                     </div>
                   </button>
@@ -449,16 +447,16 @@ export const WelcomeHeroSection: React.FC = () => {
             <div className="relative" ref={brainstormRef}>
               <button
                 onClick={() => setIsBrainstormOpen(!isBrainstormOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#555850] dark:text-[#A0A0A0] hover:bg-[#EAE7D8] dark:hover:bg-[#222] rounded-lg transition-colors cursor-pointer"
               >
-                <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                <Lightbulb className="w-3.5 h-3.5 text-[#666] dark:text-[#AAA]" />
                 <span className="hidden sm:inline">Brainstorm Ideas</span>
                 <span className="sm:hidden">Ideas</span>
               </button>
 
               {isBrainstormOpen && (
-                <div className="absolute left-0 top-full mt-2 w-72 p-2 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-flyout z-30 space-y-1">
-                  <div className="px-2.5 py-1 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                <div className="absolute left-0 top-full mt-2 w-72 p-2 bg-[#FAF8F0] dark:bg-[#161616] rounded-2xl border border-[#E5E2D2] dark:border-[#262626] shadow-flyout z-30 space-y-1">
+                  <div className="px-2.5 py-1 text-[11px] font-bold text-[#7A7D75] dark:text-[#888] uppercase tracking-wider">
                     Idea Starters
                   </div>
                   {brainstormIdeas.map((idea, idx) => (
@@ -469,7 +467,7 @@ export const WelcomeHeroSection: React.FC = () => {
                         setIsBrainstormOpen(false);
                         textareaRef.current?.focus();
                       }}
-                      className="w-full text-left px-2.5 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors leading-snug"
+                      className="w-full text-left px-2.5 py-1.5 text-xs text-[#555850] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#EAE7D8] dark:hover:bg-[#222] rounded-xl transition-colors leading-snug cursor-pointer"
                     >
                       {idea}
                     </button>
@@ -479,16 +477,11 @@ export const WelcomeHeroSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: Round Send Arrow Button (↑) */}
+          {/* Right: Round Dark Olive Send Arrow Button (↑) */}
           <button
             onClick={handleSend}
-            disabled={!inputText.trim() && attachments.length === 0}
             title="Send (Enter)"
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-              inputText.trim() || attachments.length > 0
-                ? 'bg-[var(--primary)] text-white hover:opacity-90 shadow-button-primary cursor-pointer'
-                : 'bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] opacity-50 cursor-not-allowed'
-            }`}
+            className="w-8 h-8 rounded-full bg-[#485442] dark:bg-[#55604e] hover:opacity-90 text-white flex items-center justify-center shadow-button-primary cursor-pointer transition-opacity"
           >
             <ArrowUp className="w-4 h-4 stroke-[2.5]" />
           </button>
@@ -508,10 +501,10 @@ export const WelcomeHeroSection: React.FC = () => {
             <button
               key={cat.name}
               onClick={() => handleCategoryChange(cat.name)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-180 ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all duration-180 cursor-pointer ${
                 isSelected
-                  ? 'bg-[var(--bg-app)] border border-[var(--border-color)] ring-1 ring-[var(--primary)]/30 text-[var(--text-primary)] font-bold shadow-2xs'
-                  : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                  ? 'bg-[#FAF8F0] dark:bg-[#161616] border border-[#485442] dark:border-[#8A9E7F] text-[#1A1A1A] dark:text-[#ECECEC] font-medium shadow-soft'
+                  : 'bg-[#FAF8F0] dark:bg-[#161616] border border-[#E2DFCE] dark:border-[#262626] text-[#4F534C] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white hover:border-[#485442]'
               }`}
             >
               {cat.icon}
@@ -521,43 +514,41 @@ export const WelcomeHeroSection: React.FC = () => {
         })}
       </motion.div>
 
-      {/* 5. Suggestion Questions Card with Row Dividers & Pagination */}
+      {/* 5. Suggestion Questions Card with Row Dividers & Clean Pagination */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.15 }}
-        className="w-full bg-[var(--bg-app)] rounded-3xl border border-[var(--border-color)] shadow-card overflow-hidden"
+        className="w-full bg-[#FAF8F0] dark:bg-[#161616] rounded-[22px] border border-[#E5E2D2] dark:border-[#262626] shadow-card overflow-hidden"
       >
-        <div className="divide-y divide-[var(--border-color)]">
+        <div className="divide-y divide-[#EAE7D8] dark:divide-[#232323]">
           {currentQuestions.map((q, index) => (
             <button
               key={index}
               onClick={() => sendMessage(q)}
-              className="w-full flex items-center justify-between px-5 py-3.5 text-left text-xs sm:text-[13.5px] font-normal text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors group cursor-pointer"
+              className="w-full flex items-center justify-between px-6 py-3.5 text-left text-[14px] text-[#222222] dark:text-[#ECECEC] hover:bg-[#F2EFE4] dark:hover:bg-[#1E1E1E] transition-colors group cursor-pointer"
             >
-              <span className="truncate pr-4 leading-relaxed font-serif sm:font-sans">{q}</span>
-              <ArrowUpRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+              <span className="truncate pr-4 leading-relaxed font-normal">{q}</span>
+              <ArrowUpRight className="w-4 h-4 text-[#7A7D75] group-hover:text-[#111] dark:group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
             </button>
           ))}
         </div>
 
-        {/* Bottom Pagination (< >) */}
-        <div className="flex items-center justify-center py-2.5 border-t border-[var(--border-color)] bg-[var(--bg-app)]">
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-2xs">
+        {/* Bottom Pagination (< >) Matching Image 1 */}
+        <div className="flex items-center justify-center py-3 border-t border-[#EAE7D8] dark:border-[#232323] bg-[#FAF8F0] dark:bg-[#161616]">
+          <div className="inline-flex items-center bg-[#FAF8F0] dark:bg-[#161616] border border-[#DDD9C7] dark:border-[#2C2C2C] rounded-lg overflow-hidden shadow-soft">
             <button
               onClick={handlePrevPage}
               title="Previous Page"
-              className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+              className="px-2 py-1 text-[#666] dark:text-[#AAA] hover:bg-[#EAE7D8] dark:hover:bg-[#222] transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[10.5px] font-medium text-[var(--text-muted)] px-1">
-              {pageIndex + 1} / {totalPages}
-            </span>
+            <div className="w-[1px] h-3.5 bg-[#DDD9C7] dark:bg-[#2C2C2C]" />
             <button
               onClick={handleNextPage}
               title="Next Page"
-              className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+              className="px-2 py-1 text-[#666] dark:text-[#AAA] hover:bg-[#EAE7D8] dark:hover:bg-[#222] transition-colors cursor-pointer"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
