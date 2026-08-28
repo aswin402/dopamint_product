@@ -269,7 +269,7 @@ export const WelcomeHeroSection: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-[760px] mx-auto pt-3 sm:pt-6 md:pt-8 pb-16 px-3 sm:px-4 flex flex-col items-center space-y-4.5">
+    <div className="w-full max-w-[760px] mx-auto pt-2 sm:pt-4 md:pt-6 pb-16 px-3 sm:px-4 flex flex-col items-center space-y-4">
       {/* 1. Top Centered Pill: Install Ask Dope App */}
       <motion.button
         initial={{ opacity: 0, y: -10 }}
@@ -299,12 +299,12 @@ export const WelcomeHeroSection: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 2. Hero Title with Crown Logo (Shifted slightly up) */}
+      {/* 2. Hero Title with Crown Logo */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center justify-center gap-3 text-center -mt-2.5 sm:-mt-3.5 mb-1 -translate-y-1"
+        className="flex items-center justify-center gap-3 text-center -mt-1 mb-1"
       >
         <img
           src={crownLogo}
