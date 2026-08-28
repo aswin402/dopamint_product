@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Download,
   Plus,
-  Zap,
-  Lightbulb,
   ArrowUp,
   Flame,
   TrendingUp,
@@ -16,7 +14,6 @@ import {
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Paperclip,
   X,
   Sparkles,
@@ -180,34 +177,14 @@ export const WelcomeHeroSection: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Trending');
   const [pageIndex, setPageIndex] = useState(0);
-  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
-  const [isBrainstormOpen, setIsBrainstormOpen] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [showInstallToast, setShowInstallToast] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const modelDropdownRef = useRef<HTMLDivElement>(null);
-  const brainstormRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = useCryptoStore((s) => s.sendMessage);
   const isStreaming = useCryptoStore((s) => s.isStreaming);
-  const selectedModel = useCryptoStore((s) => s.selectedModel);
-  const setSelectedModel = useCryptoStore((s) => s.setSelectedModel);
-
-  // Close dropdowns on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target as Node)) {
-        setIsModelDropdownOpen(false);
-      }
-      if (brainstormRef.current && !brainstormRef.current.contains(e.target as Node)) {
-        setIsBrainstormOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -259,14 +236,6 @@ export const WelcomeHeroSection: React.FC = () => {
     }));
     setAttachments((prev) => [...prev, ...newAttachments]);
   };
-
-  const brainstormIdeas = [
-    'Analyze Bitcoin cycle top indicators and risk metrics',
-    'Compare top Layer 2 rollup fee burns and active addresses',
-    'Evaluate semiconductor supply chain bottleneck risks in 2025',
-    'Find undervalued DeFi protocols with high fee-to-market-cap ratio',
-    'Simulate a 60/40 crypto and equity risk-parity portfolio',
-  ];
 
   return (
     <div className="w-full max-w-[760px] mx-auto pt-10 sm:pt-14 md:pt-18 pb-20 px-3 sm:px-4 flex flex-col items-center">
@@ -362,8 +331,8 @@ export const WelcomeHeroSection: React.FC = () => {
 
         {/* Action Controls Row inside prompt card */}
         <div className="flex items-center justify-between pt-2">
-          {/* Left Buttons: + , Fast ▾ , Brainstorm ideas */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Left Buttons: Plus Attach Button */}
+          <div className="flex items-center gap-2">
             <input
               type="file"
               ref={fileInputRef}
@@ -380,106 +349,6 @@ export const WelcomeHeroSection: React.FC = () => {
             >
               <Plus className="w-4 h-4" />
             </button>
-
-            {/* Model Selector Dropdown: Fast ▾ */}
-            <div className="relative" ref={modelDropdownRef}>
-              <button
-                onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#333] dark:text-[#DDD] hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] rounded-lg transition-colors cursor-pointer font-medium"
-              >
-                <Zap className="w-3.5 h-3.5 text-[#333] dark:text-[#DDD]" />
-                <span>{selectedModel === 'dopamint-4o' ? 'Fast' : selectedModel === 'dopamint-DeepResearch' ? 'Deep' : 'Quant'}</span>
-                <ChevronDown className="w-3 h-3 text-[#777] dark:text-[#999]" />
-              </button>
-
-              {isModelDropdownOpen && (
-                <div className="absolute left-0 top-full mt-2 w-48 p-1.5 bg-[var(--bg-card)] dark:bg-[#161616] rounded-2xl border border-[var(--border-color)] dark:border-[#262626] shadow-flyout z-30 space-y-1">
-                  <button
-                    onClick={() => {
-                      setSelectedModel('dopamint-4o');
-                      setIsModelDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
-                      selectedModel === 'dopamint-4o'
-                        ? 'bg-[var(--primary-light)] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
-                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[var(--bg-hover)] dark:hover:bg-[#222]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-3.5 h-3.5" />
-                      <span>Fast (dopamint-4o)</span>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setSelectedModel('dopamint-DeepResearch');
-                      setIsModelDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
-                      selectedModel === 'dopamint-DeepResearch'
-                        ? 'bg-[var(--primary-light)] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
-                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[var(--bg-hover)] dark:hover:bg-[#222]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Deep Research</span>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setSelectedModel('QuantAlpha-3');
-                      setIsModelDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
-                      selectedModel === 'QuantAlpha-3'
-                        ? 'bg-[var(--primary-light)] dark:bg-[#20261D] text-[#485442] dark:text-[#8A9E7F] font-bold'
-                        : 'text-[#555850] dark:text-[#A0A0A0] hover:bg-[var(--bg-hover)] dark:hover:bg-[#222]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <CircleDot className="w-3.5 h-3.5" />
-                      <span>QuantAlpha-3</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Brainstorm Ideas Button */}
-            <div className="relative" ref={brainstormRef}>
-              <button
-                onClick={() => setIsBrainstormOpen(!isBrainstormOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-[#555850] dark:text-[#A0A0A0] hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] rounded-lg transition-colors cursor-pointer"
-              >
-                <Lightbulb className="w-3.5 h-3.5 text-[#666] dark:text-[#AAA]" />
-                <span className="hidden sm:inline">Brainstorm Ideas</span>
-                <span className="sm:hidden">Ideas</span>
-              </button>
-
-              {isBrainstormOpen && (
-                <div className="absolute left-0 top-full mt-2 w-72 p-2 bg-[var(--bg-card)] dark:bg-[#161616] rounded-2xl border border-[var(--border-color)] dark:border-[#262626] shadow-flyout z-30 space-y-1">
-                  <div className="px-2.5 py-1 text-[11px] font-bold text-[#7A7D75] dark:text-[#888] uppercase tracking-wider">
-                    Idea Starters
-                  </div>
-                  {brainstormIdeas.map((idea, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setInputText(idea);
-                        setIsBrainstormOpen(false);
-                        textareaRef.current?.focus();
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 text-xs text-[#555850] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] rounded-xl transition-colors leading-snug cursor-pointer"
-                    >
-                      {idea}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Right: Round Dark Olive Send Arrow Button (↑) */}

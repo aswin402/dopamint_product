@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   ChevronDown,
-  Star,
+  Pin,
   Share2,
   MoreHorizontal,
   PanelLeft,
@@ -175,14 +175,14 @@ export const ChatHeader: React.FC = () => {
 
         <button
           onClick={() => currentChat && togglePin(currentChat.id)}
-          title={currentChat?.isPinned ? 'Remove from Favourites' : 'Save to Favourites'}
+          title={currentChat?.isPinned ? 'Unpin conversation' : 'Pin conversation'}
           className={`p-2 rounded-xl transition-colors cursor-pointer ${
             currentChat?.isPinned
-              ? 'text-amber-500 bg-amber-500/10'
+              ? 'text-[var(--primary)] bg-[var(--primary-light)]'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
           }`}
         >
-          <Star className={`w-4 h-4 ${currentChat?.isPinned ? 'fill-amber-400 text-amber-400' : ''}`} />
+          <Pin className={`w-4 h-4 ${currentChat?.isPinned ? 'fill-[var(--primary)]' : ''}`} />
         </button>
 
         <button

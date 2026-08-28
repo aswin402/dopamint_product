@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Pin } from 'lucide-react';
 import type { Conversation } from '../../types/crypto';
 import { ConversationItem } from './ConversationItem';
 
@@ -25,9 +25,14 @@ export const HistoryGroup: React.FC<HistoryGroupProps> = ({
     <div className="mb-3">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg group"
+        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg group cursor-pointer"
       >
-        <span className="tracking-tight uppercase text-[10.5px] font-bold">{title}</span>
+        <span className="tracking-tight uppercase text-[10.5px] font-bold flex items-center gap-1.5">
+          {title.toLowerCase() === 'pinned' && (
+            <Pin className="w-3 h-3 text-[var(--primary)] fill-[var(--primary)]" />
+          )}
+          <span>{title}</span>
+        </span>
         <ChevronDown
           className={`w-3.5 h-3.5 transition-transform duration-200 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] ${
             isExpanded ? 'transform rotate-0' : 'transform -rotate-90'

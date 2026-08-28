@@ -3,14 +3,11 @@ import { motion } from 'framer-motion';
 import {
   Plus,
   Search,
-  Star,
   Bell,
   Settings,
   Sparkles,
   Command,
   X,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import logoDope from '../../assets/logo_dope.png';
@@ -29,8 +26,6 @@ export const Sidebar: React.FC = () => {
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const alerts = useCryptoStore((s) => s.alerts);
-  const theme = useCryptoStore((s) => s.theme);
-  const toggleTheme = useCryptoStore((s) => s.toggleTheme);
 
   // Filter conversations
   const filtered = conversations.filter((c) =>
@@ -51,7 +46,7 @@ export const Sidebar: React.FC = () => {
     >
       {/* Top Header & New Chat */}
       <div className="space-y-3.5">
-        {/* Brand Header with Crown Logo & Theme Switcher */}
+        {/* Brand Header with Crown Logo */}
         <div className="flex items-center justify-between px-1 pt-1">
           <div className="flex items-center gap-2.5 min-w-0">
             {/* Crown Logo without enclosing card */}
@@ -71,28 +66,13 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-              className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
-            >
-              {theme === 'light' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4 text-amber-400" />
-              )}
-            </button>
-
-            {/* Close drawer on mobile */}
-            <button
-              onClick={toggleSidebar}
-              className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          {/* Close drawer on mobile */}
+          <button
+            onClick={toggleSidebar}
+            className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)]"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* New Chat Primary Button */}
@@ -100,7 +80,7 @@ export const Sidebar: React.FC = () => {
           whileHover={{ scale: 1.015, y: -1 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => createNewChat()}
-          className="w-full h-11 bg-[var(--primary)] hover:opacity-95 text-white font-semibold text-sm rounded-2xl flex items-center justify-center gap-2 shadow-button-primary transition-all duration-180"
+          className="w-full h-11 bg-[var(--primary)] hover:opacity-95 text-white font-semibold text-sm rounded-2xl flex items-center justify-center gap-2 shadow-button-primary transition-all duration-180 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Chat</span>
@@ -118,7 +98,7 @@ export const Sidebar: React.FC = () => {
           />
           <button
             onClick={() => setModalState('isCommandPaletteOpen', true)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 bg-[var(--bg-card)] border border-[var(--border-color)] text-[10.5px] font-medium text-[var(--text-muted)] rounded-md shadow-2xs"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 bg-[var(--bg-card)] border border-[var(--border-color)] text-[10.5px] font-medium text-[var(--text-muted)] rounded-md shadow-2xs cursor-pointer"
           >
             <Command className="w-2.5 h-2.5" />
             <span>K</span>
@@ -130,7 +110,7 @@ export const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto my-3 pr-1 -mr-1 scroll-smooth">
         {pinnedList.length > 0 && (
           <HistoryGroup
-            title="Favourites"
+            title="Pinned"
             conversations={pinnedList}
             activeConversationId={activeConversationId}
           />
@@ -172,21 +152,8 @@ export const Sidebar: React.FC = () => {
       {/* Bottom Utility Navigation & User Profile */}
       <div className="space-y-1 pt-2 border-t border-[var(--border-color)]">
         <button
-          onClick={() => setModalState('isWatchlistModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <Star className={`w-4 h-4 ${pinnedList.length > 0 ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'}`} />
-            <span>Favourite</span>
-          </div>
-          <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
-            {pinnedList.length}
-          </span>
-        </button>
-
-        <button
           onClick={() => setModalState('isAlertsModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <Bell className="w-4 h-4 text-[var(--text-muted)]" />
@@ -199,7 +166,7 @@ export const Sidebar: React.FC = () => {
 
         <button
           onClick={() => setModalState('isSettingsModalOpen', true)}
-          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
         >
           <Settings className="w-4 h-4 text-[var(--text-muted)]" />
           <span>Settings</span>
@@ -207,7 +174,7 @@ export const Sidebar: React.FC = () => {
 
         <button
           onClick={() => setModalState('isUpgradeProModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-semibold text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-semibold text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <Sparkles className="w-4 h-4 text-[var(--primary)]" />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Star,
+  Pin,
   Pencil,
   Trash2,
   Copy,
@@ -139,7 +139,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
         {!isHovered ? (
           <div className="flex items-center gap-1">
             {conversation.isPinned && (
-              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              <Pin className="w-3 h-3 text-[var(--primary)] fill-[var(--primary)]" />
             )}
             <span className="text-[11.5px] text-[var(--text-muted)] font-normal">
               {renderTimestamp()}
@@ -157,14 +157,14 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
                 e.stopPropagation();
                 togglePin(conversation.id);
               }}
-              title={conversation.isPinned ? 'Remove from Favourites' : 'Add to Favourites'}
-              className={`p-1 rounded-md transition-colors ${
+              title={conversation.isPinned ? 'Unpin conversation' : 'Pin conversation'}
+              className={`p-1 rounded-md transition-colors cursor-pointer ${
                 conversation.isPinned
-                  ? 'text-amber-500 hover:bg-amber-500/10'
-                  : 'text-[var(--text-muted)] hover:text-amber-400 hover:bg-[var(--bg-hover)]'
+                  ? 'text-[var(--primary)] hover:bg-[var(--primary-light)]'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               }`}
             >
-              <Star className={`w-3.5 h-3.5 ${conversation.isPinned ? 'fill-amber-400 text-amber-400' : ''}`} />
+              <Pin className={`w-3.5 h-3.5 ${conversation.isPinned ? 'fill-[var(--primary)]' : ''}`} />
             </button>
 
             <button
