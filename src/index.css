@@ -20,6 +20,7 @@
   --primary-hover: oklch(0.42 0.04 135);
   --primary-light: oklch(0.92 0.022 135);
   --primary-glow: oklch(0.485 0.035 135 / 0.25);
+  --primary-text: #FFFFFF;
   
   --border-color: oklch(0.895 0.014 95);
   --border-subtle: oklch(0.935 0.01 95);
@@ -41,36 +42,43 @@
 
 html.dark {
   /* ========================================================
-     dopamint DARK THEME (OKLCH)
-     - Canvas Background: oklch(0.18 0.014 135) (#131612)
-     - Card Surfaces:    oklch(0.23 0.018 135) (#1a1e17)
-     - Primary Accent:   oklch(0.74 0.065 135) (#9bb28f)
-     - Primary Text:     oklch(0.957 0.016 95) (#f3f2e6 cream)
+     dopamint DARK THEME (ChatGPT Deep Black + Vibrant Green Accent)
+     - Canvas Background: #0D0D0D -> oklch(0.12 0 0) (Pitch Black)
+     - Card Surfaces:    #171717 -> oklch(0.17 0.003 135)
+     - Primary Green:    #558B55 / #4E9A51 -> oklch(0.68 0.15 142) (Vibrant Dopamint Green)
+     - Primary Hover:    oklch(0.73 0.16 142)
+     - Primary Light:    oklch(0.68 0.15 142 / 0.16)
+     - Primary Glow:     oklch(0.68 0.15 142 / 0.35)
+     - Primary Text:     #0D0D0D or #FFFFFF
+     - Primary Text on Dark: #FFFFFF
+     - Primary Text:     #FFFFFF -> oklch(0.98 0 0) (High Contrast)
+     - Borders:          #242424 -> oklch(0.22 0.002 135)
      ======================================================== */
-  --bg-app: oklch(0.18 0.014 135);
-  --bg-card: oklch(0.23 0.018 135);
-  --bg-card-subtle: oklch(0.26 0.02 135);
-  --bg-hover: oklch(0.29 0.022 135);
-  --bg-active: oklch(0.33 0.025 135);
-  --bg-chat-user: oklch(0.28 0.02 135);
+  --bg-app: oklch(0.11 0 0);                 /* #0A0A0A - Deep Black */
+  --bg-card: oklch(0.16 0.002 135);           /* #141414 - Elevated OLED Charcoal */
+  --bg-card-subtle: oklch(0.19 0.003 135);    /* #1C1C1C */
+  --bg-hover: oklch(0.22 0.004 135);          /* #242424 */
+  --bg-active: oklch(0.26 0.005 135);         /* #2E2E2E */
+  --bg-chat-user: oklch(0.20 0.003 135);      /* #1F1F1F - ChatGPT user bubble */
   
-  --primary: oklch(0.74 0.065 135);
-  --primary-hover: oklch(0.80 0.07 135);
-  --primary-light: oklch(0.28 0.03 135 / 0.45);
-  --primary-glow: oklch(0.74 0.065 135 / 0.35);
+  --primary: oklch(0.68 0.15 142);            /* Vibrant Green */
+  --primary-hover: oklch(0.74 0.16 142);       /* Luminous Green Hover */
+  --primary-light: oklch(0.68 0.15 142 / 0.16);/* Soft Green Glass Tint */
+  --primary-glow: oklch(0.68 0.15 142 / 0.38); /* Neon Green Aura */
+  --primary-text: #0D0D0D;                    /* Dark text for maximum contrast on green buttons */
   
-  --border-color: oklch(0.30 0.018 135);
-  --border-subtle: oklch(0.25 0.015 135);
+  --border-color: oklch(0.22 0.002 135);      /* #242424 - Sleek Crisp Border */
+  --border-subtle: oklch(0.17 0.001 135);     /* #171717 */
   
-  --text-primary: oklch(0.957 0.016 95);
-  --text-secondary: oklch(0.76 0.02 95);
-  --text-muted: oklch(0.56 0.02 135);
+  --text-primary: oklch(0.98 0 0);            /* #FAFAFA - Crisp White */
+  --text-secondary: oklch(0.80 0 0);          /* #C4C4C4 - Soft White */
+  --text-muted: oklch(0.58 0 0);              /* #7E7E7E - Muted Grey */
   
-  --green-trend: oklch(0.72 0.17 145);
-  --green-light: oklch(0.28 0.05 145 / 0.4);
-  --red-trend: oklch(0.68 0.20 25);
-  --red-light: oklch(0.28 0.05 25 / 0.4);
-  --gold-accent: oklch(0.82 0.15 80);
+  --green-trend: oklch(0.72 0.17 145);        /* #34D399 */
+  --green-light: oklch(0.72 0.17 145 / 0.15);
+  --red-trend: oklch(0.68 0.20 25);           /* #F87171 */
+  --red-light: oklch(0.68 0.20 25 / 0.15);
+  --gold-accent: oklch(0.82 0.15 80);         /* Luminous Gold */
 }
 
 html, body {
@@ -125,12 +133,16 @@ html, body {
   box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.04), 0 1px 4px -1px rgba(0, 0, 0, 0.02);
 }
 
+.dark .shadow-soft {
+  box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.6), 0 1px 4px -1px rgba(0, 0, 0, 0.4);
+}
+
 .shadow-card {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
 .dark .shadow-card {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.7), 0 2px 6px -1px rgba(0, 0, 0, 0.4);
 }
 
 .shadow-flyout {
@@ -138,7 +150,7 @@ html, body {
 }
 
 .dark .shadow-flyout {
-  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6), 0 8px 16px -4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85), 0 8px 16px -4px rgba(0, 0, 0, 0.6);
 }
 
 .shadow-button-primary {
