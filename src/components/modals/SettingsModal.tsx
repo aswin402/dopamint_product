@@ -73,7 +73,7 @@ export const SettingsModal: React.FC = () => {
                 }`}
               >
                 <Sun className="w-4 h-4" />
-                <span>Light Cream (#f3f2e6)</span>
+                <span>Light Cream</span>
               </button>
 
               <button

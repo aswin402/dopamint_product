@@ -5,28 +5,28 @@
 
 :root {
   /* ========================================================
-     dopamint LIGHT THEME (Image 1 Swapped Aesthetic)
-     - Canvas Background: #ffffff / #fcfbf9 (Clean Off-White)
-     - Card / Component Background: #f3f2e6 (Warm Parchment Cream)
+     dopamint LIGHT THEME
+     - Canvas Background: #fcfbf9 (Clean Off-White)
+     - Card / Component Background: #f7f6ec (Lighter Warm Cream)
      - Primary Accent:   #485442 (Dark Forest Olive)
      - Primary Text:     #1a1a1a
-     - Borders:          #e5e2d2
+     - Borders:          #eae7da
      ======================================================== */
   --bg-app: #fcfbf9;
-  --bg-card: #f3f2e6;
-  --bg-card-subtle: #eae8d8;
-  --bg-hover: #eae7d7;
-  --bg-active: #e2dfcd;
-  --bg-chat-user: #f3f2e6;
+  --bg-card: #f7f6ec;
+  --bg-card-subtle: #f0eee1;
+  --bg-hover: #ecead9;
+  --bg-active: #e4e2cf;
+  --bg-chat-user: #f7f6ec;
   
   --primary: #485442;                         /* Dark Olive Forest */
   --primary-hover: #3b4635;
-  --primary-light: #e5eadf;
+  --primary-light: #e8ede3;
   --primary-glow: rgba(72, 84, 66, 0.15);
   --primary-text: #FFFFFF;
   
-  --border-color: #e5e2d2;
-  --border-subtle: #ece9db;
+  --border-color: #eae7da;
+  --border-subtle: #f1efe4;
   
   --text-primary: #1a1a1a;
   --text-secondary: #555850;
