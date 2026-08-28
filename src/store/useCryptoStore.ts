@@ -582,9 +582,11 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
 
   // User Profile & Settings
   userProfile: {
-    name: 'Vishal Raj',
-    email: 'vishalraj@email.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    name: '0x71C8...49A2',
+    email: '0x71C8392F865eE824A1054E5F36423c9E3c7649A2',
+    walletAddress: '0x71C8392F865eE824A1054E5F36423c9E3c7649A2',
+    ensName: 'dope.eth',
+    avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
     tier: 'Pro',
     apiCallsRemaining: 4850,
   },

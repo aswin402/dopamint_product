@@ -152,6 +152,8 @@ export type TimeframeOption = '1H' | '24H' | '7D' | '1M' | '1Y' | 'ALL';
 export interface UserProfile {
   name: string;
   email: string;
+  walletAddress: string;
+  ensName?: string;
   avatarUrl: string;
   tier: 'Free' | 'Pro' | 'Enterprise';
   apiCallsRemaining: number;
