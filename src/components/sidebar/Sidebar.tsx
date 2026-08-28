@@ -4,6 +4,7 @@ import {
   Plus,
   Search,
   Trophy,
+  Star,
   Bot,
   Settings,
   Coins,
@@ -164,6 +165,19 @@ export const Sidebar: React.FC = () => {
           </div>
           <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase">
             XP
+          </span>
+        </button>
+
+        <button
+          onClick={() => setModalState('isWatchlistModalOpen', true)}
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Star className={`w-4 h-4 ${pinnedList.length > 0 ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'}`} />
+            <span>Favourites</span>
+          </div>
+          <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
+            {pinnedList.length}
           </span>
         </button>
 
