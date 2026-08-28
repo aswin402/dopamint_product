@@ -269,20 +269,40 @@ export const WelcomeHeroSection: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-[760px] mx-auto pt-2 sm:pt-4 md:pt-6 pb-16 px-3 sm:px-4 flex flex-col items-center space-y-4">
-      {/* 1. Top Centered Pill: Install Ask Dope App */}
-      <motion.button
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        onClick={() => {
-          setShowInstallToast(true);
-          setTimeout(() => setShowInstallToast(false), 3000);
-        }}
-        className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[var(--bg-card)] dark:bg-[#161616] border border-[var(--border-color)] dark:border-[#262626] rounded-full text-xs font-normal text-[#555850] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white transition-all shadow-2xs cursor-pointer"
-      >
-        <Download className="w-3.5 h-3.5 text-[#7A7D75] dark:text-[#888]" />
-        <span>Install Ask Dope App</span>
-      </motion.button>
+    <div className="w-full max-w-[760px] mx-auto pt-1 pb-16 px-3 sm:px-4 flex flex-col items-center">
+      {/* Top Header Group: Pill & Ask Dope Title (Shifted Top) */}
+      <div className="flex flex-col items-center space-y-2 mb-8 sm:mb-10">
+        {/* 1. Top Centered Pill: Install Ask Dope App */}
+        <motion.button
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          onClick={() => {
+            setShowInstallToast(true);
+            setTimeout(() => setShowInstallToast(false), 3000);
+          }}
+          className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[var(--bg-card)] dark:bg-[#161616] border border-[var(--border-color)] dark:border-[#262626] rounded-full text-xs font-normal text-[#555850] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white transition-all shadow-2xs cursor-pointer"
+        >
+          <Download className="w-3.5 h-3.5 text-[#7A7D75] dark:text-[#888]" />
+          <span>Install Ask Dope App</span>
+        </motion.button>
+
+        {/* 2. Hero Title with Crown Logo */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-center justify-center gap-3 text-center pt-0.5"
+        >
+          <img
+            src={crownLogo}
+            alt="dopamint crown"
+            className="w-10 h-10 md:w-11 md:h-11 object-contain filter drop-shadow-xs flex-shrink-0"
+          />
+          <h1 className="font-serif text-[32px] sm:text-[38px] md:text-[44px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-none">
+            Ask Dope
+          </h1>
+        </motion.div>
+      </div>
 
       {/* Install App Toast Notification */}
       <AnimatePresence>
@@ -299,30 +319,15 @@ export const WelcomeHeroSection: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 2. Hero Title with Crown Logo */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="flex items-center justify-center gap-3 text-center -mt-1 mb-1"
-      >
-        <img
-          src={crownLogo}
-          alt="dopamint crown"
-          className="w-10 h-10 md:w-11 md:h-11 object-contain filter drop-shadow-xs flex-shrink-0"
-        />
-        <h1 className="font-serif text-[32px] sm:text-[38px] md:text-[44px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-none">
-          Ask Dope
-        </h1>
-      </motion.div>
-
-      {/* 3. Main Input Box Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.05 }}
-        className="w-full bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[var(--border-color)] dark:border-[#262626] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#55604e]"
-      >
+      {/* Main Lower Cards & Tabs Container */}
+      <div className="w-full space-y-5">
+        {/* 3. Main Input Box Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.05 }}
+          className="w-full bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[var(--border-color)] dark:border-[#262626] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#55604e]"
+        >
         {/* Attachments Preview */}
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-2 pb-2 border-b border-[var(--border-color)] dark:border-[#262626]">
@@ -555,6 +560,7 @@ export const WelcomeHeroSection: React.FC = () => {
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 };
