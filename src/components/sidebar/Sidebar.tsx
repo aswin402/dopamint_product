@@ -14,17 +14,19 @@ import {
   Moon,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
+import logoDope from '../../assets/logo_dope.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { HistoryGroup } from './HistoryGroup';
 import { UserProfileCard } from './UserProfileCard';
 
 export const Sidebar: React.FC = () => {
+  const searchQuery = useCryptoStore((s) => s.searchQuery);
+  const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
+
   const isSidebarOpen = useCryptoStore((s) => s.isSidebarOpen);
   const toggleSidebar = useCryptoStore((s) => s.toggleSidebar);
   const conversations = useCryptoStore((s) => s.conversations);
   const activeConversationId = useCryptoStore((s) => s.activeConversationId);
-  const searchQuery = useCryptoStore((s) => s.searchQuery);
-  const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const watchlist = useCryptoStore((s) => s.watchlist);
@@ -53,28 +55,24 @@ export const Sidebar: React.FC = () => {
       <div className="space-y-3.5">
         {/* Brand Header with Crown Logo & Theme Switcher */}
         <div className="flex items-center justify-between px-1 pt-1">
-          <div className="flex items-center gap-2.5">
-            {/* Crown Logo Container */}
-            <div className="w-9 h-9 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center p-1 shadow-2xs">
-              <img
-                src={crownLogo}
-                alt="dopamint crown"
-                className="w-full h-full object-contain filter drop-shadow-xs"
-              />
-            </div>
+          <div className="flex items-center gap-2.5 min-w-0">
+            {/* Crown Logo without enclosing card */}
+            <img
+              src={crownLogo}
+              alt="crown"
+              className="w-8 h-8 object-contain filter drop-shadow-xs flex-shrink-0"
+            />
 
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-extrabold text-[17px] tracking-tight text-[var(--text-primary)] leading-tight">
-                  dopamint
-                </h1>
-                <span className="text-[9.5px] font-bold px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] rounded-md uppercase tracking-wider">
-                  AI
-                </span>
-              </div>
-              <p className="text-[11px] font-medium text-[var(--text-muted)] leading-none mt-0.5">
-                Your Crypto Assistant
-              </p>
+            {/* logo_dope.png (black in light theme, white in dark theme) */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <img
+                src={logoDope}
+                alt="dopamint"
+                className="h-5 w-auto max-w-[130px] object-contain brightness-0 dark:brightness-100 transition-all"
+              />
+              <span className="text-[9.5px] font-bold px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] rounded-md uppercase tracking-wider flex-shrink-0">
+                AI
+              </span>
             </div>
           </div>
 

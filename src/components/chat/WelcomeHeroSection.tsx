@@ -311,8 +311,8 @@ export const WelcomeHeroSection: React.FC = () => {
           alt="dopamint crown"
           className="w-10 h-10 md:w-11 md:h-11 object-contain filter drop-shadow-xs flex-shrink-0"
         />
-        <h1 className="font-serif text-[30px] sm:text-[36px] md:text-[40px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-none">
-          Which Stock Or Crypto Today?
+        <h1 className="font-serif text-[32px] sm:text-[38px] md:text-[44px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-none">
+          Ask Dope
         </h1>
       </motion.div>
 
