@@ -10,7 +10,7 @@ export const WatchlistModal: React.FC = () => {
   const isOpen = useCryptoStore((s) => s.isWatchlistModalOpen);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const conversations = useCryptoStore((s) => s.conversations);
-  const togglePinConversation = useCryptoStore((s) => s.togglePinConversation);
+  const toggleFavouriteConversation = useCryptoStore((s) => s.toggleFavouriteConversation);
   const setActiveConversation = useCryptoStore((s) => s.setActiveConversation);
   const coins = useCryptoStore((s) => s.coins);
   const watchlist = useCryptoStore((s) => s.watchlist);
@@ -18,7 +18,7 @@ export const WatchlistModal: React.FC = () => {
   const setSelectedCoinId = useCryptoStore((s) => s.setSelectedCoinId);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
 
-  const favouriteChats = conversations.filter((c) => c.isPinned);
+  const favouriteChats = conversations.filter((c) => c.isFavourite);
 
   if (!isOpen) return null;
 
@@ -124,7 +124,7 @@ export const WatchlistModal: React.FC = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          togglePinConversation(chat.id);
+                          toggleFavouriteConversation(chat.id);
                         }}
                         title="Remove from favourites"
                         className="p-1 text-amber-400 hover:scale-110 transition-transform cursor-pointer"

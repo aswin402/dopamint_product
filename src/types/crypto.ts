@@ -66,6 +66,7 @@ export interface Conversation {
   id: string;
   title: string;
   isPinned: boolean;
+  isFavourite?: boolean;
   group: ConversationGroup;
   createdAt: string;
   updatedAt: string;

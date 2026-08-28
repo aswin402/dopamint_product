@@ -5,6 +5,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     id: 'chat-1',
     title: 'What is Bitcoin?',
     isPinned: false,
+    isFavourite: true,
     group: 'today',
     createdAt: '2026-08-28T10:45:00Z',
     updatedAt: '2026-08-28T10:45:00Z',
@@ -15,7 +16,8 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
   {
     id: 'chat-2',
     title: 'Ethereum price prediction',
-    isPinned: false,
+    isPinned: true,
+    isFavourite: false,
     group: 'today',
     createdAt: '2026-08-28T09:30:00Z',
     updatedAt: '2026-08-28T09:30:00Z',

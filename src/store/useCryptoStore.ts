@@ -50,6 +50,7 @@ interface CryptoStoreState {
   renameConversation: (id: string, newTitle: string) => void;
   deleteConversation: (id: string) => void;
   togglePinConversation: (id: string) => void;
+  toggleFavouriteConversation: (id: string) => void;
   duplicateConversation: (id: string) => void;
 
   // Messages
@@ -319,6 +320,14 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     set((state) => ({
       conversations: state.conversations.map((c) =>
         c.id === id ? { ...c, isPinned: !c.isPinned } : c
+      ),
+    }));
+  },
+
+  toggleFavouriteConversation: (id) => {
+    set((state) => ({
+      conversations: state.conversations.map((c) =>
+        c.id === id ? { ...c, isFavourite: !c.isFavourite } : c
       ),
     }));
   },

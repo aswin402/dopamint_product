@@ -26,7 +26,7 @@ export const ChatHeader: React.FC = () => {
   const currentChat = conversations.find((c) => c.id === activeId);
   const userProfile = useCryptoStore((s) => s.userProfile);
 
-  const togglePin = useCryptoStore((s) => s.togglePinConversation);
+  const toggleFavourite = useCryptoStore((s) => s.toggleFavouriteConversation);
   const toggleSidebar = useCryptoStore((s) => s.toggleSidebar);
   const toggleInsights = useCryptoStore((s) => s.toggleInsights);
   const setModalState = useCryptoStore((s) => s.setModalState);
@@ -174,15 +174,15 @@ export const ChatHeader: React.FC = () => {
         </button>
 
         <button
-          onClick={() => currentChat && togglePin(currentChat.id)}
-          title={currentChat?.isPinned ? 'Remove from Favourites' : 'Add to Favourites'}
+          onClick={() => currentChat && toggleFavourite(currentChat.id)}
+          title={currentChat?.isFavourite ? 'Remove from Favourites' : 'Add to Favourites'}
           className={`p-2 rounded-xl transition-colors cursor-pointer ${
-            currentChat?.isPinned
+            currentChat?.isFavourite
               ? 'text-amber-500 bg-amber-500/10'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
           }`}
         >
-          <Star className={`w-4 h-4 ${currentChat?.isPinned ? 'fill-amber-400 text-amber-400' : ''}`} />
+          <Star className={`w-4 h-4 ${currentChat?.isFavourite ? 'fill-amber-400 text-amber-400' : ''}`} />
         </button>
 
         <button

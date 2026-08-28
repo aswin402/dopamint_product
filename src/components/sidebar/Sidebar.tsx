@@ -41,6 +41,7 @@ export const Sidebar: React.FC = () => {
   const olderList = filtered.filter((c) => !c.isPinned && c.group === 'older');
 
   const activeAgentsCount = agents.filter((a) => a.status === 'running' || a.status === 'active').length;
+  const favouriteCount = conversations.filter((c) => c.isFavourite).length;
 
   return (
     <aside
@@ -173,11 +174,11 @@ export const Sidebar: React.FC = () => {
           className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <Star className={`w-4 h-4 ${pinnedList.length > 0 ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'}`} />
+            <Star className={`w-4 h-4 ${favouriteCount > 0 ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'}`} />
             <span>Favourites</span>
           </div>
           <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
-            {pinnedList.length}
+            {favouriteCount}
           </span>
         </button>
 
