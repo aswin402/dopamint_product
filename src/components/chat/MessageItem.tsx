@@ -33,7 +33,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
   const regenerateResponse = useCryptoStore((s) => s.regenerateResponse);
   const isStreaming = useCryptoStore((s) => s.isStreaming);
   const streamingMessageId = useCryptoStore((s) => s.streamingMessageId);
-  const openInsightsByUser = useCryptoStore((s) => s.openInsightsByUser);
+  const openSourceInPanel = useCryptoStore((s) => s.openSourceInPanel);
 
   const isCurrentStreaming = isStreaming && streamingMessageId === message.id;
   const { speak, stop, isPlaying, activeMessageId } = useTextToSpeech();
@@ -110,7 +110,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
         {!isCurrentStreaming && message.role === 'assistant' && (
           <div className="flex items-center gap-1.5 mb-2.5 overflow-x-auto no-scrollbar flex-wrap">
             <button
-              onClick={() => openInsightsByUser()}
+              onClick={() => openSourceInPanel(null)}
+              title="View all verified sources"
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs group"
             >
               <Radio className="w-3 h-3 text-emerald-500 animate-pulse" />
@@ -127,7 +128,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
             ].map((src) => (
               <button
                 key={src.id}
-                onClick={() => openInsightsByUser()}
+                onClick={() => openSourceInPanel(src.label)}
+                title={`Filter sources to ${src.label}`}
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[var(--bg-app)]/70 hover:bg-[var(--bg-hover)] border border-[var(--border-color)]/70 text-[10.5px] font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
               >
                 <span className="text-[9.5px] font-bold text-[var(--primary)]">{src.id}</span>

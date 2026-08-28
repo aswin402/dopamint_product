@@ -36,10 +36,13 @@ interface CryptoStoreState {
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
   userDismissedInsights: boolean;
+  selectedSourceFilter: string | null;
   toggleSidebar: () => void;
   toggleInsights: () => void;
   closeInsightsByUser: () => void;
   openInsightsByUser: () => void;
+  setSelectedSourceFilter: (filter: string | null) => void;
+  openSourceInPanel: (sourceIdentifier?: string | null) => void;
   setSidebarOpen: (open: boolean) => void;
   setInsightsOpen: (open: boolean) => void;
 
@@ -230,14 +233,23 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isSidebarOpen: true,
   isInsightsOpen: false,
   userDismissedInsights: false,
+  selectedSourceFilter: null,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   toggleInsights: () =>
     set((state) => ({
       isInsightsOpen: !state.isInsightsOpen,
       userDismissedInsights: state.isInsightsOpen ? true : false,
+      selectedSourceFilter: state.isInsightsOpen ? null : state.selectedSourceFilter,
     })),
-  closeInsightsByUser: () => set({ isInsightsOpen: false, userDismissedInsights: true }),
+  closeInsightsByUser: () => set({ isInsightsOpen: false, userDismissedInsights: true, selectedSourceFilter: null }),
   openInsightsByUser: () => set({ isInsightsOpen: true, userDismissedInsights: false }),
+  setSelectedSourceFilter: (filter) => set({ selectedSourceFilter: filter }),
+  openSourceInPanel: (sourceIdentifier) =>
+    set({
+      isInsightsOpen: true,
+      userDismissedInsights: false,
+      selectedSourceFilter: sourceIdentifier || null,
+    }),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
   setInsightsOpen: (open) => set({ isInsightsOpen: open }),
 
