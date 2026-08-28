@@ -64,15 +64,12 @@ export const Sidebar: React.FC = () => {
             />
 
             {/* logo_dope.png (black in light theme, white in dark theme) */}
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className="flex items-center min-w-0">
               <img
                 src={logoDope}
                 alt="dopamint"
-                className="h-5 w-auto max-w-[130px] object-contain brightness-0 dark:brightness-100 transition-all"
+                className="h-5 w-auto max-w-[140px] object-contain brightness-0 dark:brightness-100 transition-all"
               />
-              <span className="text-[9.5px] font-bold px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] rounded-md uppercase tracking-wider flex-shrink-0">
-                AI
-              </span>
             </div>
           </div>
 
