@@ -23,6 +23,11 @@ interface CryptoStoreState {
   toggleTheme: () => void;
   setTheme: (theme: 'light' | 'dark') => void;
 
+  // Authentication
+  isAuthenticated: boolean;
+  login: (walletAddress: string, email?: string) => void;
+  logout: () => void;
+
   // Navigation & Layout
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
@@ -128,6 +133,13 @@ const getInitialTheme = (): 'light' | 'dark' => {
   return 'light';
 };
 
+const getInitialAuth = (): boolean => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('dopamint-authenticated') === 'true';
+  }
+  return false;
+};
+
 export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   // Theme
   theme: getInitialTheme(),
@@ -145,6 +157,34 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       document.documentElement.classList.toggle('dark', theme === 'dark');
     }
     set({ theme });
+  },
+
+  // Authentication
+  isAuthenticated: getInitialAuth(),
+  login: (walletAddress, email) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-authenticated', 'true');
+    }
+    const truncated = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    set((state) => ({
+      isAuthenticated: true,
+      isAuthModalOpen: false,
+      userProfile: {
+        ...state.userProfile,
+        name: truncated,
+        email: email || state.userProfile.email,
+        walletAddress: walletAddress,
+      },
+    }));
+  },
+  logout: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('dopamint-authenticated');
+    }
+    set({
+      isAuthenticated: false,
+      isAuthModalOpen: false,
+    });
   },
 
   // Navigation & Layout

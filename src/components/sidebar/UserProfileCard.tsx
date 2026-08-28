@@ -22,6 +22,7 @@ export const UserProfileCard: React.FC = () => {
   const setModalState = useCryptoStore((s) => s.setModalState);
   const theme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
+  const logout = useCryptoStore((s) => s.logout);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -188,7 +189,7 @@ export const UserProfileCard: React.FC = () => {
             <button
               onClick={() => {
                 setIsOpen(false);
-                setModalState('isAuthModalOpen', true);
+                logout();
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors text-left cursor-pointer"
             >
