@@ -1,0 +1,117 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { X, Star, ArrowUpRight } from 'lucide-react';
+import { useCryptoStore } from '../../store/useCryptoStore';
+import { formatCurrency, formatPercentage } from '../../lib/formatters';
+
+export const WatchlistModal: React.FC = () => {
+  const isOpen = useCryptoStore((s) => s.isWatchlistModalOpen);
+  const setModalState = useCryptoStore((s) => s.setModalState);
+  const coins = useCryptoStore((s) => s.coins);
+  const watchlist = useCryptoStore((s) => s.watchlist);
+  const toggleWatchlist = useCryptoStore((s) => s.toggleWatchlist);
+  const setSelectedCoinId = useCryptoStore((s) => s.setSelectedCoinId);
+  const createNewChat = useCryptoStore((s) => s.createNewChat);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      onClick={() => setModalState('isWatchlistModalOpen', false)}
+      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-xl bg-white rounded-3xl border border-[#ECECEC] shadow-flyout overflow-hidden flex flex-col max-h-[80vh]"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ECECEC]">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-amber-50 text-amber-500 rounded-2xl">
+              <Star className="w-5 h-5 fill-amber-500" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-[#111111] tracking-tight">Saved Watchlist</h3>
+              <p className="text-xs text-[#8E8E93]">
+                {watchlist.length} tracked tokens with real-time volatility
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setModalState('isWatchlistModalOpen', false)}
+            className="p-1.5 rounded-xl text-[#8E8E93] hover:text-[#111111] hover:bg-[#F0F2F6]"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* List of Coins */}
+        <div className="p-6 overflow-y-auto space-y-2 flex-1">
+          {coins.map((coin) => {
+            const isSaved = watchlist.includes(coin.id);
+            const isPositive = coin.change24h >= 0;
+
+            return (
+              <div
+                key={coin.id}
+                className="flex items-center justify-between p-3.5 bg-[#F7F8FA] border border-[#ECECEC] rounded-2xl hover:bg-white hover:border-[#5B5CEB]/30 transition-all shadow-2xs"
+              >
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => toggleWatchlist(coin.id)}
+                    className="p-1 text-amber-400 hover:scale-110 transition-transform"
+                  >
+                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : 'text-gray-300'}`} />
+                  </button>
+
+                  <div
+                    className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white"
+                    style={{ backgroundColor: coin.color }}
+                  >
+                    {coin.symbol.slice(0, 3)}
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-xs text-[#111111]">{coin.name}</h5>
+                    <p className="text-[11px] text-[#8E8E93]">{coin.symbol}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="font-bold text-xs text-[#111111] tabular-nums">
+                      {formatCurrency(coin.price)}
+                    </p>
+                    <p
+                      className={`text-[11px] font-semibold tabular-nums ${
+                        isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'
+                      }`}
+                    >
+                      {formatPercentage(coin.change24h)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedCoinId(coin.id);
+                      setModalState('isWatchlistModalOpen', false);
+                      createNewChat(`Analyze current technical indicators and buy/sell levels for ${coin.name} (${coin.symbol})`);
+                    }}
+                    title="Ask AI about this coin"
+                    className="p-2 bg-white hover:bg-[#EEF0FD] text-[#5B5CEB] rounded-xl border border-[#ECECEC] shadow-2xs transition-colors"
+                  >
+                    <ArrowUpRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </motion.div>
+    </div>
+  );
+};

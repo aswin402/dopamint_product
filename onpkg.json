@@ -1,0 +1,53 @@
+{
+  "agent_instructions": {
+    "active_skills": [
+      "react.md",
+      "vite.md"
+    ],
+    "docs_directory": "onpkg_docs/"
+  },
+  "architecture": {
+    "components": "src/components",
+    "entrypoint": "src/main.tsx",
+    "styles": "src/index.css",
+    "store": "src/store",
+    "hooks": "src/hooks",
+    "types": "src/types",
+    "data": "src/data"
+  },
+  "packages": {
+    "added_by_agent": [
+      "canvas-confetti",
+      "@types/canvas-confetti"
+    ],
+    "core": [
+      "@eslint/js",
+      "@fontsource-variable/inter",
+      "@tailwindcss/vite",
+      "clsx",
+      "eslint",
+      "framer-motion",
+      "gsap",
+      "lucide-react",
+      "react",
+      "react-dom",
+      "tailwind-merge",
+      "tailwindcss",
+      "typescript",
+      "vite",
+      "zustand"
+    ]
+  },
+  "project": {
+    "name": "cryptogpt",
+    "package_manager": "bun",
+    "runtime": "bun",
+    "stack": "react-vite-gsap"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  }
+}
