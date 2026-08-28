@@ -1,4 +1,5 @@
 import React from 'react';
+import { TrendingUp, TrendingDown, Star } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { formatCurrency, formatPercentage } from '../../lib/formatters';
 
@@ -6,116 +7,84 @@ export const TopCoinsTable: React.FC = () => {
   const coins = useCryptoStore((s) => s.coins);
   const selectedCoinId = useCryptoStore((s) => s.selectedCoinId);
   const setSelectedCoinId = useCryptoStore((s) => s.setSelectedCoinId);
+  const watchlist = useCryptoStore((s) => s.watchlist);
+  const toggleWatchlist = useCryptoStore((s) => s.toggleWatchlist);
   const setModalState = useCryptoStore((s) => s.setModalState);
 
-  const topFive = coins.slice(0, 5);
-
-  const renderCoinIcon = (symbol: string) => {
-    switch (symbol) {
-      case 'BTC':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0 shadow-2xs">
-            ₿
-          </div>
-        );
-      case 'ETH':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#627EEA] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0 shadow-2xs">
-            ♦
-          </div>
-        );
-      case 'USDT':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#26A17B] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 shadow-2xs">
-            ₮
-          </div>
-        );
-      case 'BNB':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#F3BA2F] text-white flex items-center justify-center font-bold text-[9px] flex-shrink-0 shadow-2xs">
-            BNB
-          </div>
-        );
-      case 'SOL':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#9945FF] text-white flex items-center justify-center font-extrabold text-[10px] flex-shrink-0 shadow-2xs">
-            ≡
-          </div>
-        );
-      default:
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#5B5CEB] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0">
-            {symbol.slice(0, 2)}
-          </div>
-        );
-    }
-  };
+  const topCoins = coins.slice(0, 5);
 
   return (
-    <div className="bg-white rounded-2xl border border-[#ECECEC] p-4 shadow-card select-none">
-      {/* Header */}
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card select-none">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-sm text-[#111111] tracking-tight">Top Coins</h3>
+        <h3 className="font-bold text-sm text-[var(--text-primary)] tracking-tight">Top Coins</h3>
         <button
           onClick={() => setModalState('isWatchlistModalOpen', true)}
-          className="text-xs font-semibold text-[#5B5CEB] hover:underline"
+          className="text-xs font-semibold text-[var(--primary)] hover:underline"
         >
-          View All
+          Watchlist ({watchlist.length})
         </button>
       </div>
 
-      {/* Table Header Row */}
-      <div className="flex items-center justify-between text-[11px] font-semibold text-[#8E8E93] pb-2 border-b border-[#F0F2F6]">
-        <div className="flex items-center gap-3">
-          <span className="w-3 text-center">#</span>
-          <span>Coin</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <span className="w-16 text-right">Price</span>
-          <span className="w-12 text-right">24h %</span>
-        </div>
-      </div>
-
-      {/* Coin Rows */}
-      <div className="divide-y divide-[#F0F2F6]">
-        {topFive.map((coin) => {
+      <div className="space-y-1.5">
+        {topCoins.map((coin) => {
           const isSelected = coin.id === selectedCoinId;
           const isPositive = coin.change24h >= 0;
+          const isSaved = watchlist.includes(coin.id);
 
           return (
             <div
               key={coin.id}
               onClick={() => setSelectedCoinId(coin.id)}
-              className={`flex items-center justify-between py-2.5 px-1.5 rounded-xl cursor-pointer transition-colors ${
+              className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all duration-180 ${
                 isSelected
-                  ? 'bg-[#EEF0FD]/80 text-[#111111]'
-                  : 'hover:bg-[#F9FAFC] text-[#333333]'
+                  ? 'bg-[var(--primary-light)] border border-[var(--primary)]/30'
+                  : 'hover:bg-[var(--bg-hover)]'
               }`}
             >
-              {/* # and Icon + Name */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-[11px] font-medium text-[#8E8E93] w-3 text-center">
-                  {coin.rank}
-                </span>
-                {renderCoinIcon(coin.symbol)}
-                <div className="flex items-center gap-1.5 truncate">
-                  <span className="text-xs font-bold text-[#111111] truncate">{coin.name}</span>
-                  <span className="text-[11px] text-[#8E8E93] font-medium">{coin.symbol}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleWatchlist(coin.id);
+                  }}
+                  className="p-0.5 text-[var(--text-muted)] hover:text-amber-400"
+                >
+                  <Star
+                    className={`w-3.5 h-3.5 ${
+                      isSaved ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'
+                    }`}
+                  />
+                </button>
+
+                <div
+                  className="w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0"
+                  style={{ backgroundColor: coin.color }}
+                >
+                  {coin.symbol.slice(0, 3)}
+                </div>
+
+                <div className="truncate">
+                  <p className="font-bold text-xs text-[var(--text-primary)] truncate">{coin.name}</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">{coin.symbol}</p>
                 </div>
               </div>
 
-              {/* Price & 24h Change */}
-              <div className="flex items-center gap-6 flex-shrink-0">
-                <span className="text-xs font-bold text-[#111111] w-16 text-right tabular-nums">
+              <div className="text-right flex-shrink-0">
+                <p className="font-bold text-xs text-[var(--text-primary)] tabular-nums">
                   {formatCurrency(coin.price)}
-                </span>
-                <span
-                  className={`text-[11px] font-bold w-12 text-right tabular-nums ${
-                    isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'
+                </p>
+                <div
+                  className={`flex items-center justify-end text-[10px] font-bold ${
+                    isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                   }`}
                 >
+                  {isPositive ? (
+                    <TrendingUp className="w-2.5 h-2.5 mr-0.5" />
+                  ) : (
+                    <TrendingDown className="w-2.5 h-2.5 mr-0.5" />
+                  )}
                   {formatPercentage(coin.change24h)}
-                </span>
+                </div>
               </div>
             </div>
           );

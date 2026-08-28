@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Sparkles, Check } from 'lucide-react';
+import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { triggerCelebration } from '../../lib/confetti';
 
@@ -12,7 +13,7 @@ export const UpgradeProModal: React.FC = () => {
 
   const handleCheckout = () => {
     triggerCelebration();
-    alert('🎉 Congratulations! You have unlocked CryptoGPT Pro with unlimited Deep Research and on-chain RPC intelligence.');
+    alert('🎉 Congratulations! You have unlocked dopamint Pro with unlimited Deep Research and on-chain RPC intelligence.');
     setModalState('isUpgradeProModalOpen', false);
   };
 
@@ -28,7 +29,7 @@ export const UpgradeProModal: React.FC = () => {
   return (
     <div
       onClick={() => setModalState('isUpgradeProModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -36,28 +37,28 @@ export const UpgradeProModal: React.FC = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg bg-white rounded-3xl border border-[#ECECEC] shadow-flyout p-6 space-y-6 select-none"
+        className="w-full max-w-lg bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout p-6 space-y-6 select-none"
       >
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-primary text-white flex items-center justify-center shadow-button-primary">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center p-1.5 shadow-2xs">
+              <img src={crownLogo} alt="dopamint crown" className="w-full h-full object-contain" />
             </div>
-            <span className="font-bold text-sm text-[#111111] uppercase tracking-wider">
-              CryptoGPT Pro
+            <span className="font-extrabold text-sm text-[var(--text-primary)] uppercase tracking-wider">
+              dopamint Pro
             </span>
           </div>
           <button
             onClick={() => setModalState('isUpgradeProModalOpen', false)}
-            className="p-1.5 rounded-xl text-[#8E8E93] hover:text-[#111111] hover:bg-[#F0F2F6]"
+            className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Pricing Banner */}
-        <div className="p-5 bg-gradient-to-br from-[#5B5CEB] to-[#7677F4] text-white rounded-2xl shadow-card">
+        <div className="p-5 bg-[var(--primary)] text-white rounded-2xl shadow-card">
           <div className="flex items-baseline justify-between">
             <div>
               <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Pro Tier</p>
@@ -67,7 +68,7 @@ export const UpgradeProModal: React.FC = () => {
               Save 20% Annual
             </span>
           </div>
-          <p className="text-xs text-white/80 mt-2 leading-relaxed">
+          <p className="text-xs text-white/85 mt-2 leading-relaxed">
             Institutional-grade algorithmic crypto analysis, automated portfolio rebalancing, and unmetered AI queries.
           </p>
         </div>
@@ -75,8 +76,8 @@ export const UpgradeProModal: React.FC = () => {
         {/* Perks Checklist */}
         <div className="space-y-2.5">
           {perks.map((perk, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-xs text-[#333333]">
-              <div className="w-4 h-4 rounded-full bg-[#ECFDF5] text-green-600 flex items-center justify-center flex-shrink-0">
+            <div key={i} className="flex items-center gap-2.5 text-xs text-[var(--text-primary)]">
+              <div className="w-4 h-4 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0">
                 <Check className="w-3 h-3 stroke-[2.5]" />
               </div>
               <span className="font-medium">{perk}</span>
@@ -89,7 +90,7 @@ export const UpgradeProModal: React.FC = () => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleCheckout}
-          className="w-full py-3.5 bg-[#5B5CEB] hover:bg-[#4F50D9] text-white font-bold text-sm rounded-2xl shadow-button-primary transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3.5 bg-[var(--primary)] hover:opacity-90 text-white font-bold text-sm rounded-2xl shadow-button-primary transition-opacity flex items-center justify-center gap-2"
         >
           <Sparkles className="w-4 h-4" />
           <span>Upgrade to Pro Now</span>

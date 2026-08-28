@@ -10,7 +10,10 @@ import {
   Sparkles,
   Command,
   X,
+  Sun,
+  Moon,
 } from 'lucide-react';
+import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { HistoryGroup } from './HistoryGroup';
 import { UserProfileCard } from './UserProfileCard';
@@ -26,6 +29,8 @@ export const Sidebar: React.FC = () => {
   const setModalState = useCryptoStore((s) => s.setModalState);
   const watchlist = useCryptoStore((s) => s.watchlist);
   const alerts = useCryptoStore((s) => s.alerts);
+  const theme = useCryptoStore((s) => s.theme);
+  const toggleTheme = useCryptoStore((s) => s.toggleTheme);
 
   // Filter conversations
   const filtered = conversations.filter((c) =>
@@ -40,51 +45,61 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed lg:relative z-40 inset-y-0 left-0 w-[280px] h-screen bg-[#FFFFFF] border-r border-[#ECECEC] flex flex-col justify-between p-4 transition-transform duration-250 ease-out select-none ${
+      className={`fixed lg:relative z-40 inset-y-0 left-0 w-[280px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex flex-col justify-between p-4 transition-all duration-250 ease-out select-none ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       } ${!isSidebarOpen ? 'lg:hidden' : ''}`}
     >
       {/* Top Header & New Chat */}
-      <div className="space-y-4">
-        {/* Brand Header */}
+      <div className="space-y-3.5">
+        {/* Brand Header with Crown Logo & Theme Switcher */}
         <div className="flex items-center justify-between px-1 pt-1">
-          <div className="flex items-center gap-3">
-            {/* Hexagonal Prism Gradient Logo */}
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#5B5CEB] via-[#7B7CF6] to-[#9E9EFA] flex items-center justify-center shadow-button-primary">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="w-5 h-5 text-white"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m21 16-9 5-9-5V8l9-5 9 5v8z" />
-                <path d="M12 21V12" />
-                <path d="M3.27 6.96 12 12.01l8.73-5.05" />
-                <path d="M12 12 2.29 6.5" />
-                <path d="m12 12 9.71-5.5" />
-              </svg>
+          <div className="flex items-center gap-2.5">
+            {/* Crown Logo Container */}
+            <div className="w-9 h-9 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center p-1 shadow-2xs">
+              <img
+                src={crownLogo}
+                alt="dopamint crown"
+                className="w-full h-full object-contain filter drop-shadow-xs"
+              />
             </div>
 
             <div>
-              <h1 className="font-bold text-[17px] tracking-tight text-[#111111] leading-tight">
-                CryptoGPT
-              </h1>
-              <p className="text-[11.5px] font-medium text-[#8E8E93] leading-none mt-0.5">
+              <div className="flex items-center gap-1.5">
+                <h1 className="font-extrabold text-[17px] tracking-tight text-[var(--text-primary)] leading-tight">
+                  dopamint
+                </h1>
+                <span className="text-[9.5px] font-bold px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] rounded-md uppercase tracking-wider">
+                  AI
+                </span>
+              </div>
+              <p className="text-[11px] font-medium text-[var(--text-muted)] leading-none mt-0.5">
                 Your Crypto Assistant
               </p>
             </div>
           </div>
 
-          {/* Close drawer on mobile */}
-          <button
-            onClick={toggleSidebar}
-            className="lg:hidden p-1.5 rounded-lg text-[#666666] hover:bg-[#F0F2F6]"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+              className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4 text-amber-400" />
+              )}
+            </button>
+
+            {/* Close drawer on mobile */}
+            <button
+              onClick={toggleSidebar}
+              className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* New Chat Primary Button */}
@@ -92,7 +107,7 @@ export const Sidebar: React.FC = () => {
           whileHover={{ scale: 1.015, y: -1 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => createNewChat()}
-          className="w-full h-11 bg-gradient-primary hover:opacity-95 text-white font-semibold text-sm rounded-2xl flex items-center justify-center gap-2 shadow-button-primary transition-all duration-180"
+          className="w-full h-11 bg-[var(--primary)] hover:opacity-95 text-white font-semibold text-sm rounded-2xl flex items-center justify-center gap-2 shadow-button-primary transition-all duration-180"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Chat</span>
@@ -100,17 +115,17 @@ export const Sidebar: React.FC = () => {
 
         {/* Search Chats Input */}
         <div className="relative">
-          <Search className="w-4 h-4 text-[#8E8E93] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search chats..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-9 pl-9 pr-12 text-[13px] bg-[#F7F8FA] hover:bg-[#F2F4F8] focus:bg-white text-[#111111] placeholder-[#8E8E93] rounded-xl border border-[#ECECEC] focus:border-[#5B5CEB] focus:ring-2 focus:ring-[#5B5CEB]/10 outline-none transition-all"
+            className="w-full h-9 pl-9 pr-12 text-[13px] bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] rounded-xl border border-[var(--border-color)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/10 outline-none transition-all"
           />
           <button
             onClick={() => setModalState('isCommandPaletteOpen', true)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 bg-[#FFFFFF] border border-[#ECECEC] text-[10.5px] font-medium text-[#8E8E93] rounded-md shadow-2xs"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 bg-[var(--bg-card)] border border-[var(--border-color)] text-[10.5px] font-medium text-[var(--text-muted)] rounded-md shadow-2xs"
           >
             <Command className="w-2.5 h-2.5" />
             <span>K</span>
@@ -156,65 +171,65 @@ export const Sidebar: React.FC = () => {
 
         {filtered.length === 0 && (
           <div className="text-center py-8 px-2">
-            <p className="text-xs text-[#8E8E93]">No conversations found</p>
+            <p className="text-xs text-[var(--text-muted)]">No conversations found</p>
           </div>
         )}
       </div>
 
       {/* Bottom Utility Navigation & User Profile */}
-      <div className="space-y-1 pt-2 border-t border-[#ECECEC]">
+      <div className="space-y-1 pt-2 border-t border-[var(--border-color)]">
         <button
           onClick={() => setModalState('isWatchlistModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[#333333] hover:text-[#111111] hover:bg-[#F0F2F6] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
         >
           <div className="flex items-center gap-3">
-            <Star className="w-4 h-4 text-[#8E8E93]" />
+            <Star className="w-4 h-4 text-[var(--text-muted)]" />
             <span>Watchlist</span>
           </div>
-          <span className="text-[11px] px-1.5 py-0.2 bg-[#F0F2F6] text-[#666666] font-semibold rounded-md">
+          <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
             {watchlist.length}
           </span>
         </button>
 
         <button
           onClick={() => setModalState('isAlertsModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[#333333] hover:text-[#111111] hover:bg-[#F0F2F6] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
         >
           <div className="flex items-center gap-3">
-            <Bell className="w-4 h-4 text-[#8E8E93]" />
+            <Bell className="w-4 h-4 text-[var(--text-muted)]" />
             <span>Alerts</span>
           </div>
-          <span className="text-[11px] px-1.5 py-0.2 bg-[#EEF0FD] text-[#5B5CEB] font-semibold rounded-md">
+          <span className="text-[11px] px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] font-semibold rounded-md">
             {alerts.filter((a) => a.isActive).length} Active
           </span>
         </button>
 
         <button
           onClick={() => setModalState('isPortfolioModalOpen', true)}
-          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[#333333] hover:text-[#111111] hover:bg-[#F0F2F6] rounded-xl transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
         >
-          <PieChart className="w-4 h-4 text-[#8E8E93]" />
+          <PieChart className="w-4 h-4 text-[var(--text-muted)]" />
           <span>Portfolio</span>
         </button>
 
         <button
           onClick={() => setModalState('isSettingsModalOpen', true)}
-          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[#333333] hover:text-[#111111] hover:bg-[#F0F2F6] rounded-xl transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
         >
-          <Settings className="w-4 h-4 text-[#8E8E93]" />
+          <Settings className="w-4 h-4 text-[var(--text-muted)]" />
           <span>Settings</span>
         </button>
 
         <button
           onClick={() => setModalState('isUpgradeProModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-semibold text-[#5B5CEB] hover:bg-[#EEF0FD] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-semibold text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors"
         >
           <div className="flex items-center gap-3">
-            <Sparkles className="w-4 h-4 text-[#5B5CEB]" />
+            <Sparkles className="w-4 h-4 text-[var(--primary)]" />
             <span>Upgrade to Pro</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 bg-[#5B5CEB] text-white font-bold rounded-md">
-            NEW
+          <span className="text-[10px] px-1.5 py-0.5 bg-[var(--primary)] text-white font-bold rounded-md">
+            PRO
           </span>
         </button>
 

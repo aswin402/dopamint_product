@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDown, Sparkles, MessageSquare, Zap, Shield, TrendingUp } from 'lucide-react';
+import { ArrowDown, MessageSquare, Zap, Shield, TrendingUp } from 'lucide-react';
+import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { ChatHeader } from './ChatHeader';
 import { MessageItem } from './MessageItem';
@@ -75,7 +76,7 @@ export const ChatContainer: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FFFFFF] relative overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-[var(--bg-card)] relative overflow-hidden transition-colors duration-200">
       {/* Top Fixed Chat Header */}
       <ChatHeader />
 
@@ -87,17 +88,26 @@ export const ChatContainer: React.FC = () => {
       >
         <div className="max-w-[820px] mx-auto w-full">
           {currentMessages.length === 0 ? (
-            /* Empty State / Welcome Screen */
-            <div className="py-12 md:py-20 text-center max-w-xl mx-auto space-y-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#5B5CEB] via-[#7B7CF6] to-[#9E9EFA] flex items-center justify-center mx-auto shadow-button-primary">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
+            /* Empty State / Welcome Screen with Crown Logo */
+            <div className="py-12 md:py-20 text-center max-w-xl mx-auto space-y-6 select-none">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="w-20 h-20 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center mx-auto p-3 shadow-card"
+              >
+                <img
+                  src={crownLogo}
+                  alt="dopamint crown"
+                  className="w-full h-full object-contain filter drop-shadow-md"
+                />
+              </motion.div>
 
               <div>
-                <h3 className="text-2xl font-bold text-[#111111] tracking-tight">
-                  How can CryptoGPT help you today?
+                <h3 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
+                  How can dopamint help you today?
                 </h3>
-                <p className="text-sm text-[#666666] mt-2">
+                <p className="text-sm text-[var(--text-secondary)] mt-2">
                   Ask about on-chain metrics, macro price forecasts, DeFi protocols, smart contract audits, or tax rules.
                 </p>
               </div>
@@ -110,17 +120,17 @@ export const ChatContainer: React.FC = () => {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => sendMessage(starter.prompt)}
-                    className="p-4 bg-[#F7F8FA] hover:bg-[#EEF0FD] border border-[#ECECEC] hover:border-[#5B5CEB]/30 rounded-2xl transition-all duration-200 text-left shadow-2xs group"
+                    className="p-4 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all duration-200 text-left shadow-2xs group"
                   >
                     <div className="flex items-center gap-2 mb-1.5">
-                      <div className="p-1.5 bg-white rounded-lg border border-[#ECECEC] shadow-2xs">
+                      <div className="p-1.5 bg-[var(--bg-card)] rounded-lg border border-[var(--border-color)] shadow-2xs">
                         {starter.icon}
                       </div>
-                      <span className="font-semibold text-sm text-[#111111] group-hover:text-[#5B5CEB] transition-colors">
+                      <span className="font-semibold text-sm text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
                         {starter.title}
                       </span>
                     </div>
-                    <p className="text-xs text-[#8E8E93] leading-relaxed pl-8">
+                    <p className="text-xs text-[var(--text-muted)] leading-relaxed pl-8">
                       {starter.subtitle}
                     </p>
                   </motion.button>
@@ -152,12 +162,12 @@ export const ChatContainer: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
             onClick={() => scrollToBottom(true)}
-            className="absolute bottom-28 right-8 z-30 flex items-center gap-1.5 px-3 py-2 bg-white text-[#111111] border border-[#ECECEC] rounded-full shadow-card hover:bg-[#F7F8FA] transition-all text-xs font-semibold"
+            className="absolute bottom-28 right-8 z-30 flex items-center gap-1.5 px-3 py-2 bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-full shadow-card hover:bg-[var(--bg-hover)] transition-all text-xs font-semibold"
           >
-            <ArrowDown className="w-3.5 h-3.5 text-[#5B5CEB]" />
+            <ArrowDown className="w-3.5 h-3.5 text-[var(--primary)]" />
             <span>Scroll to bottom</span>
             {unreadCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-[#5B5CEB] text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-[var(--primary)] text-white text-[10px] flex items-center justify-center font-bold">
                 {unreadCount}
               </span>
             )}

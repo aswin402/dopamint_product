@@ -9,6 +9,8 @@ import {
   Star,
   X,
   ArrowRight,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
@@ -24,6 +26,8 @@ export const CommandPalette: React.FC = () => {
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const coins = useCryptoStore((s) => s.coins);
   const setSelectedCoinId = useCryptoStore((s) => s.setSelectedCoinId);
+  const theme = useCryptoStore((s) => s.theme);
+  const toggleTheme = useCryptoStore((s) => s.toggleTheme);
 
   useEffect(() => {
     if (isOpen) {
@@ -43,7 +47,7 @@ export const CommandPalette: React.FC = () => {
       type: 'chat',
       title: c.title,
       subtitle: 'Jump to conversation',
-      icon: <MessageSquare className="w-4 h-4 text-[#5B5CEB]" />,
+      icon: <MessageSquare className="w-4 h-4 text-[var(--primary)]" />,
       action: () => {
         setActiveConversation(c.id);
         setModalState('isCommandPaletteOpen', false);
@@ -74,9 +78,20 @@ export const CommandPalette: React.FC = () => {
       type: 'action',
       title: 'Start New Conversation',
       subtitle: 'Create a fresh crypto chat context (⌘N)',
-      icon: <Plus className="w-4 h-4 text-[#5B5CEB]" />,
+      icon: <Plus className="w-4 h-4 text-[var(--primary)]" />,
       action: () => {
         createNewChat();
+        setModalState('isCommandPaletteOpen', false);
+      },
+    },
+    {
+      id: 'act-toggle-theme',
+      type: 'action',
+      title: `Switch Theme to ${theme === 'light' ? 'Dark' : 'Light'} Mode`,
+      subtitle: 'Toggle between OKLCH light cream and dark obsidian',
+      icon: theme === 'light' ? <Moon className="w-4 h-4 text-[var(--primary)]" /> : <Sun className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        toggleTheme();
         setModalState('isCommandPaletteOpen', false);
       },
     },
@@ -107,7 +122,7 @@ export const CommandPalette: React.FC = () => {
       type: 'action',
       title: 'Preferences & API Keys',
       subtitle: 'Configure AI models, temperature, and currency',
-      icon: <Settings className="w-4 h-4 text-[#666666]" />,
+      icon: <Settings className="w-4 h-4 text-[var(--text-muted)]" />,
       action: () => {
         setModalState('isSettingsModalOpen', true);
         setModalState('isCommandPaletteOpen', false);
@@ -133,7 +148,7 @@ export const CommandPalette: React.FC = () => {
   return (
     <div
       onClick={() => setModalState('isCommandPaletteOpen', false)}
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-start justify-center pt-20 px-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 px-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: -10 }}
@@ -141,10 +156,10 @@ export const CommandPalette: React.FC = () => {
         exit={{ opacity: 0, scale: 0.96, y: -10 }}
         transition={{ duration: 0.18 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl bg-white rounded-3xl border border-[#ECECEC] shadow-flyout overflow-hidden"
+        className="w-full max-w-xl bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout overflow-hidden"
       >
-        <div className="flex items-center px-4 py-3.5 border-b border-[#ECECEC]">
-          <Search className="w-5 h-5 text-[#8E8E93] mr-3" />
+        <div className="flex items-center px-4 py-3.5 border-b border-[var(--border-color)]">
+          <Search className="w-5 h-5 text-[var(--text-muted)] mr-3" />
           <input
             ref={inputRef}
             type="text"
@@ -155,11 +170,11 @@ export const CommandPalette: React.FC = () => {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Type a command, search chats, or find coins..."
-            className="w-full text-sm font-medium text-[#111111] placeholder-[#8E8E93] outline-none bg-transparent"
+            className="w-full text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none bg-transparent"
           />
           <button
             onClick={() => setModalState('isCommandPaletteOpen', false)}
-            className="p-1 text-[#8E8E93] hover:text-[#111111] rounded-lg"
+            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg"
           >
             <X className="w-4 h-4" />
           </button>
@@ -167,7 +182,7 @@ export const CommandPalette: React.FC = () => {
 
         <div className="max-h-[360px] overflow-y-auto p-2 space-y-1">
           {allItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-[#8E8E93]">
+            <div className="py-8 text-center text-xs text-[var(--text-muted)]">
               No matching commands or conversations found.
             </div>
           ) : (
@@ -179,20 +194,20 @@ export const CommandPalette: React.FC = () => {
                   onClick={item.action}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-2xl cursor-pointer transition-colors ${
-                    isSelected ? 'bg-[#EEF0FD] text-[#111111]' : 'hover:bg-[#F7F8FA] text-[#333333]'
+                    isSelected ? 'bg-[var(--primary-light)] text-[var(--text-primary)]' : 'hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 rounded-xl bg-white border border-[#ECECEC] shadow-2xs">
+                    <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs">
                       {item.icon}
                     </div>
                     <div className="truncate">
-                      <p className="font-semibold text-xs text-[#111111] truncate">{item.title}</p>
-                      <p className="text-[11px] text-[#8E8E93] truncate">{item.subtitle}</p>
+                      <p className="font-semibold text-xs text-[var(--text-primary)] truncate">{item.title}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] truncate">{item.subtitle}</p>
                     </div>
                   </div>
                   <ArrowRight
-                    className={`w-4 h-4 text-[#5B5CEB] transition-opacity ${
+                    className={`w-4 h-4 text-[var(--primary)] transition-opacity ${
                       isSelected ? 'opacity-100' : 'opacity-0'
                     }`}
                   />
@@ -202,7 +217,7 @@ export const CommandPalette: React.FC = () => {
           )}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2 bg-[#F7F8FA] border-t border-[#ECECEC] text-[11px] text-[#8E8E93]">
+        <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-app)] border-t border-[var(--border-color)] text-[11px] text-[var(--text-muted)]">
           <span>Use ↑ ↓ to navigate</span>
           <span>Press ↵ to select • Esc to close</span>
         </div>

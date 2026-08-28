@@ -18,6 +18,11 @@ import { generateCryptoResponse } from '../lib/aiResponseGenerator';
 import { formatTimestamp } from '../lib/formatters';
 
 interface CryptoStoreState {
+  // Theme state
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
+
   // Navigation & Layout
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
@@ -54,8 +59,8 @@ interface CryptoStoreState {
   isDeepResearchEnabled: boolean;
   toggleWebSearch: () => void;
   toggleDeepResearch: () => void;
-  selectedModel: 'CryptoGPT-4o' | 'DeepResearch-Crypto' | 'QuantAlpha-3';
-  setSelectedModel: (model: 'CryptoGPT-4o' | 'DeepResearch-Crypto' | 'QuantAlpha-3') => void;
+  selectedModel: 'dopamint-4o' | 'dopamint-DeepResearch' | 'QuantAlpha-3';
+  setSelectedModel: (model: 'dopamint-4o' | 'dopamint-DeepResearch' | 'QuantAlpha-3') => void;
 
   // Market & Coins
   marketOverview: MarketOverviewData;
@@ -107,8 +112,40 @@ interface CryptoStoreState {
 
 let streamAbortController: AbortController | null = null;
 
+const getInitialTheme = (): 'light' | 'dark' => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('dopamint-theme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.classList.toggle('dark', saved === 'dark');
+      return saved;
+    }
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', prefersDark);
+    return prefersDark ? 'dark' : 'light';
+  }
+  return 'light';
+};
+
 export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
-  // Layout
+  // Theme
+  theme: getInitialTheme(),
+  toggleTheme: () => {
+    const nextTheme = get().theme === 'light' ? 'dark' : 'light';
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-theme', nextTheme);
+      document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+    }
+    set({ theme: nextTheme });
+  },
+  setTheme: (theme) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-theme', theme);
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    }
+    set({ theme });
+  },
+
+  // Navigation & Layout
   isSidebarOpen: true,
   isInsightsOpen: true,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
@@ -118,14 +155,15 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
 
   // Conversations
   conversations: INITIAL_CONVERSATIONS,
-  activeConversationId: 'chat-1',
+  activeConversationId: INITIAL_CONVERSATIONS[0].id,
   searchQuery: '',
   setSearchQuery: (searchQuery) => set({ searchQuery }),
+
   setActiveConversation: (activeConversationId) => {
-    set({ activeConversationId });
-    if (window.innerWidth < 1024) {
-      set({ isSidebarOpen: false });
+    if (get().isStreaming) {
+      get().stopGeneration();
     }
+    set({ activeConversationId });
   },
 
   createNewChat: (initialPrompt?: string) => {
@@ -196,24 +234,27 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   },
 
   duplicateConversation: (id) => {
-    const original = get().conversations.find((c) => c.id === id);
-    if (!original) return;
+    const { conversations, messages } = get();
+    const target = conversations.find((c) => c.id === id);
+    if (!target) return;
+
     const newId = `chat-${Date.now()}`;
-    const duplicateChat: Conversation = {
-      ...original,
+    const duplicatedChat: Conversation = {
+      ...target,
       id: newId,
-      title: `${original.title} (Copy)`,
+      title: `${target.title} (Copy)`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    const originalMessages = get().messages[id] || [];
+
+    const duplicatedMessages = messages[id] ? [...messages[id]] : [];
 
     set((state) => ({
-      conversations: [duplicateChat, ...state.conversations],
+      conversations: [duplicatedChat, ...state.conversations],
       activeConversationId: newId,
       messages: {
         ...state.messages,
-        [newId]: [...originalMessages],
+        [newId]: duplicatedMessages,
       },
     }));
   },
@@ -223,118 +264,139 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isStreaming: false,
   streamingMessageId: null,
   activeSpeechMessageId: null,
-  setActiveSpeechMessageId: (id) => set({ activeSpeechMessageId: id }),
+  setActiveSpeechMessageId: (activeSpeechMessageId) => set({ activeSpeechMessageId }),
 
   sendMessage: async (content: string, attachments?: Attachment[]) => {
-    const state = get();
-    const activeId = state.activeConversationId;
-    const nowTime = formatTimestamp(new Date());
+    const {
+      activeConversationId,
+      isWebSearchEnabled,
+      isDeepResearchEnabled,
+      conversations,
+      messages,
+    } = get();
 
-    const userMessageId = `usr-${Date.now()}`;
+    if (!content.trim() && (!attachments || attachments.length === 0)) return;
+
+    const userMessageId = `user-msg-${Date.now()}`;
     const userMessage: Message = {
       id: userMessageId,
-      conversationId: activeId,
+      conversationId: activeConversationId,
       role: 'user',
-      content,
-      createdAt: nowTime,
-      status: 'completed',
-      attachments,
+      content: content.trim(),
+      createdAt: formatTimestamp(new Date()),
+      status: 'sent',
+      attachments: attachments || [],
     };
 
-    const currentConv = state.conversations.find((c) => c.id === activeId);
-    const existingMessages = state.messages[activeId] || [];
-    if (currentConv && (existingMessages.length === 0 || currentConv.title === 'New Conversation')) {
-      const summaryTitle = content.length > 28 ? `${content.slice(0, 26)}...` : content;
-      get().renameConversation(activeId, summaryTitle);
+    // Auto-update conversation title if first message
+    const currentConv = conversations.find((c) => c.id === activeConversationId);
+    const existingMessages = messages[activeConversationId] || [];
+    let updatedConversations = conversations;
+    if (existingMessages.length === 0 && currentConv) {
+      const generatedTitle =
+        content.length > 32 ? `${content.slice(0, 30)}...` : content;
+      updatedConversations = conversations.map((c) =>
+        c.id === activeConversationId
+          ? { ...c, title: generatedTitle, updatedAt: new Date().toISOString() }
+          : c
+      );
     }
 
-    const assistantMessageId = `ast-${Date.now() + 1}`;
-    const assistantMessage: Message = {
-      id: assistantMessageId,
-      conversationId: activeId,
-      role: 'assistant',
-      content: '',
-      createdAt: nowTime,
-      status: 'streaming',
-      isDeepResearch: state.isDeepResearchEnabled,
-    };
-
-    set((s) => ({
+    // Append user message immediately
+    set((state) => ({
+      conversations: updatedConversations,
       messages: {
-        ...s.messages,
-        [activeId]: [...(s.messages[activeId] || []), userMessage, assistantMessage],
+        ...state.messages,
+        [activeConversationId]: [...(state.messages[activeConversationId] || []), userMessage],
       },
-      isStreaming: true,
-      streamingMessageId: assistantMessageId,
     }));
 
+    // Generate AI Response Object
+    const aiResponseTemplate = generateCryptoResponse(content, {
+      isDeepResearch: isDeepResearchEnabled,
+      isWebSearch: isWebSearchEnabled,
+    });
+
+    const assistantMessageId = `ai-msg-${Date.now()}`;
+    const assistantMessage: Message = {
+      id: assistantMessageId,
+      conversationId: activeConversationId,
+      role: 'assistant',
+      content: '',
+      createdAt: formatTimestamp(new Date()),
+      status: 'streaming',
+      thinkingSteps: isDeepResearchEnabled ? aiResponseTemplate.thinkingSteps : undefined,
+      keyPoints: aiResponseTemplate.keyPoints,
+      priceSnapshot: aiResponseTemplate.priceSnapshot,
+      suggestedFollowUps: aiResponseTemplate.suggestedFollowUps,
+      webSources: isWebSearchEnabled ? aiResponseTemplate.webSources : undefined,
+      isDeepResearch: isDeepResearchEnabled,
+    };
+
+    // Add empty streaming assistant message
+    set((state) => ({
+      isStreaming: true,
+      streamingMessageId: assistantMessageId,
+      messages: {
+        ...state.messages,
+        [activeConversationId]: [
+          ...(state.messages[activeConversationId] || []),
+          assistantMessage,
+        ],
+      },
+    }));
+
+    // Abort controller for cancellation
     if (streamAbortController) {
       streamAbortController.abort();
     }
     streamAbortController = new AbortController();
-    const currentAbort = streamAbortController;
+    const signal = streamAbortController.signal;
 
-    const generated = generateCryptoResponse(content, state.isDeepResearchEnabled);
+    // Simulate Token-by-Token Streaming
+    const fullText = aiResponseTemplate.content;
+    const tokens = fullText.split(/(\s+)/);
+    let streamedContent = '';
 
-    if (state.isDeepResearchEnabled && generated.thinkingSteps) {
-      set((s) => ({
-        messages: {
-          ...s.messages,
-          [activeId]: (s.messages[activeId] || []).map((m) =>
-            m.id === assistantMessageId
-              ? { ...m, thinkingSteps: generated.thinkingSteps }
-              : m
-          ),
-        },
-      }));
-      await new Promise((r) => setTimeout(r, 600));
+    try {
+      for (let i = 0; i < tokens.length; i++) {
+        if (signal.aborted) break;
+
+        streamedContent += tokens[i];
+        const delay = Math.random() * 20 + 10;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+
+        if (signal.aborted) break;
+
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [activeConversationId]: (state.messages[activeConversationId] || []).map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: streamedContent }
+                : msg
+            ),
+          },
+        }));
+      }
+    } catch {
+      // Aborted or cancelled
+    } finally {
+      if (!signal.aborted) {
+        set((state) => ({
+          isStreaming: false,
+          streamingMessageId: null,
+          messages: {
+            ...state.messages,
+            [activeConversationId]: (state.messages[activeConversationId] || []).map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, status: 'completed' as const, content: fullText }
+                : msg
+            ),
+          },
+        }));
+      }
     }
-
-    if (currentAbort.signal.aborted) return;
-
-    const fullText = generated.content;
-    const tokens = fullText.split(' ');
-    let currentText = '';
-
-    for (let i = 0; i < tokens.length; i++) {
-      if (currentAbort.signal.aborted) break;
-
-      currentText += (i === 0 ? '' : ' ') + tokens[i];
-
-      set((s) => ({
-        messages: {
-          ...s.messages,
-          [activeId]: (s.messages[activeId] || []).map((m) =>
-            m.id === assistantMessageId
-              ? { ...m, content: currentText }
-              : m
-          ),
-        },
-      }));
-
-      await new Promise((r) => setTimeout(r, Math.floor(Math.random() * 20 + 15)));
-    }
-
-    set((s) => ({
-      messages: {
-        ...s.messages,
-        [activeId]: (s.messages[activeId] || []).map((m) =>
-          m.id === assistantMessageId
-            ? {
-                ...m,
-                content: currentText,
-                status: 'completed',
-                keyPoints: generated.keyPoints,
-                priceSnapshot: generated.priceSnapshot,
-                codeBlocks: generated.codeBlocks,
-                suggestedFollowUps: generated.suggestedFollowUps,
-              }
-            : m
-        ),
-      },
-      isStreaming: false,
-      streamingMessageId: null,
-    }));
   },
 
   stopGeneration: () => {
@@ -343,39 +405,46 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       streamAbortController = null;
     }
     const { activeConversationId, streamingMessageId } = get();
-    if (streamingMessageId) {
-      set((s) => ({
-        messages: {
-          ...s.messages,
-          [activeConversationId]: (s.messages[activeConversationId] || []).map((m) =>
-            m.id === streamingMessageId ? { ...m, status: 'completed' } : m
-          ),
-        },
-        isStreaming: false,
-        streamingMessageId: null,
-      }));
-    }
+    set((state) => ({
+      isStreaming: false,
+      streamingMessageId: null,
+      messages: {
+        ...state.messages,
+        [activeConversationId]: (state.messages[activeConversationId] || []).map((msg) =>
+          msg.id === streamingMessageId ? { ...msg, status: 'completed' as const } : msg
+        ),
+      },
+    }));
   },
 
   regenerateResponse: async (messageId: string) => {
     const { activeConversationId, messages } = get();
-    const convMessages = messages[activeConversationId] || [];
-    const index = convMessages.findIndex((m) => m.id === messageId);
-    if (index <= 0) return;
+    const currentList = messages[activeConversationId] || [];
+    const targetIdx = currentList.findIndex((m) => m.id === messageId);
+    if (targetIdx === -1) return;
 
-    const previousUserMessage = convMessages[index - 1];
-    if (previousUserMessage && previousUserMessage.role === 'user') {
-      set((s) => ({
-        messages: {
-          ...s.messages,
-          [activeConversationId]: convMessages.filter((m) => m.id !== messageId),
-        },
-      }));
-      await get().sendMessage(previousUserMessage.content);
+    // Find preceding user message
+    let userPrompt = 'Analyze current crypto market';
+    for (let i = targetIdx - 1; i >= 0; i--) {
+      if (currentList[i].role === 'user') {
+        userPrompt = currentList[i].content;
+        break;
+      }
     }
+
+    // Remove the old assistant message
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [activeConversationId]: currentList.filter((m) => m.id !== messageId),
+      },
+    }));
+
+    // Trigger regeneration
+    await get().sendMessage(userPrompt);
   },
 
-  setMessageFeedback: (messageId, feedback) => {
+  setMessageFeedback: (messageId: string, feedback: 'liked' | 'disliked' | null) => {
     const { activeConversationId } = get();
     set((s) => ({
       messages: {
@@ -392,7 +461,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isDeepResearchEnabled: false,
   toggleWebSearch: () => set((s) => ({ isWebSearchEnabled: !s.isWebSearchEnabled })),
   toggleDeepResearch: () => set((s) => ({ isDeepResearchEnabled: !s.isDeepResearchEnabled })),
-  selectedModel: 'CryptoGPT-4o',
+  selectedModel: 'dopamint-4o',
   setSelectedModel: (selectedModel) => set({ selectedModel }),
 
   // Market & Coins
@@ -429,7 +498,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       symbol: 'ETH',
       name: 'Ethereum',
       amount: 4.2,
-      buyPriceAvg: 2950.0,
+      buyPriceAvg: 3050.0,
       currentPrice: 3215.47,
       color: '#627EEA',
     },
@@ -438,21 +507,27 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       coinId: 'solana',
       symbol: 'SOL',
       name: 'Solana',
-      amount: 25.0,
-      buyPriceAvg: 142.0,
+      amount: 45.0,
+      buyPriceAvg: 142.5,
       currentPrice: 178.34,
-      color: '#9945FF',
+      color: '#14F195',
     },
   ],
+
   addPortfolioPosition: (position) => {
     const newPos: PortfolioPosition = {
       ...position,
-      id: `pos-${Date.now()}`,
+      id: `p-${Date.now()}`,
     };
-    set((s) => ({ portfolio: [...s.portfolio, newPos] }));
+    set((s) => ({
+      portfolio: [...s.portfolio, newPos],
+    }));
   },
+
   removePortfolioPosition: (id) => {
-    set((s) => ({ portfolio: s.portfolio.filter((p) => p.id !== id) }));
+    set((s) => ({
+      portfolio: s.portfolio.filter((p) => p.id !== id),
+    }));
   },
 
   // Alerts
@@ -462,37 +537,44 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       coinId: 'bitcoin',
       symbol: 'BTC',
       name: 'Bitcoin',
-      targetPrice: 70000,
+      targetPrice: 70000.0,
       condition: 'above',
       isActive: true,
-      createdAt: '2026-08-28T08:00:00Z',
+      createdAt: '2026-08-28T09:00:00Z',
     },
     {
       id: 'alt-2',
       coinId: 'ethereum',
       symbol: 'ETH',
       name: 'Ethereum',
-      targetPrice: 3000,
+      targetPrice: 3000.0,
       condition: 'below',
       isActive: true,
-      createdAt: '2026-08-28T08:00:00Z',
+      createdAt: '2026-08-28T09:00:00Z',
     },
   ],
-  addPriceAlert: (alertData) => {
+
+  addPriceAlert: (alert) => {
     const newAlert: PriceAlert = {
-      ...alertData,
+      ...alert,
       id: `alt-${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
-    set((s) => ({ alerts: [...s.alerts, newAlert] }));
+    set((s) => ({
+      alerts: [...s.alerts, newAlert],
+    }));
   },
+
   togglePriceAlert: (id) => {
     set((s) => ({
       alerts: s.alerts.map((a) => (a.id === id ? { ...a, isActive: !a.isActive } : a)),
     }));
   },
+
   removePriceAlert: (id) => {
-    set((s) => ({ alerts: s.alerts.filter((a) => a.id !== id) }));
+    set((s) => ({
+      alerts: s.alerts.filter((a) => a.id !== id),
+    }));
   },
 
   // News
@@ -502,7 +584,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   userProfile: {
     name: 'Vishal Raj',
     email: 'vishalraj@email.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     tier: 'Pro',
     apiCallsRemaining: 4850,
   },
@@ -531,25 +613,22 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
 
   // Live Jitter Simulation
   simulateMarketTick: () => {
-    set((state) => {
-      const updatedCoins = state.coins.map((coin) => {
-        const delta = (Math.random() * 0.35 - 0.15) / 100;
-        const newPrice = Number((coin.price * (1 + delta)).toFixed(coin.price < 1 ? 4 : 2));
-        const updatedHistory24h = [...coin.history24h];
-        if (updatedHistory24h.length > 0) {
-          updatedHistory24h[updatedHistory24h.length - 1] = {
-            ...updatedHistory24h[updatedHistory24h.length - 1],
-            price: newPrice,
-          };
-        }
-        return {
-          ...coin,
-          price: newPrice,
-          history24h: updatedHistory24h,
-        };
-      });
+    const { coins, marketOverview } = get();
+    const updatedCoins = coins.map((c) => {
+      const jitterPercent = (Math.random() - 0.49) * 0.2;
+      const newPrice = Math.max(0.0001, c.price * (1 + jitterPercent / 100));
+      return {
+        ...c,
+        price: newPrice,
+      };
+    });
 
-      return { coins: updatedCoins };
+    set({
+      coins: updatedCoins,
+      marketOverview: {
+        ...marketOverview,
+        totalMarketCap: marketOverview.totalMarketCap * (1 + (Math.random() - 0.49) * 0.001),
+      },
     });
   },
 }));

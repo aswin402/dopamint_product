@@ -10,7 +10,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-28T10:45:00Z',
     iconName: 'bitcoin',
     iconBgColor: '#FFF4E6',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-2',
@@ -21,7 +21,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-28T09:30:00Z',
     iconName: 'ethereum',
     iconBgColor: '#EEF2FF',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-3',
@@ -32,7 +32,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-28T08:15:00Z',
     iconName: 'defi',
     iconBgColor: '#E0F2FE',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-4',
@@ -43,7 +43,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-27T23:20:00Z',
     iconName: 'staking',
     iconBgColor: '#ECFDF5',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-5',
@@ -54,7 +54,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-27T20:45:00Z',
     iconName: 'solana',
     iconBgColor: '#F5F3FF',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-6',
@@ -65,7 +65,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-27T18:30:00Z',
     iconName: 'tax',
     iconBgColor: '#F3F4F6',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-7',
@@ -76,7 +76,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-24T14:10:00Z',
     iconName: 'wallet',
     iconBgColor: '#F5F3FF',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-8',
@@ -87,7 +87,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-23T16:40:00Z',
     iconName: 'trending',
     iconBgColor: '#ECFDF5',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
   {
     id: 'chat-9',
@@ -98,7 +98,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     updatedAt: '2026-08-22T11:05:00Z',
     iconName: 'layers',
     iconBgColor: '#F5F3FF',
-    model: 'CryptoGPT-4o',
+    model: 'dopamint-4o',
   },
 ];
 

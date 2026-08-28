@@ -86,10 +86,10 @@ export const ChatInputArea: React.FC = () => {
           setIsDragOver(false);
           handleFileUpload(e.dataTransfer.files);
         }}
-        className={`relative bg-white rounded-[24px] border transition-all duration-200 shadow-card ${
+        className={`relative bg-[var(--bg-card)] rounded-[24px] border transition-all duration-200 shadow-card ${
           isDragOver
-            ? 'border-[#5B5CEB] ring-4 ring-[#5B5CEB]/10 bg-[#EEF0FD]/30'
-            : 'border-[#ECECEC] focus-within:border-[#5B5CEB] focus-within:ring-4 focus-within:ring-[#5B5CEB]/10'
+            ? 'border-[var(--primary)] ring-4 ring-[var(--primary)]/10 bg-[var(--primary-light)]'
+            : 'border-[var(--border-color)] focus-within:border-[var(--primary)] focus-within:ring-4 focus-within:ring-[var(--primary)]/10'
         }`}
       >
         {attachments.length > 0 && (
@@ -97,9 +97,9 @@ export const ChatInputArea: React.FC = () => {
             {attachments.map((att) => (
               <div
                 key={att.id}
-                className="flex items-center gap-1.5 px-3 py-1 bg-[#F7F8FA] border border-[#ECECEC] rounded-xl text-xs text-[#111111]"
+                className="flex items-center gap-1.5 px-3 py-1 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl text-xs text-[var(--text-primary)]"
               >
-                <Paperclip className="w-3 h-3 text-[#5B5CEB]" />
+                <Paperclip className="w-3 h-3 text-[var(--primary)]" />
                 <span className="font-medium truncate max-w-[140px]">{att.name}</span>
                 <button
                   onClick={() => setAttachments((prev) => prev.filter((a) => a.id !== att.id))}
@@ -119,8 +119,8 @@ export const ChatInputArea: React.FC = () => {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything about crypto..."
-            className="w-full bg-transparent text-[15px] text-[#111111] placeholder-[#8E8E93] outline-none resize-none overflow-y-auto leading-relaxed max-h-[180px]"
+            placeholder="Ask dopamint anything about crypto..."
+            className="w-full bg-transparent text-[15px] text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none resize-none overflow-y-auto leading-relaxed max-h-[180px]"
           />
         </div>
 
@@ -137,7 +137,7 @@ export const ChatInputArea: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               title="Attach document or image"
-              className="w-9 h-9 rounded-full bg-[#F7F8FA] hover:bg-[#EEF0FD] hover:text-[#5B5CEB] text-[#666666] border border-[#ECECEC] flex items-center justify-center transition-colors shadow-2xs"
+              className="w-9 h-9 rounded-full bg-[var(--bg-app)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)] text-[var(--text-secondary)] border border-[var(--border-color)] flex items-center justify-center transition-colors shadow-2xs"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -147,8 +147,8 @@ export const ChatInputArea: React.FC = () => {
               title={isWebSearchEnabled ? 'Web search enabled' : 'Web search disabled'}
               className={`h-9 px-3 rounded-full border text-xs font-medium flex items-center gap-1.5 transition-all ${
                 isWebSearchEnabled
-                  ? 'bg-[#EEF0FD] border-[#5B5CEB]/30 text-[#5B5CEB] font-semibold'
-                  : 'bg-[#F7F8FA] border-[#ECECEC] text-[#666666] hover:bg-[#F0F2F6]'
+                  ? 'bg-[var(--primary-light)] border-[var(--primary)]/30 text-[var(--primary)] font-bold'
+                  : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
               }`}
             >
               <Globe className="w-3.5 h-3.5" />
@@ -160,8 +160,8 @@ export const ChatInputArea: React.FC = () => {
               title="Toggle Deep Multi-Step Research Mode"
               className={`h-9 px-3 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 isDeepResearchEnabled
-                  ? 'bg-[#5B5CEB] border-[#5B5CEB] text-white shadow-button-primary'
-                  : 'bg-[#F7F8FA] border-[#ECECEC] text-[#333333] hover:bg-[#EEF0FD] hover:text-[#5B5CEB]'
+                  ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-button-primary'
+                  : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)]'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5 text-inherit" />
@@ -170,10 +170,10 @@ export const ChatInputArea: React.FC = () => {
                 className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold uppercase ${
                   isDeepResearchEnabled
                     ? 'bg-white/20 text-white'
-                    : 'bg-[#5B5CEB] text-white'
+                    : 'bg-[var(--primary)] text-white'
                 }`}
               >
-                NEW
+                PRO
               </span>
             </button>
 
@@ -186,8 +186,8 @@ export const ChatInputArea: React.FC = () => {
               title={isListening ? 'Stop voice recording' : 'Voice search'}
               className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
                 isListening
-                  ? 'bg-red-50 text-red-500 border border-red-200'
-                  : 'text-[#666666] hover:text-[#111111] hover:bg-[#F0F2F6]'
+                  ? 'bg-red-500/10 text-red-500 border border-red-500/30'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               }`}
             >
               {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -199,9 +199,9 @@ export const ChatInputArea: React.FC = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={stopGeneration}
                 title="Stop generating"
-                className="w-9 h-9 rounded-full bg-[#111111] text-white flex items-center justify-center shadow-soft"
+                className="w-9 h-9 rounded-full bg-[var(--text-primary)] text-[var(--bg-card)] flex items-center justify-center shadow-soft"
               >
-                <Square className="w-3.5 h-3.5 fill-white" />
+                <Square className="w-3.5 h-3.5 fill-current" />
               </motion.button>
             ) : (
               <motion.button
@@ -212,8 +212,8 @@ export const ChatInputArea: React.FC = () => {
                 title="Send message (Enter)"
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-180 ${
                   inputText.trim() || attachments.length > 0
-                    ? 'bg-[#5B5CEB] text-white shadow-button-primary hover:bg-[#4F50D9]'
-                    : 'bg-[#5B5CEB]/50 text-white/70 cursor-not-allowed'
+                    ? 'bg-[var(--primary)] text-white shadow-button-primary hover:opacity-95'
+                    : 'bg-[var(--primary)]/40 text-white/60 cursor-not-allowed'
                 }`}
               >
                 <Send className="w-4 h-4 translate-x-0.2 -translate-y-0.2" />
@@ -223,7 +223,7 @@ export const ChatInputArea: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-center text-[11px] text-[#8E8E93] mt-2.5 leading-relaxed tracking-tight select-none">
+      <p className="text-center text-[11px] text-[var(--text-muted)] mt-2.5 leading-relaxed tracking-tight select-none">
         Crypto markets are volatile. AI answers can be wrong. Always do your own research before investing.
       </p>
     </div>

@@ -34,13 +34,16 @@ export const InteractiveChart: React.FC = () => {
   const timeframes: TimeframeOption[] = ['1H', '24H', '7D', '1M', '1Y', 'ALL'];
 
   return (
-    <div className="bg-white rounded-2xl border border-[#ECECEC] p-4 shadow-card select-none">
+    <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] p-4 shadow-card select-none">
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-[#F7931A] text-white flex items-center justify-center font-bold text-[11px] shadow-2xs">
-            ₿
+          <div
+            className="w-5 h-5 rounded-full text-white flex items-center justify-center font-bold text-[11px] shadow-2xs"
+            style={{ backgroundColor: coin.color }}
+          >
+            {coin.symbol.slice(0, 1)}
           </div>
-          <span className="font-bold text-sm text-[#111111] tracking-tight">
+          <span className="font-bold text-sm text-[var(--text-primary)] tracking-tight">
             {coin.name} ({coin.symbol})
           </span>
         </div>
@@ -48,14 +51,14 @@ export const InteractiveChart: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-1 px-2 py-1 bg-[#F7F8FA] hover:bg-[#F0F2F6] border border-[#ECECEC] text-xs font-semibold text-[#111111] rounded-lg transition-colors"
+            className="flex items-center gap-1 px-2 py-1 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] text-xs font-semibold text-[var(--text-primary)] rounded-lg transition-colors"
           >
             <span>{selectedTimeframe}</span>
-            <ChevronDown className="w-3 h-3 text-[#8E8E93]" />
+            <ChevronDown className="w-3 h-3 text-[var(--text-muted)]" />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-20 bg-white rounded-xl border border-[#ECECEC] shadow-flyout z-30 py-1">
+            <div className="absolute right-0 top-full mt-1.5 w-20 bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)] shadow-flyout z-30 py-1">
               {timeframes.map((tf) => (
                 <button
                   key={tf}
@@ -65,8 +68,8 @@ export const InteractiveChart: React.FC = () => {
                   }}
                   className={`w-full text-left px-2.5 py-1 text-xs font-medium transition-colors ${
                     selectedTimeframe === tf
-                      ? 'bg-[#EEF0FD] text-[#5B5CEB] font-bold'
-                      : 'text-[#333333] hover:bg-[#F7F8FA]'
+                      ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold'
+                      : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                   }`}
                 >
                   {tf}
@@ -78,12 +81,12 @@ export const InteractiveChart: React.FC = () => {
       </div>
 
       <div className="flex items-baseline gap-2 mb-3">
-        <span className="text-xl font-extrabold text-[#111111] tabular-nums tracking-tight">
+        <span className="text-xl font-extrabold text-[var(--text-primary)] tabular-nums tracking-tight">
           {formatCurrency(activeHoverPrice)}
         </span>
         <span
           className={`inline-flex items-center text-xs font-bold ${
-            isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'
+            isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
           }`}
         >
           {isPositive ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
@@ -92,7 +95,7 @@ export const InteractiveChart: React.FC = () => {
       </div>
 
       <div className="relative w-full h-[120px] pt-1">
-        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[9.5px] font-medium text-[#A0A0A5] select-none pointer-events-none">
+        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[9.5px] font-medium text-[var(--text-muted)] select-none pointer-events-none">
           <span>{formatCurrency(max, 'USD', true)}</span>
           <span>{formatCurrency((max + min) / 2, 'USD', true)}</span>
           <span>{formatCurrency(min, 'USD', true)}</span>
@@ -145,7 +148,7 @@ export const InteractiveChart: React.FC = () => {
                 y1={0}
                 x2={activeHoverPoint.x}
                 y2={chartHeight}
-                stroke="#A0A0A5"
+                stroke="var(--text-muted)"
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
@@ -154,7 +157,7 @@ export const InteractiveChart: React.FC = () => {
                 cy={activeHoverPoint.y}
                 r="4.5"
                 fill={strokeColor}
-                stroke="#FFFFFF"
+                stroke="var(--bg-card)"
                 strokeWidth="2"
               />
             </g>
@@ -162,7 +165,7 @@ export const InteractiveChart: React.FC = () => {
         </svg>
       </div>
 
-      <div className="flex items-center justify-between text-[10px] font-medium text-[#8E8E93] pt-1 px-1 border-t border-[#F0F2F6] select-none">
+      <div className="flex items-center justify-between text-[10px] font-medium text-[var(--text-muted)] pt-1 px-1 border-t border-[var(--border-color)] select-none">
         <span>12AM</span>
         <span>6AM</span>
         <span>12PM</span>

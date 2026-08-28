@@ -50,61 +50,61 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
     switch (conversation.iconName) {
       case 'bitcoin':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#FFF4E6] flex items-center justify-center flex-shrink-0 text-[#F97316]">
+          <div className="w-5 h-5 rounded-full bg-[#FFF4E6] dark:bg-[#382613] flex items-center justify-center flex-shrink-0 text-[#F97316]">
             <span className="text-[11px] font-bold">₿</span>
           </div>
         );
       case 'ethereum':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#EEF2FF] flex items-center justify-center flex-shrink-0 text-[#4F46E5]">
+          <div className="w-5 h-5 rounded-full bg-[#EEF2FF] dark:bg-[#1a203a] flex items-center justify-center flex-shrink-0 text-[#6366F1]">
             <span className="text-[11px] font-bold">♦</span>
           </div>
         );
       case 'defi':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#E0F2FE] flex items-center justify-center flex-shrink-0 text-[#0284C7]">
+          <div className="w-5 h-5 rounded-full bg-[#E0F2FE] dark:bg-[#122b3d] flex items-center justify-center flex-shrink-0 text-[#0284C7]">
             <span className="text-[11px] font-bold">A</span>
           </div>
         );
       case 'staking':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 text-[#10B981]">
+          <div className="w-5 h-5 rounded-full bg-[#ECFDF5] dark:bg-[#133327] flex items-center justify-center flex-shrink-0 text-[#10B981]">
             <CircleDot className="w-3 h-3" />
           </div>
         );
       case 'solana':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] flex items-center justify-center flex-shrink-0 text-[#9333EA]">
+          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] dark:bg-[#2c1c3f] flex items-center justify-center flex-shrink-0 text-[#9333EA]">
             <span className="text-[10px] font-extrabold">≡</span>
           </div>
         );
       case 'tax':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#F3F4F6] flex items-center justify-center flex-shrink-0 text-[#4B5563]">
+          <div className="w-5 h-5 rounded-full bg-[var(--bg-app)] flex items-center justify-center flex-shrink-0 text-[var(--text-secondary)] border border-[var(--border-color)]">
             <FileText className="w-3 h-3" />
           </div>
         );
       case 'wallet':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] flex items-center justify-center flex-shrink-0 text-[#7C3AED]">
+          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] dark:bg-[#2c1c3f] flex items-center justify-center flex-shrink-0 text-[#7C3AED]">
             <Wallet className="w-3 h-3" />
           </div>
         );
       case 'trending':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 text-[#10B981]">
+          <div className="w-5 h-5 rounded-full bg-[#ECFDF5] dark:bg-[#133327] flex items-center justify-center flex-shrink-0 text-[#10B981]">
             <TrendingUp className="w-3 h-3" />
           </div>
         );
       case 'layers':
         return (
-          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] flex items-center justify-center flex-shrink-0 text-[#6366F1]">
+          <div className="w-5 h-5 rounded-full bg-[var(--primary-light)] flex items-center justify-center flex-shrink-0 text-[var(--primary)]">
             <Layers className="w-3 h-3" />
           </div>
         );
       default:
         return (
-          <div className="w-5 h-5 rounded-full bg-[#EEF0FD] flex items-center justify-center flex-shrink-0 text-[#5B5CEB]">
+          <div className="w-5 h-5 rounded-full bg-[var(--primary-light)] flex items-center justify-center flex-shrink-0 text-[var(--primary)]">
             <CircleDot className="w-3 h-3" />
           </div>
         );
@@ -126,8 +126,8 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
       onClick={() => setActiveConversation(conversation.id)}
       className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-180 cursor-pointer select-none ${
         isActive
-          ? 'bg-[#EEF0FD] text-[#111111] font-semibold shadow-xs'
-          : 'text-[#333333] hover:bg-[#F0F2F6] hover:text-[#111111]'
+          ? 'bg-[var(--primary-light)] text-[var(--text-primary)] font-semibold shadow-xs'
+          : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
       }`}
     >
       <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
@@ -139,9 +139,9 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
         {!isHovered ? (
           <div className="flex items-center gap-1">
             {conversation.isPinned && (
-              <Pin className="w-3 h-3 text-[#5B5CEB] fill-[#5B5CEB]" />
+              <Pin className="w-3 h-3 text-[var(--primary)] fill-[var(--primary)]" />
             )}
-            <span className="text-[11.5px] text-[#8E8E93] font-normal">
+            <span className="text-[11.5px] text-[var(--text-muted)] font-normal">
               {renderTimestamp()}
             </span>
           </div>
@@ -160,11 +160,11 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
               title={conversation.isPinned ? 'Unpin' : 'Pin'}
               className={`p-1 rounded-md transition-colors ${
                 conversation.isPinned
-                  ? 'text-[#5B5CEB] hover:bg-[#E0E3FA]'
-                  : 'text-[#888888] hover:text-[#111111] hover:bg-[#E4E7ED]'
+                  ? 'text-[var(--primary)] hover:bg-[var(--primary-light)]'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               }`}
             >
-              <Pin className={`w-3.5 h-3.5 ${conversation.isPinned ? 'fill-[#5B5CEB]' : ''}`} />
+              <Pin className={`w-3.5 h-3.5 ${conversation.isPinned ? 'fill-[var(--primary)]' : ''}`} />
             </button>
 
             <button
@@ -173,7 +173,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
                 openRenameModal(conversation.id);
               }}
               title="Rename"
-              className="p-1 rounded-md text-[#888888] hover:text-[#111111] hover:bg-[#E4E7ED] transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -181,7 +181,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
             <button
               onClick={handleDuplicate}
               title="Duplicate"
-              className="p-1 rounded-md text-[#888888] hover:text-[#111111] hover:bg-[#E4E7ED] transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
@@ -192,7 +192,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
                 openDeleteModal(conversation.id);
               }}
               title="Delete"
-              className="p-1 rounded-md text-[#888888] hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

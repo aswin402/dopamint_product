@@ -18,7 +18,7 @@ export const WatchlistModal: React.FC = () => {
   return (
     <div
       onClick={() => setModalState('isWatchlistModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -26,24 +26,24 @@ export const WatchlistModal: React.FC = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl bg-white rounded-3xl border border-[#ECECEC] shadow-flyout overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-xl bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout overflow-hidden flex flex-col max-h-[80vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ECECEC]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-50 text-amber-500 rounded-2xl">
+            <div className="p-2 bg-amber-500/10 text-amber-500 rounded-2xl">
               <Star className="w-5 h-5 fill-amber-500" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-[#111111] tracking-tight">Saved Watchlist</h3>
-              <p className="text-xs text-[#8E8E93]">
+              <h3 className="font-bold text-base text-[var(--text-primary)] tracking-tight">Saved Watchlist</h3>
+              <p className="text-xs text-[var(--text-muted)]">
                 {watchlist.length} tracked tokens with real-time volatility
               </p>
             </div>
           </div>
           <button
             onClick={() => setModalState('isWatchlistModalOpen', false)}
-            className="p-1.5 rounded-xl text-[#8E8E93] hover:text-[#111111] hover:bg-[#F0F2F6]"
+            className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
           >
             <X className="w-5 h-5" />
           </button>
@@ -58,14 +58,14 @@ export const WatchlistModal: React.FC = () => {
             return (
               <div
                 key={coin.id}
-                className="flex items-center justify-between p-3.5 bg-[#F7F8FA] border border-[#ECECEC] rounded-2xl hover:bg-white hover:border-[#5B5CEB]/30 transition-all shadow-2xs"
+                className="flex items-center justify-between p-3.5 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-2xl hover:border-[var(--primary)]/40 transition-all shadow-2xs"
               >
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => toggleWatchlist(coin.id)}
                     className="p-1 text-amber-400 hover:scale-110 transition-transform"
                   >
-                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : 'text-gray-300'}`} />
+                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : 'text-[var(--text-muted)]'}`} />
                   </button>
 
                   <div
@@ -76,19 +76,19 @@ export const WatchlistModal: React.FC = () => {
                   </div>
 
                   <div>
-                    <h5 className="font-bold text-xs text-[#111111]">{coin.name}</h5>
-                    <p className="text-[11px] text-[#8E8E93]">{coin.symbol}</p>
+                    <h5 className="font-bold text-xs text-[var(--text-primary)]">{coin.name}</h5>
+                    <p className="text-[11px] text-[var(--text-muted)]">{coin.symbol}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="font-bold text-xs text-[#111111] tabular-nums">
+                    <p className="font-bold text-xs text-[var(--text-primary)] tabular-nums">
                       {formatCurrency(coin.price)}
                     </p>
                     <p
                       className={`text-[11px] font-semibold tabular-nums ${
-                        isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'
+                        isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}
                     >
                       {formatPercentage(coin.change24h)}
@@ -101,8 +101,8 @@ export const WatchlistModal: React.FC = () => {
                       setModalState('isWatchlistModalOpen', false);
                       createNewChat(`Analyze current technical indicators and buy/sell levels for ${coin.name} (${coin.symbol})`);
                     }}
-                    title="Ask AI about this coin"
-                    className="p-2 bg-white hover:bg-[#EEF0FD] text-[#5B5CEB] rounded-xl border border-[#ECECEC] shadow-2xs transition-colors"
+                    title="Ask dopamint about this coin"
+                    className="p-2 bg-[var(--bg-card)] hover:bg-[var(--primary-light)] text-[var(--primary)] rounded-xl border border-[var(--border-color)] shadow-2xs transition-colors"
                   >
                     <ArrowUpRight className="w-4 h-4" />
                   </button>

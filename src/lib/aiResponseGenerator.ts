@@ -1,4 +1,4 @@
-import type { KeyPointItem, PriceSnapshot, ThinkingStep } from '../types/crypto';
+import type { KeyPointItem, PriceSnapshot, ThinkingStep, WebSource } from '../types/crypto';
 import { INITIAL_COINS } from '../data/cryptoData';
 
 export interface GeneratedAiResponse {
@@ -8,10 +8,43 @@ export interface GeneratedAiResponse {
   priceSnapshot?: PriceSnapshot;
   codeBlocks?: Array<{ language: string; code: string }>;
   suggestedFollowUps: string[];
+  webSources?: WebSource[];
 }
 
-export function generateCryptoResponse(prompt: string, isDeepResearch: boolean = false): GeneratedAiResponse {
+export interface CryptoResponseOptions {
+  isDeepResearch?: boolean;
+  isWebSearch?: boolean;
+}
+
+export function generateCryptoResponse(
+  prompt: string,
+  optionsOrBool: boolean | CryptoResponseOptions = false
+): GeneratedAiResponse {
+  const isDeepResearch =
+    typeof optionsOrBool === 'boolean'
+      ? optionsOrBool
+      : !!optionsOrBool?.isDeepResearch;
+
+  const isWebSearch =
+    typeof optionsOrBool === 'object' ? !!optionsOrBool?.isWebSearch : false;
   const query = prompt.toLowerCase();
+
+  const webSources: WebSource[] = isWebSearch
+    ? [
+        {
+          title: 'Coindesk Market Real-Time Intelligence',
+          url: 'https://coindesk.com',
+          domain: 'coindesk.com',
+          snippet: 'Real-time on-chain metrics, orderbook depth, and liquidity data.',
+        },
+        {
+          title: 'DefiLlama Protocol Analytics',
+          url: 'https://defillama.com',
+          domain: 'defillama.com',
+          snippet: 'Total value locked (TVL) tracking across all active smart contract chains.',
+        },
+      ]
+    : [];
 
   const thinkingSteps: ThinkingStep[] = isDeepResearch
     ? [
@@ -252,6 +285,7 @@ export function generateCryptoResponse(prompt: string, isDeepResearch: boolean =
       },
     ],
     thinkingSteps,
+    webSources: isWebSearch ? webSources : undefined,
     suggestedFollowUps: [
       'What are the key technical support and resistance levels?',
       'How to hedge portfolio downside with crypto options?',

@@ -13,29 +13,29 @@ export const InlineCryptoCard: React.FC<InlineCryptoCardProps> = ({ snapshot }) 
   const setModalState = useCryptoStore((s) => s.setModalState);
 
   const isPositive = snapshot.change24h >= 0;
-  const strokeColor = isPositive ? '#10B981' : '#EF4444';
+  const strokeColor = isPositive ? 'var(--green-trend)' : 'var(--red-trend)';
   const fillColor = isPositive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)';
 
   const { pathD, areaD } = generateSvgCurvePath(snapshot.sparkline, 140, 48, 4);
 
   return (
-    <div className="my-4 p-3.5 bg-white border border-[#ECECEC] rounded-2xl shadow-soft flex flex-wrap items-center justify-between gap-4">
+    <div className="my-4 p-3.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-soft flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#F7F8FA] border border-[#ECECEC] flex items-center justify-center font-bold text-sm text-[#111111] shadow-2xs">
+        <div className="w-10 h-10 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center font-bold text-sm text-[var(--text-primary)] shadow-2xs">
           {snapshot.symbol}
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sm text-[#111111]">{snapshot.name}</span>
-            <span className="text-xs text-[#8E8E93] font-medium">{snapshot.symbol}</span>
+            <span className="font-bold text-sm text-[var(--text-primary)]">{snapshot.name}</span>
+            <span className="text-xs text-[var(--text-muted)] font-medium">{snapshot.symbol}</span>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="font-bold text-base text-[#111111] tabular-nums">
+            <span className="font-bold text-base text-[var(--text-primary)] tabular-nums">
               {formatCurrency(snapshot.priceUsd)}
             </span>
             <span
               className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md text-[11px] font-bold ${
-                isPositive ? 'bg-[#ECFDF5] text-[#10B981]' : 'bg-[#FEF2F2] text-[#EF4444]'
+                isPositive ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-red-500/10 text-red-600 dark:text-red-400'
               }`}
             >
               {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -57,7 +57,7 @@ export const InlineCryptoCard: React.FC<InlineCryptoCardProps> = ({ snapshot }) 
           setSelectedCoinId(snapshot.coinId);
           setModalState('isPortfolioModalOpen', true);
         }}
-        className="px-3 py-1.5 bg-[#F7F8FA] hover:bg-[#EEF0FD] text-[#5B5CEB] text-xs font-semibold rounded-xl border border-[#ECECEC] transition-colors flex items-center gap-1"
+        className="px-3 py-1.5 bg-[var(--bg-app)] hover:bg-[var(--primary-light)] text-[var(--primary)] text-xs font-semibold rounded-xl border border-[var(--border-color)] transition-colors flex items-center gap-1"
       >
         <span>Trade / Analyze</span>
         <ArrowUpRight className="w-3.5 h-3.5" />

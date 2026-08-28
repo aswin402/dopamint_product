@@ -25,11 +25,11 @@ export const HistoryGroup: React.FC<HistoryGroupProps> = ({
     <div className="mb-3">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[#8E8E93] hover:text-[#111111] transition-colors rounded-lg group"
+        className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg group"
       >
-        <span className="tracking-tight">{title}</span>
+        <span className="tracking-tight uppercase text-[10.5px] font-bold">{title}</span>
         <ChevronDown
-          className={`w-3.5 h-3.5 transition-transform duration-200 text-[#A0A0A5] group-hover:text-[#111111] ${
+          className={`w-3.5 h-3.5 transition-transform duration-200 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] ${
             isExpanded ? 'transform rotate-0' : 'transform -rotate-90'
           }`}
         />

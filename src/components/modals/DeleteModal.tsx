@@ -22,7 +22,7 @@ export const DeleteModal: React.FC = () => {
   return (
     <div
       onClick={() => setModalState('isDeleteModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -30,37 +30,37 @@ export const DeleteModal: React.FC = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm bg-white rounded-3xl border border-[#ECECEC] shadow-flyout p-6 space-y-4"
+        className="w-full max-w-sm bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout p-6 space-y-4"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-red-50 text-red-500 rounded-xl">
+            <div className="p-2 bg-red-500/10 text-red-500 rounded-xl">
               <Trash2 className="w-4 h-4" />
             </div>
-            <h4 className="font-bold text-sm text-[#111111]">Delete Chat?</h4>
+            <h4 className="font-bold text-sm text-[var(--text-primary)]">Delete Chat?</h4>
           </div>
           <button
             onClick={() => setModalState('isDeleteModalOpen', false)}
-            className="p-1 rounded-lg text-[#8E8E93] hover:text-[#111111]"
+            className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <p className="text-xs text-[#666666] leading-relaxed">
-          Are you sure you want to delete <strong className="text-[#111111]">"{currentChat.title}"</strong>? This will remove all messages from your local history.
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          Are you sure you want to delete <strong className="text-[var(--text-primary)]">"{currentChat.title}"</strong>? This will remove all messages from your local history.
         </p>
 
         <div className="flex justify-end gap-2 pt-2">
           <button
             onClick={() => setModalState('isDeleteModalOpen', false)}
-            className="px-3.5 py-2 text-xs font-semibold text-[#666666] hover:bg-[#F0F2F6] rounded-xl"
+            className="px-3.5 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-xl"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-xl transition-colors"
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-xl transition-colors shadow-2xs"
           >
             Delete Permanently
           </button>

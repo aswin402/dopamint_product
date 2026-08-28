@@ -72,7 +72,7 @@ export interface Conversation {
   iconName: string;
   iconBgColor?: string;
   unreadCount?: number;
-  model: 'CryptoGPT-4o' | 'DeepResearch-Crypto' | 'QuantAlpha-3';
+  model: 'dopamint-4o' | 'dopamint-DeepResearch' | 'QuantAlpha-3';
 }
 
 export interface CryptoCoin {

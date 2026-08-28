@@ -8,207 +8,209 @@ interface MarkdownContentProps {
 export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
   if (!content) return null;
 
-  // Split by code blocks first
-  const parts = content.split(/(```[\s\S]*?```)/g);
-
-  return (
-    <div className="space-y-3 text-[14.5px] leading-[1.68] text-[#111111]">
-      {parts.map((part, index) => {
-        // Code Block match
-        if (part.startsWith('```') && part.endsWith('```')) {
-          const match = part.match(/```(\w+)?\n([\s\S]*?)```/);
-          const lang = match ? match[1] || 'bash' : 'text';
-          const code = match ? match[2] : part.slice(3, -3);
-          return <CodeBlock key={index} language={lang} code={code} />;
-        }
-
-        // Render standard markdown lines
-        return <MarkdownSection key={index} text={part} />;
-      })}
-    </div>
-  );
-};
-
-const MarkdownSection: React.FC<{ text: string }> = ({ text }) => {
-  const lines = text.split('\n');
+  const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
-  let tableBuffer: string[] = [];
-  let inTable = false;
 
-  const flushTable = (key: string) => {
-    if (tableBuffer.length > 0) {
-      elements.push(<MarkdownTable key={key} tableLines={tableBuffer} />);
-      tableBuffer = [];
+  let inCodeBlock = false;
+  let codeLang = '';
+  let codeBuffer: string[] = [];
+
+  let inTable = false;
+  let tableHeader: string[] = [];
+  let tableRows: string[][] = [];
+
+  const flushTable = () => {
+    if (inTable && tableHeader.length > 0) {
+      elements.push(
+        <div key={`table-${elements.length}`} className="my-4 overflow-x-auto rounded-2xl border border-[var(--border-color)]">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-[var(--bg-app)] border-b border-[var(--border-color)]">
+                {tableHeader.map((th, idx) => (
+                  <th key={idx} className="px-3.5 py-2.5 font-bold text-[var(--text-primary)]">
+                    {th.trim()}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((row, rIdx) => (
+                <tr
+                  key={rIdx}
+                  className="border-b border-[var(--border-color)] last:border-b-0 hover:bg-[var(--bg-hover)] transition-colors"
+                >
+                  {row.map((cell, cIdx) => (
+                    <td key={cIdx} className="px-3.5 py-2 text-[var(--text-secondary)]">
+                      {cell.trim()}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
       inTable = false;
+      tableHeader = [];
+      tableRows = [];
     }
   };
 
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
 
-    // LaTeX Math Formula block ($$...$$)
-    if (trimmed.startsWith('$$') && trimmed.endsWith('$$')) {
-      flushTable(`tbl-${idx}`);
-      const formula = trimmed.slice(2, -2).trim();
+    // Code block fences
+    if (line.startsWith('```')) {
+      if (inCodeBlock) {
+        elements.push(
+          <CodeBlock
+            key={`code-${elements.length}`}
+            language={codeLang || 'bash'}
+            code={codeBuffer.join('\n')}
+          />
+        );
+        inCodeBlock = false;
+        codeBuffer = [];
+        codeLang = '';
+      } else {
+        flushTable();
+        inCodeBlock = true;
+        codeLang = line.replace('```', '').trim();
+      }
+      continue;
+    }
+
+    if (inCodeBlock) {
+      codeBuffer.push(line);
+      continue;
+    }
+
+    // Markdown Table lines
+    if (line.includes('|') && line.trim().startsWith('|')) {
+      const cells = line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim());
+      if (cells.every((c) => c.match(/^-+$/))) {
+        // Table divider row
+        continue;
+      }
+      if (!inTable) {
+        inTable = true;
+        tableHeader = cells;
+      } else {
+        tableRows.push(cells);
+      }
+      continue;
+    } else if (inTable) {
+      flushTable();
+    }
+
+    // Headers
+    if (line.startsWith('### ')) {
+      elements.push(
+        <h3
+          key={`h3-${i}`}
+          className="text-base font-bold text-[var(--text-primary)] mt-4 mb-1.5 tracking-tight"
+        >
+          {line.replace('### ', '')}
+        </h3>
+      );
+      continue;
+    }
+
+    if (line.startsWith('## ')) {
+      elements.push(
+        <h2
+          key={`h2-${i}`}
+          className="text-lg font-bold text-[var(--text-primary)] mt-5 mb-2 tracking-tight"
+        >
+          {line.replace('## ', '')}
+        </h2>
+      );
+      continue;
+    }
+
+    // LaTeX Math Blocks ($$...$$)
+    if (line.startsWith('$$') && line.endsWith('$$')) {
+      const formula = line.replace(/\$\$/g, '').trim();
       elements.push(
         <div
-          key={`math-${idx}`}
-          className="my-3 p-3.5 bg-[#F7F8FA] border border-[#ECECEC] rounded-2xl text-center font-mono text-[13.5px] text-[#5B5CEB] overflow-x-auto shadow-2xs"
+          key={`math-${i}`}
+          className="my-3 p-3 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)] text-center font-mono text-xs text-[var(--primary)] font-semibold"
         >
           {formula}
         </div>
       );
-      return;
+      continue;
     }
 
-    // Markdown Table Row
-    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-      inTable = true;
-      tableBuffer.push(trimmed);
-      return;
-    } else if (inTable) {
-      flushTable(`tbl-${idx}`);
-    }
-
-    // Heading 3
-    if (trimmed.startsWith('### ')) {
+    // Bullet points
+    if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+      const text = line.trim().slice(2);
       elements.push(
-        <h3 key={idx} className="text-base font-bold text-[#111111] mt-4 mb-2 tracking-tight">
-          {formatInlineMarkdown(trimmed.slice(4))}
-        </h3>
-      );
-      return;
-    }
-
-    // Heading 2
-    if (trimmed.startsWith('## ')) {
-      elements.push(
-        <h2 key={idx} className="text-lg font-bold text-[#111111] mt-5 mb-2.5 tracking-tight">
-          {formatInlineMarkdown(trimmed.slice(3))}
-        </h2>
-      );
-      return;
-    }
-
-    // Unordered List item
-    if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-      elements.push(
-        <li key={idx} className="ml-4 list-disc text-[14px] text-[#333333] my-1">
-          {formatInlineMarkdown(trimmed.slice(2))}
+        <li key={`li-${i}`} className="ml-4 list-disc text-sm text-[var(--text-primary)] leading-relaxed my-0.5">
+          <FormatInlineText text={text} />
         </li>
       );
-      return;
+      continue;
     }
 
-    // Ordered List item
-    if (/^\d+\.\s/.test(trimmed)) {
-      const match = trimmed.match(/^\d+\.\s(.*)/);
+    // Numbered list
+    if (line.trim().match(/^\d+\.\s/)) {
+      const text = line.trim().replace(/^\d+\.\s/, '');
       elements.push(
-        <li key={idx} className="ml-4 list-decimal text-[14px] text-[#333333] my-1">
-          {formatInlineMarkdown(match ? match[1] : trimmed)}
+        <li key={`ol-${i}`} className="ml-4 list-decimal text-sm text-[var(--text-primary)] leading-relaxed my-0.5">
+          <FormatInlineText text={text} />
         </li>
       );
-      return;
+      continue;
     }
 
-    // Empty line / paragraph break
-    if (!trimmed) {
-      elements.push(<div key={idx} className="h-1.5" />);
-      return;
+    // Empty line / paragraph
+    if (!line.trim()) {
+      elements.push(<div key={`sp-${i}`} className="h-2" />);
+      continue;
     }
 
-    // Regular paragraph
+    // Regular text paragraph
     elements.push(
-      <p key={idx} className="my-1 text-[14.5px] text-[#111111]">
-        {formatInlineMarkdown(line)}
+      <p key={`p-${i}`} className="text-[14.5px] text-[var(--text-primary)] leading-relaxed my-1.5">
+        <FormatInlineText text={line} />
       </p>
     );
-  });
+  }
 
-  flushTable('tbl-last');
+  flushTable();
 
-  return <>{elements}</>;
+  return <div className="space-y-1">{elements}</div>;
 };
 
-function formatInlineMarkdown(text: string): React.ReactNode {
-  // Split bold **text**
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
-
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return (
-        <strong key={i} className="font-bold text-[#111111]">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    if (part.startsWith('*') && part.endsWith('*')) {
-      return (
-        <em key={i} className="italic text-[#333333]">
-          {part.slice(1, -1)}
-        </em>
-      );
-    }
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return (
-        <code
-          key={i}
-          className="px-1.5 py-0.5 bg-[#F0F2F6] text-[#5B5CEB] rounded-md font-mono text-[12.5px]"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-    return part;
-  });
-}
-
-const MarkdownTable: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
-  if (tableLines.length < 2) return null;
-
-  const headerCells = tableLines[0]
-    .split('|')
-    .slice(1, -1)
-    .map((c) => c.trim());
-
-  // Skip delimiter line (e.g. |---|---|)
-  const bodyRows = tableLines.slice(2).map((row) =>
-    row
-      .split('|')
-      .slice(1, -1)
-      .map((c) => c.trim())
-  );
+const FormatInlineText: React.FC<{ text: string }> = ({ text }) => {
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
 
   return (
-    <div className="my-4 overflow-x-auto rounded-2xl border border-[#ECECEC] bg-white shadow-soft">
-      <table className="w-full text-left text-xs border-collapse">
-        <thead className="bg-[#F7F8FA] border-b border-[#ECECEC]">
-          <tr>
-            {headerCells.map((head, i) => (
-              <th
-                key={i}
-                className="px-4 py-2.5 font-bold text-[#111111] uppercase tracking-wider text-[11px]"
-              >
-                {formatInlineMarkdown(head)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[#ECECEC]">
-          {bodyRows.map((row, rowIdx) => (
-            <tr
-              key={rowIdx}
-              className="hover:bg-[#F9FAFC] transition-colors odd:bg-white even:bg-[#FAFAFC]"
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return (
+            <strong key={index} className="font-bold text-[var(--text-primary)]">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        if (part.startsWith('`') && part.endsWith('`')) {
+          return (
+            <code
+              key={index}
+              className="px-1.5 py-0.5 bg-[var(--bg-app)] text-[var(--primary)] border border-[var(--border-color)] rounded-md font-mono text-[12.5px] mx-0.5"
             >
-              {row.map((cell, cellIdx) => (
-                <td key={cellIdx} className="px-4 py-2.5 text-[#333333] leading-relaxed">
-                  {formatInlineMarkdown(cell)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Share2, Copy, Check, Link, Globe } from 'lucide-react';
+import { X, Share2, Copy, Check, Globe } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
 export const ShareModal: React.FC = () => {
@@ -13,7 +13,7 @@ export const ShareModal: React.FC = () => {
 
   if (!isOpen) return null;
 
-  const shareUrl = `https://cryptogpt.app/share/${activeId}`;
+  const shareUrl = `https://dopamint.ai/share/${activeId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
@@ -24,7 +24,7 @@ export const ShareModal: React.FC = () => {
   return (
     <div
       onClick={() => setModalState('isShareModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -32,52 +32,53 @@ export const ShareModal: React.FC = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md bg-white rounded-3xl border border-[#ECECEC] shadow-flyout p-6 space-y-4"
+        className="w-full max-w-md bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout p-6 space-y-5"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#EEF0FD] text-[#5B5CEB] rounded-2xl">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-[var(--primary-light)] text-[var(--primary)] rounded-2xl">
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-[#111111] tracking-tight">
-                Share Conversation
-              </h3>
-              <p className="text-xs text-[#8E8E93]">Generate a public read-only link</p>
+              <h3 className="font-bold text-base text-[var(--text-primary)]">Share Conversation</h3>
+              <p className="text-xs text-[var(--text-muted)]">Public web link for anyone to view</p>
             </div>
           </div>
           <button
             onClick={() => setModalState('isShareModalOpen', false)}
-            className="p-1.5 rounded-xl text-[#8E8E93] hover:text-[#111111] hover:bg-[#F0F2F6]"
+            className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-3 bg-[#F7F8FA] border border-[#ECECEC] rounded-2xl">
-          <p className="text-xs font-semibold text-[#111111] truncate">
+        <div className="p-3 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] space-y-1">
+          <span className="text-[11px] font-semibold text-[var(--text-muted)] block">Shared Topic</span>
+          <p className="text-xs font-bold text-[var(--text-primary)] truncate">
             {currentChat?.title || 'What is Bitcoin?'}
           </p>
-          <div className="flex items-center gap-1.5 text-[11px] text-[#8E8E93] mt-1">
-            <Globe className="w-3.5 h-3.5 text-green-500" />
-            <span>Public link • Anyone with this link can view this thread</span>
-          </div>
         </div>
 
-        {/* Link box */}
-        <div className="flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-[#F7F8FA] border border-[#ECECEC] rounded-xl text-xs text-[#333333] font-mono truncate">
-            <Link className="w-3.5 h-3.5 text-[#8E8E93] flex-shrink-0" />
-            <span className="truncate">{shareUrl}</span>
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-[var(--text-muted)] block">Public Link</label>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Globe className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                readOnly
+                value={shareUrl}
+                className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl pl-9 pr-3 py-2 text-xs font-mono text-[var(--text-primary)] outline-none"
+              />
+            </div>
+            <button
+              onClick={handleCopy}
+              className="px-3.5 py-2 bg-[var(--primary)] hover:opacity-90 text-white font-semibold text-xs rounded-xl transition-all shadow-button-primary flex items-center gap-1.5"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? 'Copied' : 'Copy'}</span>
+            </button>
           </div>
-
-          <button
-            onClick={handleCopy}
-            className="px-4 py-2 bg-[#5B5CEB] text-white text-xs font-semibold rounded-xl hover:bg-[#4F50D9] transition-colors flex items-center gap-1.5 flex-shrink-0"
-          >
-            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Copied' : 'Copy'}</span>
-          </button>
         </div>
       </motion.div>
     </div>

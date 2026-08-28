@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Terminal } from 'lucide-react';
 
 interface CodeBlockProps {
   language: string;
@@ -16,41 +16,35 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ language, code }) => {
   };
 
   return (
-    <div className="my-3 rounded-2xl overflow-hidden border border-[#ECECEC] bg-[#1E1E2E] text-[#F8F8F2] shadow-sm">
+    <div className="my-3.5 rounded-2xl overflow-hidden border border-[var(--border-color)] bg-[#1e221c] text-[#f3f2e6] shadow-card text-xs font-mono select-text">
       {/* Code Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#181825] border-b border-[#313244] text-xs font-medium text-[#A6ADC8]">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F38BA8]/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F9E2AF]/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#A6E3A1]/80" />
-          </div>
-          <span className="font-mono uppercase text-[11px] font-bold text-[#CDD6F4] ml-2">
-            {language || 'text'}
-          </span>
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#171a15] border-b border-[#292f25]">
+        <div className="flex items-center gap-2 text-[#9bb28f]">
+          <Terminal className="w-3.5 h-3.5" />
+          <span className="font-semibold uppercase text-[11px] tracking-wider">{language}</span>
         </div>
 
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#313244]/60 hover:bg-[#313244] text-[#CDD6F4] hover:text-white transition-colors text-[11.5px]"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#242a20] hover:bg-[#2e362a] text-[#f3f2e6] transition-colors text-[11px]"
         >
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5 text-green-400" />
-              <span className="text-green-400">Copied!</span>
+              <span>Copied!</span>
             </>
           ) : (
             <>
               <Copy className="w-3.5 h-3.5" />
-              <span>Copy</span>
+              <span>Copy Code</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Code Body */}
-      <div className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed selection:bg-[#5B5CEB]/40 selection:text-white">
-        <pre>
+      {/* Code Content */}
+      <div className="p-4 overflow-x-auto">
+        <pre className="leading-relaxed whitespace-pre font-mono text-[12.5px] text-[#f3f2e6]">
           <code>{code}</code>
         </pre>
       </div>
