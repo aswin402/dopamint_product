@@ -5,28 +5,28 @@
 
 :root {
   /* ========================================================
-     dopamint LIGHT THEME (OKLCH)
-     - Canvas Background: #f3f2e6 -> oklch(0.957 0.016 95)
-     - Card Surfaces:    #faf8f0 -> oklch(0.980 0.010 95)
-     - Primary Accent:   #485442 -> oklch(0.460 0.035 135)
-     - Primary Text:     #1a1a1a -> oklch(0.16 0.01 135)
-     - Borders:          #e5e2d2 -> oklch(0.900 0.014 95)
+     dopamint LIGHT THEME (Image 1 Swapped Aesthetic)
+     - Canvas Background: #ffffff / #fcfbf9 (Clean Off-White)
+     - Card / Component Background: #f3f2e6 (Warm Parchment Cream)
+     - Primary Accent:   #485442 (Dark Forest Olive)
+     - Primary Text:     #1a1a1a
+     - Borders:          #e5e2d2
      ======================================================== */
-  --bg-app: #f3f2e6;
-  --bg-card: #faf8f0;
-  --bg-card-subtle: #f4f1e5;
-  --bg-hover: #ede9dc;
-  --bg-active: #e3dfd0;
-  --bg-chat-user: #ede9dc;
+  --bg-app: #fcfbf9;
+  --bg-card: #f3f2e6;
+  --bg-card-subtle: #eae8d8;
+  --bg-hover: #eae7d7;
+  --bg-active: #e2dfcd;
+  --bg-chat-user: #f3f2e6;
   
-  --primary: #485442;                         /* Rich Sage Moss / Forest Charcoal */
+  --primary: #485442;                         /* Dark Olive Forest */
   --primary-hover: #3b4635;
   --primary-light: #e5eadf;
   --primary-glow: rgba(72, 84, 66, 0.15);
   --primary-text: #FFFFFF;
   
   --border-color: #e5e2d2;
-  --border-subtle: #ede9db;
+  --border-subtle: #ece9db;
   
   --text-primary: #1a1a1a;
   --text-secondary: #555850;
@@ -128,7 +128,7 @@ html, body {
 
 /* Subtle shadows matching reference design */
 .shadow-soft {
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
 }
 
 .dark .shadow-soft {
