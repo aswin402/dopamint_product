@@ -129,12 +129,6 @@ export const InsightsPanel: React.FC = () => {
           );
         })}
       </div>
-
-      {/* Subtle Footer */}
-      <div className="px-5 py-3 border-t border-[var(--border-color)]/60 bg-[var(--bg-card)] flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] flex-shrink-0">
-        <span>AI Consensus: 100%</span>
-        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">● 14ms Live</span>
-      </div>
     </aside>
   );
 };
