@@ -66,7 +66,7 @@ export const ChatContainer: React.FC = () => {
         ref={scrollRef}
         onScroll={handleScroll}
         className={`flex-1 overflow-y-auto px-4 md:px-8 ${
-          isWelcomeScreen ? 'py-4 md:py-8' : 'py-6'
+          isWelcomeScreen ? 'py-1 sm:py-2' : 'py-6'
         } scroll-smooth`}
       >
         <div className="max-w-[820px] mx-auto w-full">
