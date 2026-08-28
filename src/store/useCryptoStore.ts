@@ -35,8 +35,11 @@ interface CryptoStoreState {
   // Navigation & Layout
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
+  userDismissedInsights: boolean;
   toggleSidebar: () => void;
   toggleInsights: () => void;
+  closeInsightsByUser: () => void;
+  openInsightsByUser: () => void;
   setSidebarOpen: (open: boolean) => void;
   setInsightsOpen: (open: boolean) => void;
 
@@ -226,8 +229,15 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   // Navigation & Layout
   isSidebarOpen: true,
   isInsightsOpen: false,
+  userDismissedInsights: false,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-  toggleInsights: () => set((state) => ({ isInsightsOpen: !state.isInsightsOpen })),
+  toggleInsights: () =>
+    set((state) => ({
+      isInsightsOpen: !state.isInsightsOpen,
+      userDismissedInsights: state.isInsightsOpen ? true : false,
+    })),
+  closeInsightsByUser: () => set({ isInsightsOpen: false, userDismissedInsights: true }),
+  openInsightsByUser: () => set({ isInsightsOpen: true, userDismissedInsights: false }),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
   setInsightsOpen: (open) => set({ isInsightsOpen: open }),
 
@@ -432,10 +442,11 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       isDeepResearch: isDeepResearchEnabled,
     };
 
-    // Add empty streaming assistant message
+    // Add empty streaming assistant message & auto-open sources panel if not dismissed by user
     set((state) => ({
       isStreaming: true,
       streamingMessageId: assistantMessageId,
+      isInsightsOpen: !state.userDismissedInsights ? true : state.isInsightsOpen,
       messages: {
         ...state.messages,
         [activeConversationId]: [

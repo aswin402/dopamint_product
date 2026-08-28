@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
-  ShieldCheck,
-  Radio,
   ExternalLink,
   ChevronDown,
   Activity,
@@ -13,7 +11,8 @@ import {
   CheckCircle2,
   Copy,
   Check,
-  Layers,
+  ShieldCheck,
+  Radio,
   Sparkles,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -21,10 +20,10 @@ import { INITIAL_AI_SOURCES, type AISource } from '../../data/sourcesData';
 
 export const InsightsPanel: React.FC = () => {
   const isInsightsOpen = useCryptoStore((s) => s.isInsightsOpen);
-  const toggleInsights = useCryptoStore((s) => s.toggleInsights);
+  const closeInsightsByUser = useCryptoStore((s) => s.closeInsightsByUser);
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [expandedSourceId, setExpandedSourceId] = useState<string | null>('src-1');
+  const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
   const [copiedHash, setCopiedHash] = useState(false);
   const [scanningIdx, setScanningIdx] = useState(0);
 
@@ -52,16 +51,16 @@ export const InsightsPanel: React.FC = () => {
   const getCategoryIcon = (category: AISource['category']) => {
     switch (category) {
       case 'onchain':
-        return <ShieldCheck className="w-4 h-4 text-emerald-500" />;
+        return <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />;
       case 'exchanges':
-        return <Activity className="w-4 h-4 text-blue-500" />;
+        return <Activity className="w-3.5 h-3.5 text-blue-500" />;
       case 'macro':
-        return <Globe className="w-4 h-4 text-indigo-500" />;
+        return <Globe className="w-3.5 h-3.5 text-indigo-500" />;
       case 'social':
-        return <Zap className="w-4 h-4 text-amber-500" />;
+        return <Zap className="w-3.5 h-3.5 text-amber-500" />;
       case 'research':
       default:
-        return <BookOpen className="w-4 h-4 text-purple-500" />;
+        return <BookOpen className="w-3.5 h-3.5 text-purple-500" />;
     }
   };
 
@@ -73,85 +72,72 @@ export const InsightsPanel: React.FC = () => {
 
   return (
     <aside
-      className={`fixed xl:relative z-30 inset-y-0 right-0 w-[360px] h-screen bg-[var(--bg-app)] border-l border-[var(--border-color)] flex flex-col justify-between transition-all duration-250 ease-out shadow-lg xl:shadow-none ${
+      className={`fixed xl:relative z-30 inset-y-0 right-0 w-[330px] sm:w-[350px] h-screen bg-[var(--bg-app)] border-l border-[var(--border-color)] flex flex-col justify-between transition-all duration-250 ease-out shadow-lg xl:shadow-none ${
         isInsightsOpen ? 'translate-x-0' : 'translate-x-full xl:translate-x-0'
       } ${!isInsightsOpen ? 'xl:hidden' : ''}`}
     >
       {/* Top Header */}
-      <div className="p-4 pb-3 border-b border-[var(--border-color)] bg-[var(--bg-card)] flex-shrink-0">
+      <div className="p-3.5 pb-2.5 border-b border-[var(--border-color)] bg-[var(--bg-card)] flex-shrink-0 space-y-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
-              <Radio className="w-4 h-4 animate-pulse" />
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
+              <Radio className="w-3.5 h-3.5 animate-pulse" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-[var(--text-primary)] tracking-tight">
-                  AI Verified Sources
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-bold text-xs text-[var(--text-primary)] tracking-tight">
+                  Sources
                 </h3>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9.5px] font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                   Live
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Real-time data feeds inspected by dopamint AI
-              </p>
             </div>
           </div>
 
           <button
-            onClick={toggleInsights}
-            title="Close Sources Inspector"
-            className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+            onClick={closeInsightsByUser}
+            title="Close Sources (won't auto-open)"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Live Active Inspection Hero Card */}
-        <div className="mt-3 p-3 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] relative overflow-hidden shadow-2xs">
-          {/* Animated top shimmer bar */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent animate-pulse" />
-
-          <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] mb-1">
-            <span className="flex items-center gap-1 font-semibold text-[var(--text-primary)]">
-              <Sparkles className="w-3 h-3 text-[var(--primary)]" />
-              Live Telemetry Feed
-            </span>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">18ms Avg</span>
-          </div>
-
+        {/* Minimal Perplexity-style Active Query Pill */}
+        <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)]/70 flex items-center gap-2 relative overflow-hidden">
+          <Sparkles className="w-3 h-3 text-[var(--primary)] flex-shrink-0" />
           <AnimatePresence mode="wait">
             <motion.p
               key={scanningIdx}
-              initial={{ opacity: 0, y: 3 }}
+              initial={{ opacity: 0, y: 2 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -3 }}
-              transition={{ duration: 0.25 }}
-              className="text-[11.5px] text-[var(--text-secondary)] font-medium leading-snug line-clamp-2"
+              exit={{ opacity: 0, y: -2 }}
+              transition={{ duration: 0.2 }}
+              className="text-[10.5px] text-[var(--text-secondary)] font-medium truncate leading-none"
             >
               {scanningMessages[scanningIdx]}
             </motion.p>
           </AnimatePresence>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-3">
+        {/* Minimal Category Filter Tabs */}
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
           {[
             { id: 'all', label: 'All', count: INITIAL_AI_SOURCES.length },
             { id: 'onchain', label: 'On-Chain', count: 3 },
-            { id: 'exchanges', label: 'Exchanges', count: 3 },
-            { id: 'macro', label: 'Macro & SEC', count: 3 },
+            { id: 'exchanges', label: 'DEX/CEX', count: 3 },
+            { id: 'macro', label: 'Macro', count: 3 },
             { id: 'social', label: 'Social', count: 3 },
-            { id: 'research', label: 'Research', count: 2 },
+            { id: 'research', label: 'Papers', count: 2 },
           ].map((tab) => {
             const isSelected = selectedCategory === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setSelectedCategory(tab.id)}
-                className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 flex-shrink-0 transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded-lg text-[10.5px] font-semibold flex items-center gap-1 flex-shrink-0 transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[var(--primary)] text-white shadow-2xs'
                     : 'bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
@@ -159,8 +145,8 @@ export const InsightsPanel: React.FC = () => {
               >
                 <span>{tab.label}</span>
                 <span
-                  className={`text-[9.5px] px-1 rounded-md font-bold ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-[var(--bg-card)] text-[var(--text-muted)]'
+                  className={`text-[9px] px-1 rounded-md font-bold ${
+                    isSelected ? 'bg-white/20 text-white' : 'text-[var(--text-muted)]'
                   }`}
                 >
                   {tab.count}
@@ -171,95 +157,96 @@ export const InsightsPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Middle Scrollable Sources List */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5">
-        {filteredSources.map((source) => {
+      {/* Minimal Perplexity-style Source Cards */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        {filteredSources.map((source, idx) => {
           const isExpanded = expandedSourceId === source.id;
 
           return (
             <motion.div
               layout
               key={source.id}
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`rounded-2xl border transition-all overflow-hidden ${
+              transition={{ duration: 0.15 }}
+              className={`rounded-xl border transition-all overflow-hidden ${
                 isExpanded
-                  ? 'bg-[var(--bg-card)] border-[var(--primary)]/60 shadow-2xs ring-1 ring-[var(--primary)]/20'
-                  : 'bg-[var(--bg-card)] border-[var(--border-color)] hover:border-[var(--primary)]/30 hover:bg-[var(--bg-card)]'
+                  ? 'bg-[var(--bg-card)] border-[var(--primary)] shadow-2xs ring-1 ring-[var(--primary)]/20'
+                  : 'bg-[var(--bg-card)] border-[var(--border-color)] hover:border-[var(--border-color)]/90 hover:bg-[var(--bg-card)]/90'
               }`}
             >
-              {/* Header Row (Click to toggle accordion) */}
+              {/* Minimal Card Header & Snippet */}
               <div
                 onClick={() => setExpandedSourceId(isExpanded ? null : source.id)}
-                className="p-3 flex items-start justify-between gap-2.5 cursor-pointer select-none"
+                className="p-2.5 cursor-pointer select-none space-y-1.5"
               >
-                <div className="flex items-start gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center flex-shrink-0 shadow-2xs mt-0.5">
-                    {getCategoryIcon(source.category)}
+                {/* Domain & Source Index Pill */}
+                <div className="flex items-center justify-between gap-1 text-[10.5px]">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <div className="w-4 h-4 rounded-md bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center flex-shrink-0">
+                      {getCategoryIcon(source.category)}
+                    </div>
+                    <span className="font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] truncate font-mono text-[10px]">
+                      {source.domain}
+                    </span>
                   </div>
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <h4 className="font-bold text-xs text-[var(--text-primary)] truncate leading-tight">
-                        {source.name}
-                      </h4>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-1 text-[10.5px] text-[var(--text-muted)]">
-                      <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        {source.latencyMs}ms
-                      </span>
-                      <span>•</span>
-                      <span className="text-[var(--text-secondary)] font-medium">
-                        {source.dataPoints}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                      {source.latencyMs}ms
+                    </span>
+                    <span className="w-4 h-4 rounded-full bg-[var(--bg-app)] border border-[var(--border-color)] text-[9.5px] font-mono font-bold text-[var(--text-muted)] flex items-center justify-center">
+                      {idx + 1}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <span className="text-[10px] px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] font-bold rounded-md">
-                    {source.trustScore}%
-                  </span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-200 ${
-                      isExpanded ? 'transform rotate-180' : ''
-                    }`}
-                  />
+                {/* Source Title */}
+                <h4 className="font-bold text-[12px] text-[var(--text-primary)] leading-tight line-clamp-1">
+                  {source.name}
+                </h4>
+
+                {/* Micro-snippet preview */}
+                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed line-clamp-2">
+                  {source.description}
+                </p>
+
+                {/* Footer Micro-Bar */}
+                <div className="flex items-center justify-between pt-1 text-[10px] text-[var(--text-muted)] border-t border-[var(--border-color)]/40">
+                  <span className="truncate">{source.dataPoints}</span>
+                  <div className="flex items-center gap-1 font-semibold text-[var(--primary)] flex-shrink-0">
+                    <span>{isExpanded ? 'Less' : 'Details'}</span>
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform duration-150 ${
+                        isExpanded ? 'transform rotate-180' : ''
+                      }`}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Expanded Details Drawer */}
+              {/* Perplexity-style Citation Quote Box on Expand */}
               <AnimatePresence>
                 {isExpanded && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="px-3.5 pb-3.5 pt-1 space-y-2.5 border-t border-[var(--border-color)]/60 bg-[var(--bg-app)]/50"
+                    transition={{ duration: 0.18 }}
+                    className="px-2.5 pb-2.5 pt-1 space-y-2 border-t border-[var(--border-color)]/60 bg-[var(--bg-app)]/40"
                   >
-                    {/* Technical Description */}
-                    <p className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed">
-                      {source.description}
-                    </p>
-
-                    {/* AI Citation Extraction Box */}
-                    <div className="p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] space-y-1">
-                      <span className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-wider flex items-center gap-1">
+                    <div className="p-2 rounded-lg bg-[var(--bg-card)] border border-[var(--border-color)] space-y-1">
+                      <span className="text-[9.5px] font-bold text-[var(--primary)] uppercase tracking-wider flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        Latest AI Extraction Citation
+                        AI Verified Citation
                       </span>
                       <p className="text-[11px] text-[var(--text-primary)] italic leading-snug">
                         "{source.sampleCitation}"
                       </p>
                     </div>
 
-                    {/* Meta Tags & External Link */}
-                    <div className="flex items-center justify-between text-[11px] pt-1">
-                      <span className="px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-color)] text-[10px] font-mono text-[var(--text-muted)]">
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="px-1.5 py-0.2 rounded-md bg-[var(--bg-card)] border border-[var(--border-color)] font-mono text-[var(--text-muted)]">
                         {source.protocol}
                       </span>
 
@@ -267,10 +254,10 @@ export const InsightsPanel: React.FC = () => {
                         href={source.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--primary)] hover:underline"
+                        className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-[var(--primary)] hover:underline"
                       >
-                        <span>{source.domain}</span>
-                        <ExternalLink className="w-3 h-3" />
+                        <span>Visit {source.domain}</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </div>
                   </motion.div>
@@ -281,37 +268,25 @@ export const InsightsPanel: React.FC = () => {
         })}
       </div>
 
-      {/* Bottom Consensus Verification Footer */}
-      <div className="p-3.5 border-t border-[var(--border-color)] bg-[var(--bg-card)] space-y-2 flex-shrink-0">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-[var(--primary)]" />
-            <span className="font-bold text-[var(--text-primary)]">Consensus Proof</span>
-          </div>
-          <span className="px-1.5 py-0.2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold rounded-md text-[10px]">
-            5/5 Clusters Validated
-          </span>
-        </div>
-
-        <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-between text-[11px] font-mono">
-          <span className="text-[var(--text-muted)] truncate">0x7f4b...39e1</span>
-          <button
-            onClick={handleCopyProof}
-            className="flex items-center gap-1 text-[10.5px] text-[var(--primary)] font-semibold hover:underline cursor-pointer"
-          >
-            {copiedHash ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-600" />
-                <span>Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3" />
-                <span>Copy Hash</span>
-              </>
-            )}
-          </button>
-        </div>
+      {/* Minimal Footer Proof */}
+      <div className="p-2.5 border-t border-[var(--border-color)] bg-[var(--bg-card)] flex items-center justify-between text-[10.5px] font-mono flex-shrink-0">
+        <span className="text-[var(--text-muted)] truncate">Proof: 0x7f4b...39e1</span>
+        <button
+          onClick={handleCopyProof}
+          className="flex items-center gap-1 text-[10px] text-[var(--primary)] font-semibold hover:underline cursor-pointer flex-shrink-0"
+        >
+          {copiedHash ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-600" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );

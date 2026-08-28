@@ -10,6 +10,7 @@ import {
   RotateCw,
   CheckCheck,
   Paperclip,
+  Radio,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import type { Message } from '../../types/crypto';
@@ -32,6 +33,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
   const regenerateResponse = useCryptoStore((s) => s.regenerateResponse);
   const isStreaming = useCryptoStore((s) => s.isStreaming);
   const streamingMessageId = useCryptoStore((s) => s.streamingMessageId);
+  const openInsightsByUser = useCryptoStore((s) => s.openInsightsByUser);
 
   const isCurrentStreaming = isStreaming && streamingMessageId === message.id;
   const { speak, stop, isPlaying, activeMessageId } = useTextToSpeech();
@@ -103,6 +105,37 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, isLastAssista
 
       <div className="flex-1 min-w-0">
         {message.thinkingSteps && <ThinkingAccordion steps={message.thinkingSteps} />}
+
+        {/* Perplexity-style Minimal Verified Sources Header */}
+        {!isCurrentStreaming && message.role === 'assistant' && (
+          <div className="flex items-center gap-1.5 mb-2.5 overflow-x-auto no-scrollbar flex-wrap">
+            <button
+              onClick={() => openInsightsByUser()}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs group"
+            >
+              <Radio className="w-3 h-3 text-emerald-500 animate-pulse" />
+              <span>Verified Sources</span>
+              <span className="text-[10px] font-mono px-1 py-0.2 bg-[var(--bg-card)] rounded border border-[var(--border-color)] font-bold text-[var(--text-muted)] group-hover:text-[var(--primary)]">
+                3
+              </span>
+            </button>
+
+            {[
+              { label: 'base.org', id: '1' },
+              { label: 'coingecko.com', id: '2' },
+              { label: 'sec.gov', id: '3' },
+            ].map((src) => (
+              <button
+                key={src.id}
+                onClick={() => openInsightsByUser()}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[var(--bg-app)]/70 hover:bg-[var(--bg-hover)] border border-[var(--border-color)]/70 text-[10.5px] font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+              >
+                <span className="text-[9.5px] font-bold text-[var(--primary)]">{src.id}</span>
+                <span>{src.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="relative">
           <MarkdownContent content={message.content} />
