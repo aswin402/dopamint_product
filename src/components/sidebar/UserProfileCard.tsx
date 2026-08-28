@@ -164,9 +164,20 @@ export const UserProfileCard: React.FC = () => {
             <button
               onClick={() => {
                 setIsOpen(false);
+                setModalState('isAuthModalOpen', true);
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors text-left cursor-pointer font-semibold"
+            >
+              <Wallet className="w-4 h-4 text-[var(--primary)]" />
+              Connect / Switch Wallet
+            </button>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
                 setModalState('isUpgradeProModalOpen', true);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-light)] rounded-xl transition-colors text-left cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors text-left cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-[var(--primary)]" />
               Manage Pro Subscription
@@ -177,7 +188,7 @@ export const UserProfileCard: React.FC = () => {
             <button
               onClick={() => {
                 setIsOpen(false);
-                alert('Wallet disconnected.');
+                setModalState('isAuthModalOpen', true);
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors text-left cursor-pointer"
             >

@@ -9,6 +9,7 @@ import { AlertsModal } from '../modals/AlertsModal';
 import { ShareModal } from '../modals/ShareModal';
 import { SettingsModal } from '../modals/SettingsModal';
 import { UpgradeProModal } from '../modals/UpgradeProModal';
+import { AuthWalletModal } from '../modals/AuthWalletModal';
 import { RenameModal } from '../modals/RenameModal';
 import { DeleteModal } from '../modals/DeleteModal';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
@@ -44,6 +45,7 @@ export const AppLayout: React.FC = () => {
       <ShareModal />
       <SettingsModal />
       <UpgradeProModal />
+      <AuthWalletModal />
       <RenameModal />
       <DeleteModal />
     </div>

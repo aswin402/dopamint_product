@@ -99,11 +99,13 @@ interface CryptoStoreState {
   isShareModalOpen: boolean;
   isSettingsModalOpen: boolean;
   isUpgradeProModalOpen: boolean;
+  isAuthModalOpen: boolean;
   modalTargetChatId: string | null;
   isRenameModalOpen: boolean;
   isDeleteModalOpen: boolean;
   openRenameModal: (chatId: string) => void;
   openDeleteModal: (chatId: string) => void;
+  openAuthModal: () => void;
   setModalState: (modalName: string, isOpen: boolean) => void;
 
   // Live Jitter Simulation
@@ -601,12 +603,14 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isShareModalOpen: false,
   isSettingsModalOpen: false,
   isUpgradeProModalOpen: false,
+  isAuthModalOpen: false,
   modalTargetChatId: null,
   isRenameModalOpen: false,
   isDeleteModalOpen: false,
 
   openRenameModal: (chatId) => set({ isRenameModalOpen: true, modalTargetChatId: chatId }),
   openDeleteModal: (chatId) => set({ isDeleteModalOpen: true, modalTargetChatId: chatId }),
+  openAuthModal: () => set({ isAuthModalOpen: true }),
   setModalState: (modalName, isOpen) =>
     set((state) => ({
       ...state,
