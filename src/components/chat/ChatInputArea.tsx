@@ -213,7 +213,7 @@ export const ChatInputArea: React.FC = () => {
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-180 ${
                   inputText.trim() || attachments.length > 0
                     ? 'bg-[var(--primary)] text-white shadow-button-primary hover:opacity-95'
-                    : 'bg-[var(--primary)]/40 text-white/60 cursor-not-allowed'
+                    : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] opacity-50 cursor-not-allowed'
                 }`}
               >
                 <Send className="w-4 h-4 translate-x-0.2 -translate-y-0.2" />
