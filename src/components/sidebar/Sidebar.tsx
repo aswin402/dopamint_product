@@ -5,7 +5,6 @@ import {
   Search,
   Star,
   Bell,
-  PieChart,
   Settings,
   Sparkles,
   Command,
@@ -179,7 +178,7 @@ export const Sidebar: React.FC = () => {
         >
           <div className="flex items-center gap-3">
             <Star className="w-4 h-4 text-[var(--text-muted)]" />
-            <span>Watchlist</span>
+            <span>Favourite</span>
           </div>
           <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
             {watchlist.length}
@@ -197,14 +196,6 @@ export const Sidebar: React.FC = () => {
           <span className="text-[11px] px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] font-semibold rounded-md">
             {alerts.filter((a) => a.isActive).length} Active
           </span>
-        </button>
-
-        <button
-          onClick={() => setModalState('isPortfolioModalOpen', true)}
-          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
-        >
-          <PieChart className="w-4 h-4 text-[var(--text-muted)]" />
-          <span>Portfolio</span>
         </button>
 
         <button
