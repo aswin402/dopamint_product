@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Plus,
   Search,
+  Trophy,
   Bell,
   Settings,
   Sparkles,
@@ -151,6 +152,19 @@ export const Sidebar: React.FC = () => {
 
       {/* Bottom Utility Navigation & User Profile */}
       <div className="space-y-1 pt-2 border-t border-[var(--border-color)]">
+        <button
+          onClick={() => setModalState('isLeaderboardModalOpen', true)}
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Trophy className="w-4 h-4 text-amber-500" />
+            <span>Leaderboard</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase">
+            XP
+          </span>
+        </button>
+
         <button
           onClick={() => setModalState('isAlertsModalOpen', true)}
           className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"

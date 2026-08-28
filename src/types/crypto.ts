@@ -158,3 +158,12 @@ export interface UserProfile {
   tier: 'Free' | 'Pro' | 'Enterprise';
   apiCallsRemaining: number;
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  walletAddress: string;
+  testnetTopupEth: number;
+  xpPoints: number;
+  badge?: string;
+  isCurrentUser?: boolean;
+}

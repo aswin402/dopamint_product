@@ -10,6 +10,7 @@ import { ShareModal } from '../modals/ShareModal';
 import { SettingsModal } from '../modals/SettingsModal';
 import { UpgradeProModal } from '../modals/UpgradeProModal';
 import { AuthWalletModal } from '../modals/AuthWalletModal';
+import { LeaderboardModal } from '../modals/LeaderboardModal';
 import { RenameModal } from '../modals/RenameModal';
 import { DeleteModal } from '../modals/DeleteModal';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
@@ -46,6 +47,7 @@ export const AppLayout: React.FC = () => {
       <SettingsModal />
       <UpgradeProModal />
       <AuthWalletModal />
+      <LeaderboardModal />
       <RenameModal />
       <DeleteModal />
     </div>

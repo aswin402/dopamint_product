@@ -10,10 +10,12 @@ import type {
   PriceAlert,
   TimeframeOption,
   UserProfile,
+  LeaderboardEntry,
 } from '../types/crypto';
 import { INITIAL_COINS, INITIAL_MARKET_OVERVIEW } from '../data/cryptoData';
 import { INITIAL_CONVERSATIONS, INITIAL_MESSAGES } from '../data/conversations';
 import { INITIAL_NEWS } from '../data/newsData';
+import { INITIAL_LEADERBOARD } from '../data/leaderboardData';
 import { generateCryptoResponse } from '../lib/aiResponseGenerator';
 import { formatTimestamp } from '../lib/formatters';
 
@@ -96,6 +98,10 @@ interface CryptoStoreState {
   activeCurrency: string;
   setActiveCurrency: (cur: string) => void;
 
+  // Leaderboard & Points
+  leaderboard: LeaderboardEntry[];
+  topupTestnet: (amountEth: number) => void;
+
   // Modals
   isCommandPaletteOpen: boolean;
   isPortfolioModalOpen: boolean;
@@ -105,12 +111,14 @@ interface CryptoStoreState {
   isSettingsModalOpen: boolean;
   isUpgradeProModalOpen: boolean;
   isAuthModalOpen: boolean;
+  isLeaderboardModalOpen: boolean;
   modalTargetChatId: string | null;
   isRenameModalOpen: boolean;
   isDeleteModalOpen: boolean;
   openRenameModal: (chatId: string) => void;
   openDeleteModal: (chatId: string) => void;
   openAuthModal: () => void;
+  openLeaderboardModal: () => void;
   setModalState: (modalName: string, isOpen: boolean) => void;
 
   // Live Jitter Simulation
@@ -667,6 +675,48 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   activeCurrency: 'USD',
   setActiveCurrency: (activeCurrency) => set({ activeCurrency }),
 
+  // Leaderboard & Points
+  leaderboard: INITIAL_LEADERBOARD,
+  topupTestnet: (amountEth: number) => {
+    const { leaderboard, userProfile } = get();
+    const currentUserAddr = userProfile.walletAddress || '0x71C8392F865eE824A1054E5F36423c9E3c7649A2';
+    const xpGained = Math.round(amountEth * 10000);
+
+    const existingIndex = leaderboard.findIndex(
+      (entry) => entry.isCurrentUser || entry.walletAddress.toLowerCase() === currentUserAddr.toLowerCase()
+    );
+
+    let updatedList = [...leaderboard];
+    if (existingIndex >= 0) {
+      const current = updatedList[existingIndex];
+      updatedList[existingIndex] = {
+        ...current,
+        testnetTopupEth: +(current.testnetTopupEth + amountEth).toFixed(2),
+        xpPoints: current.xpPoints + xpGained,
+        isCurrentUser: true,
+      };
+    } else {
+      updatedList.push({
+        rank: 99,
+        walletAddress: currentUserAddr,
+        testnetTopupEth: amountEth,
+        xpPoints: xpGained,
+        isCurrentUser: true,
+        badge: '⭐ You',
+      });
+    }
+
+    // Re-sort by topup amount / xp points descending
+    updatedList.sort((a, b) => b.xpPoints - a.xpPoints);
+    // Re-assign ranks
+    updatedList = updatedList.map((entry, idx) => ({
+      ...entry,
+      rank: idx + 1,
+    }));
+
+    set({ leaderboard: updatedList });
+  },
+
   // Modals
   isCommandPaletteOpen: false,
   isPortfolioModalOpen: false,
@@ -676,6 +726,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   isSettingsModalOpen: false,
   isUpgradeProModalOpen: false,
   isAuthModalOpen: false,
+  isLeaderboardModalOpen: false,
   modalTargetChatId: null,
   isRenameModalOpen: false,
   isDeleteModalOpen: false,
@@ -683,6 +734,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   openRenameModal: (chatId) => set({ isRenameModalOpen: true, modalTargetChatId: chatId }),
   openDeleteModal: (chatId) => set({ isDeleteModalOpen: true, modalTargetChatId: chatId }),
   openAuthModal: () => set({ isAuthModalOpen: true }),
+  openLeaderboardModal: () => set({ isLeaderboardModalOpen: true }),
   setModalState: (modalName, isOpen) =>
     set((state) => ({
       ...state,
