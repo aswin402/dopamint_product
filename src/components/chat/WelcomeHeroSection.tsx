@@ -269,7 +269,7 @@ export const WelcomeHeroSection: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-[760px] mx-auto pt-1 pb-16 px-3 sm:px-4 flex flex-col items-center">
+    <div className="w-full max-w-[760px] mx-auto pt-10 sm:pt-14 md:pt-18 pb-20 px-3 sm:px-4 flex flex-col items-center">
       {/* Top Header Group: Pill & Ask Dope Title (Shifted Top) */}
       <div className="flex flex-col items-center space-y-2 mb-8 sm:mb-10">
         {/* 1. Top Centered Pill: Install Ask Dope App */}
