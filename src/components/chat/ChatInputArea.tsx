@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
-  Globe,
-  Sparkles,
   Mic,
   MicOff,
   Send,
@@ -26,10 +24,6 @@ export const ChatInputArea: React.FC = () => {
   const sendMessage = useCryptoStore((s) => s.sendMessage);
   const isStreaming = useCryptoStore((s) => s.isStreaming);
   const stopGeneration = useCryptoStore((s) => s.stopGeneration);
-  const isWebSearchEnabled = useCryptoStore((s) => s.isWebSearchEnabled);
-  const toggleWebSearch = useCryptoStore((s) => s.toggleWebSearch);
-  const isDeepResearchEnabled = useCryptoStore((s) => s.isDeepResearchEnabled);
-  const toggleDeepResearch = useCryptoStore((s) => s.toggleDeepResearch);
 
   const { isListening, audioLevel, toggleListening } = useSpeechRecognition({
     onTranscript: (transcript) => {
@@ -140,41 +134,6 @@ export const ChatInputArea: React.FC = () => {
               className="w-9 h-9 rounded-full bg-[var(--bg-app)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)] text-[var(--text-secondary)] border border-[var(--border-color)] flex items-center justify-center transition-colors shadow-2xs"
             >
               <Plus className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={toggleWebSearch}
-              title={isWebSearchEnabled ? 'Web search enabled' : 'Web search disabled'}
-              className={`h-9 px-3 rounded-full border text-xs font-medium flex items-center gap-1.5 transition-all ${
-                isWebSearchEnabled
-                  ? 'bg-[var(--primary-light)] border-[var(--primary)]/30 text-[var(--primary)] font-bold'
-                  : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Web</span>
-            </button>
-
-            <button
-              onClick={toggleDeepResearch}
-              title="Toggle Deep Multi-Step Research Mode"
-              className={`h-9 px-3 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                isDeepResearchEnabled
-                  ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-button-primary'
-                  : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)]'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-inherit" />
-              <span>Deep Research</span>
-              <span
-                className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold uppercase ${
-                  isDeepResearchEnabled
-                    ? 'bg-white/20 text-white'
-                    : 'bg-[var(--primary)] text-white'
-                }`}
-              >
-                PRO
-              </span>
             </button>
 
             <VoiceVisualizer audioLevel={audioLevel} isListening={isListening} />

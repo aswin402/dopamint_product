@@ -28,7 +28,6 @@ export const Sidebar: React.FC = () => {
   const activeConversationId = useCryptoStore((s) => s.activeConversationId);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
-  const watchlist = useCryptoStore((s) => s.watchlist);
   const alerts = useCryptoStore((s) => s.alerts);
   const theme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
@@ -131,7 +130,7 @@ export const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto my-3 pr-1 -mr-1 scroll-smooth">
         {pinnedList.length > 0 && (
           <HistoryGroup
-            title="Pinned"
+            title="Favourites"
             conversations={pinnedList}
             activeConversationId={activeConversationId}
           />
@@ -174,14 +173,14 @@ export const Sidebar: React.FC = () => {
       <div className="space-y-1 pt-2 border-t border-[var(--border-color)]">
         <button
           onClick={() => setModalState('isWatchlistModalOpen', true)}
-          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <Star className="w-4 h-4 text-[var(--text-muted)]" />
+            <Star className={`w-4 h-4 ${pinnedList.length > 0 ? 'text-amber-400 fill-amber-400' : 'text-[var(--text-muted)]'}`} />
             <span>Favourite</span>
           </div>
           <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)]">
-            {watchlist.length}
+            {pinnedList.length}
           </span>
         </button>
 

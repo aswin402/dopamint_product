@@ -175,14 +175,14 @@ export const ChatHeader: React.FC = () => {
 
         <button
           onClick={() => currentChat && togglePin(currentChat.id)}
-          title={currentChat?.isPinned ? 'Remove Star' : 'Star this conversation'}
-          className={`p-2 rounded-xl transition-colors ${
+          title={currentChat?.isPinned ? 'Remove from Favourites' : 'Save to Favourites'}
+          className={`p-2 rounded-xl transition-colors cursor-pointer ${
             currentChat?.isPinned
-              ? 'text-[var(--primary)] bg-[var(--primary-light)]'
+              ? 'text-amber-500 bg-amber-500/10'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
           }`}
         >
-          <Star className={`w-4 h-4 ${currentChat?.isPinned ? 'fill-[var(--primary)]' : ''}`} />
+          <Star className={`w-4 h-4 ${currentChat?.isPinned ? 'fill-amber-400 text-amber-400' : ''}`} />
         </button>
 
         <button

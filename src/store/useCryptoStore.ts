@@ -166,9 +166,28 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       localStorage.setItem('dopamint-authenticated', 'true');
     }
     const truncated = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    const newChatId = `chat-${Date.now()}`;
+    const newChat: Conversation = {
+      id: newChatId,
+      title: 'New Conversation',
+      isPinned: false,
+      group: 'today',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      iconName: 'bitcoin',
+      iconBgColor: '#EEF0FD',
+      model: get().selectedModel,
+    };
     set((state) => ({
       isAuthenticated: true,
       isAuthModalOpen: false,
+      isInsightsOpen: false,
+      activeConversationId: newChatId,
+      conversations: [newChat, ...state.conversations.filter((c) => c.id !== 'chat-new')],
+      messages: {
+        ...state.messages,
+        [newChatId]: [],
+      },
       userProfile: {
         ...state.userProfile,
         name: truncated,
@@ -189,15 +208,28 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
 
   // Navigation & Layout
   isSidebarOpen: true,
-  isInsightsOpen: true,
+  isInsightsOpen: false,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   toggleInsights: () => set((state) => ({ isInsightsOpen: !state.isInsightsOpen })),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
   setInsightsOpen: (open) => set({ isInsightsOpen: open }),
 
   // Conversations
-  conversations: INITIAL_CONVERSATIONS,
-  activeConversationId: INITIAL_CONVERSATIONS[0].id,
+  conversations: [
+    {
+      id: 'chat-new',
+      title: 'New Conversation',
+      isPinned: false,
+      group: 'today',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      iconName: 'bitcoin',
+      iconBgColor: '#EEF0FD',
+      model: 'dopamint-4o',
+    },
+    ...INITIAL_CONVERSATIONS,
+  ],
+  activeConversationId: 'chat-new',
   searchQuery: '',
   setSearchQuery: (searchQuery) => set({ searchQuery }),
 
