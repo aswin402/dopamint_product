@@ -73,12 +73,28 @@ const CATEGORIES: CategoryItem[] = [
   },
 ];
 
+const PROMPT_HINTS = [
+  'Ask anything about stock, crypto and more...',
+  'Analyze Ethereum (ETH) breakout momentum & catalysts...',
+  'Which Base ecosystem tokens have highest volume today?',
+  'Compare NVIDIA vs AMD data center GPU market share...',
+  'How do I earn 20% lifetime XP rewards on DopaMint?',
+];
+
 export const DashboardPage: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Trending');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [claimedStreak, setClaimedStreak] = useState(false);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHintIndex((prev) => (prev + 1) % PROMPT_HINTS.length);
+    }, 3600);
+    return () => clearInterval(interval);
+  }, []);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -288,9 +304,21 @@ export const DashboardPage: React.FC = () => {
           {/* Main Prompt Input Box Card */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-            className="w-full bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[var(--border-color)] dark:border-[#262626] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#55604e]"
+            animate={{
+              opacity: 1,
+              y: 0,
+              boxShadow: [
+                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(72, 84, 66, 0.12)',
+                '0 6px 24px rgba(72, 84, 66, 0.16), 0 0 0 2px rgba(72, 84, 66, 0.32)',
+                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(72, 84, 66, 0.12)',
+              ],
+            }}
+            transition={{
+              y: { duration: 0.35, delay: 0.05 },
+              opacity: { duration: 0.35, delay: 0.05 },
+              boxShadow: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            className="w-full max-w-[680px] bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[#A4A390] dark:border-[#42473D] hover:border-[#6F7363] dark:hover:border-[#67705F] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#8A9E7F] focus-within:ring-2 focus-within:ring-[#485442]/20 relative"
           >
             {/* Attachments Preview Chips */}
             {attachments.length > 0 && (
@@ -320,8 +348,8 @@ export const DashboardPage: React.FC = () => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything about stock, crypto and more."
-              className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] placeholder-[#6E7169] dark:placeholder-[#666666] outline-none resize-none overflow-y-auto leading-relaxed min-h-[38px] max-h-[120px]"
+              placeholder={PROMPT_HINTS[hintIndex]}
+              className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] placeholder-[#6E7169] dark:placeholder-[#777777] outline-none resize-none overflow-y-auto leading-relaxed min-h-[38px] max-h-[120px] transition-all"
             />
 
             {/* Action Controls Row */}
@@ -338,7 +366,7 @@ export const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   title="Attach File or Image"
-                  className="w-7 h-7 rounded-full bg-transparent hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] text-[#555] dark:text-[#AAA] border border-[#D5D2BE] dark:border-[#333] flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-transparent hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] text-[#555] dark:text-[#AAA] border border-[#BCBAA6] dark:border-[#40453D] flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -348,7 +376,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 onClick={() => handleSend()}
                 title="Send (Enter)"
-                className="w-8 h-8 rounded-full bg-[#485442] dark:bg-[#55604e] hover:opacity-90 text-white flex items-center justify-center shadow-button-primary cursor-pointer transition-opacity"
+                className="w-8 h-8 rounded-full bg-[#485442] dark:bg-[#55604e] hover:opacity-90 text-white flex items-center justify-center shadow-button-primary cursor-pointer transition-all hover:scale-105"
               >
                 <ArrowUp className="w-4 h-4 stroke-[2.5]" />
               </button>
@@ -360,7 +388,7 @@ export const DashboardPage: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
-            className="w-full flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-3 pb-1 no-scrollbar"
+            className="w-full max-w-[680px] flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-3 pb-1 no-scrollbar"
           >
             {CATEGORIES.map((cat) => {
               const isSelected = cat.name === selectedCategory;
