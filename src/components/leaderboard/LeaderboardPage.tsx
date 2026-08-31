@@ -1,569 +1,386 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  Trophy,
-  Sparkles,
+  Bell,
   Zap,
-  Coins,
-  Copy,
-  Check,
-  Search,
-  Plus,
-  ArrowUpRight,
-  ShieldCheck,
-  TrendingUp,
-  Users,
-  Clock,
+  Gift,
+  Target,
+  Flame,
+  Trophy,
+  Rocket,
+  Diamond,
+  Medal,
 } from 'lucide-react';
+import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
 export const LeaderboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'season1' | 'alltime' | 'weekly'>('season1');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
-  const [isTopupOpen, setIsTopupOpen] = useState(false);
-  const [topupAmount, setTopupAmount] = useState('2.5');
+  const [timeframe, setTimeframe] = useState<'week' | 'alltime'>('week');
 
-  const leaderboard = useCryptoStore((s) => s.leaderboard);
-  const topupTestnet = useCryptoStore((s) => s.topupTestnet);
+  const setModalState = useCryptoStore((s) => s.setModalState);
   const userProfile = useCryptoStore((s) => s.userProfile);
 
-  const currentUserEntry =
-    leaderboard.find(
-      (entry) =>
-        entry.isCurrentUser ||
-        entry.walletAddress.toLowerCase() === (userProfile.walletAddress || '').toLowerCase()
-    ) || leaderboard[13];
-
-  const handleCopy = (addr: string) => {
-    navigator.clipboard.writeText(addr);
-    setCopiedAddress(addr);
-    setTimeout(() => setCopiedAddress(null), 1800);
+  const truncateAddress = (addr: string) => {
+    if (!addr || addr.length < 10) return '0x4F2...8Ae1';
+    return `${addr.slice(0, 5)}...${addr.slice(-4)}`;
   };
 
-  const handleTopupSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const val = parseFloat(topupAmount);
-    if (!isNaN(val) && val > 0) {
-      topupTestnet(val);
-      setIsTopupOpen(false);
-    }
+  // Top 3 Podium Data
+  const top1 = {
+    rank: 1,
+    address: '0x71Cd...9B02',
+    fullAddress: '0x71Cd4231865eE824A1054E5F36423c9E9B02',
+    xp: timeframe === 'week' ? '6,140' : '84,500',
+    swaps: 50,
+    referrals: 20,
+    avatarColor: 'from-amber-400 to-orange-500',
+    podiumHeight: 'h-28 sm:h-32',
+    podiumBg: 'bg-gradient-to-t from-amber-500/25 to-amber-500/10 border-t-2 border-amber-500',
   };
 
-  const truncateWallet = (addr: string) => {
-    if (addr.length < 14) return addr;
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const top2 = {
+    rank: 2,
+    address: '0x9A2b...44Fe',
+    fullAddress: '0x9A2b38291054E5F36423c9E3c76A105444Fe',
+    xp: timeframe === 'week' ? '4,820' : '62,100',
+    streak: '30-day streak',
+    avatarColor: 'from-blue-400 to-indigo-500',
+    podiumHeight: 'h-20 sm:h-24',
+    podiumBg: 'bg-gradient-to-t from-slate-400/20 to-slate-400/5 border-t-2 border-slate-400',
   };
 
-  const filteredLeaderboard = leaderboard.filter(
-    (entry) =>
-      entry.walletAddress.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (entry.badge && entry.badge.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const top3 = {
+    rank: 3,
+    address: '0x3E44...7710',
+    fullAddress: '0x3E4491C8392F865eE824A1054E5F364237710',
+    xp: timeframe === 'week' ? '4,110' : '48,900',
+    swaps: 10,
+    avatarColor: 'from-emerald-400 to-teal-600',
+    podiumHeight: 'h-14 sm:h-18',
+    podiumBg: 'bg-gradient-to-t from-amber-700/20 to-amber-700/5 border-t-2 border-amber-700',
+  };
 
-  const top1 = leaderboard[0];
-  const top2 = leaderboard[1];
-  const top3 = leaderboard[2];
+  // Table rankings 4-7
+  const rankings = [
+    {
+      rank: 4,
+      address: '0xD219...5C3A',
+      xp: timeframe === 'week' ? '3,890 XP' : '41,200 XP',
+      avatarBg: 'bg-[#C9A984] text-white',
+    },
+    {
+      rank: 5,
+      address: '0xA8F1...C920',
+      xp: timeframe === 'week' ? '3,650 XP' : '38,750 XP',
+      avatarBg: 'bg-[#89A8D4] text-white',
+    },
+    {
+      rank: 6,
+      address: '0xE802...19BD',
+      xp: timeframe === 'week' ? '3,402 XP' : '35,400 XP',
+      avatarBg: 'bg-[#D288A3] text-white',
+    },
+    {
+      rank: 7,
+      address: '0xC5A0...7E14',
+      xp: timeframe === 'week' ? '3,190 XP' : '32,150 XP',
+      avatarBg: 'bg-[#A888D4] text-white',
+    },
+  ];
+
+  // Current User Standing
+  const currentUserStanding = {
+    rank: 128,
+    address: truncateAddress(userProfile.walletAddress),
+    xp: '2,140 XP',
+    delta: '▲12',
+  };
+
+  // Top Achievements This Week
+  const achievements = [
+    {
+      id: 'first-swap',
+      name: 'First swap',
+      icon: <Medal className="w-5 h-5 text-amber-500" />,
+      bg: 'bg-gradient-to-b from-amber-400 to-amber-600',
+    },
+    {
+      id: '10-swaps',
+      name: '10 Swaps',
+      icon: <Target className="w-5 h-5 text-red-500" />,
+      bg: 'bg-gradient-to-b from-red-400 to-red-600',
+    },
+    {
+      id: '50-swaps',
+      name: '50 Swaps',
+      icon: <Trophy className="w-5 h-5 text-amber-500" />,
+      bg: 'bg-gradient-to-b from-amber-300 to-amber-500',
+    },
+    {
+      id: '7-streak',
+      name: '7-day streak',
+      icon: <Flame className="w-5 h-5 text-orange-500" />,
+      bg: 'bg-gradient-to-b from-orange-400 to-orange-600',
+    },
+    {
+      id: '30-streak',
+      name: '30-day streak',
+      icon: <Zap className="w-5 h-5 text-amber-400" />,
+      bg: 'bg-gradient-to-b from-yellow-300 to-amber-500',
+    },
+    {
+      id: '5-ref',
+      name: '5 Referrals',
+      icon: <Gift className="w-5 h-5 text-pink-500" />,
+      bg: 'bg-gradient-to-b from-pink-400 to-rose-600',
+    },
+    {
+      id: '20-ref',
+      name: '20 Referrals',
+      icon: <Diamond className="w-5 h-5 text-cyan-400" />,
+      bg: 'bg-gradient-to-b from-cyan-300 to-blue-500',
+    },
+    {
+      id: 'top-100',
+      name: 'Top 100',
+      icon: <Rocket className="w-5 h-5 text-purple-400" />,
+      bg: 'bg-gradient-to-b from-purple-400 to-indigo-600',
+    },
+  ];
 
   return (
-    <div className="flex-1 h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors duration-200">
-      {/* ─────────────────────────────────────────────────────────────
-       *  TOP HEADER
-       * ───────────────────────────────────────────────────────────── */}
-      <div className="border-b border-[var(--border-color)] bg-[var(--bg-card)] px-6 py-6 sm:px-10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-xs flex-shrink-0">
-              <Trophy className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                  Leaderboard
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wide">
-                  Season 1 Live
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Base Sepolia
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
-                Ranked by testnet deposit volume and AI interaction XP. Top participants qualify for retroactive rewards.
-              </p>
-            </div>
-          </div>
+    <div className="flex-1 h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-4 sm:px-8 md:px-12 py-6 scroll-smooth transition-colors duration-200">
+      <div className="max-w-[1000px] mx-auto space-y-6 pb-20">
+        {/* ═══════════════════════════════════════════════════════════
+         *  1. TOP BAR
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+            Leaderboard
+          </h1>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsTopupOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--primary)] text-white text-xs sm:text-sm font-semibold shadow-button-primary hover:opacity-95 transition-all cursor-pointer"
+              onClick={() => setModalState('isAlertsModalOpen', true)}
+              title="Notifications"
+              className="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all shadow-2xs cursor-pointer relative"
             >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>Top up Testnet ETH</span>
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--primary)]" />
+            </button>
+
+            <div
+              className="w-8.5 h-8.5 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 p-0.5 flex items-center justify-center text-white font-bold text-xs shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
+              title="Your Standing"
+            >
+              <div className="w-full h-full bg-[#18181b] dark:bg-[#121214] rounded-[10px] flex items-center justify-center">
+                <span className="text-[11px] font-mono text-purple-400 font-bold">0x</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+         *  2. SUB-HEADER WITH TIMEFRAME PILL
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="flex items-center justify-between">
+          <p className="text-xs sm:text-[13.5px] text-[var(--text-muted)] font-medium">
+            Top testers by XP this week
+          </p>
+
+          {/* Timeframe Switcher */}
+          <div className="inline-flex items-center p-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-2xs">
+            <button
+              onClick={() => setTimeframe('week')}
+              className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                timeframe === 'week'
+                  ? 'bg-[var(--text-primary)] text-[var(--bg-app)] shadow-2xs'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              This week
+            </button>
+            <button
+              onClick={() => setTimeframe('alltime')}
+              className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                timeframe === 'alltime'
+                  ? 'bg-[var(--text-primary)] text-[var(--bg-app)] shadow-2xs'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              All time
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-6">
-        {/* ─────────────────────────────────────────────────────────────
-         *  SEASON STATS CARDS
-         * ───────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[var(--text-muted)]">
-              <span className="text-xs font-medium">Total Testnet Volume</span>
-              <Coins className="w-4 h-4 text-emerald-500" />
+        {/* ═══════════════════════════════════════════════════════════
+         *  3. TOP 3 PODIUM SECTION
+         * ═══════════════════════════════════════════════════════════ */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[26px] p-6 sm:p-10 shadow-card relative overflow-hidden"
+        >
+          <div className="flex items-end justify-center gap-4 sm:gap-10 pt-8 pb-2">
+            {/* Rank 2 Podium (Left) */}
+            <div className="flex flex-col items-center flex-1 max-w-[170px]">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 p-0.5 shadow-md flex items-center justify-center mb-2.5">
+                <div className="w-full h-full rounded-full bg-[#181a20] flex items-center justify-center text-xs sm:text-sm font-bold text-blue-300 font-mono">
+                  #2
+                </div>
+              </div>
+              <span className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tracking-tight">
+                {top2.address}
+              </span>
+              <span className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">
+                {top2.xp} XP
+              </span>
+              <div className="flex items-center gap-1 text-[11px] font-medium text-amber-500 mt-1 mb-3">
+                <Flame className="w-3 h-3 fill-amber-500" />
+                <span>{top2.streak}</span>
+              </div>
+              <div className={`w-full ${top2.podiumHeight} ${top2.podiumBg} rounded-t-2xl flex items-center justify-center font-bold text-xs sm:text-sm text-[var(--text-muted)]`}>
+                2
+              </div>
             </div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
-              2,845.5 ETH
+
+            {/* Rank 1 Podium (Center - Elevated) */}
+            <div className="flex flex-col items-center flex-1 max-w-[190px] -mt-6">
+              <div className="relative mb-2.5">
+                {/* Crown on top */}
+                <img
+                  src={crownLogo}
+                  alt="crown"
+                  className="w-7 h-7 sm:w-8 sm:h-8 absolute -top-5 left-1/2 -translate-x-1/2 object-contain filter drop-shadow-sm"
+                />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
+                  <div className="w-full h-full rounded-full bg-[#1f1a14] flex items-center justify-center text-sm sm:text-base font-extrabold text-amber-400 font-mono">
+                    #1
+                  </div>
+                </div>
+              </div>
+              <span className="text-xs sm:text-sm font-extrabold text-[var(--text-primary)] tracking-tight">
+                {top1.address}
+              </span>
+              <span className="text-xs sm:text-[13px] text-amber-500 font-bold mt-0.5">
+                {top1.xp} XP
+              </span>
+              <div className="flex items-center gap-2 text-[10.5px] sm:text-[11px] font-medium text-[var(--text-muted)] mt-1 mb-3">
+                <span className="flex items-center gap-0.5">
+                  <Gift className="w-3 h-3 text-pink-500" /> {top1.referrals} ref
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-0.5">
+                  <Target className="w-3 h-3 text-red-500" /> {top1.swaps} swaps
+                </span>
+              </div>
+              <div className={`w-full ${top1.podiumHeight} ${top1.podiumBg} rounded-t-2xl flex items-center justify-center font-extrabold text-sm sm:text-base text-amber-500 shadow-xs`}>
+                1
+              </div>
             </div>
-            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              <span>+18.4% this week</span>
+
+            {/* Rank 3 Podium (Right) */}
+            <div className="flex flex-col items-center flex-1 max-w-[170px]">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-600 p-0.5 shadow-md flex items-center justify-center mb-2.5">
+                <div className="w-full h-full rounded-full bg-[#141d18] flex items-center justify-center text-xs sm:text-sm font-bold text-emerald-400 font-mono">
+                  #3
+                </div>
+              </div>
+              <span className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tracking-tight">
+                {top3.address}
+              </span>
+              <span className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">
+                {top3.xp} XP
+              </span>
+              <div className="flex items-center gap-1 text-[11px] font-medium text-red-500 mt-1 mb-3">
+                <Target className="w-3 h-3" />
+                <span>{top3.swaps} swaps</span>
+              </div>
+              <div className={`w-full ${top3.podiumHeight} ${top3.podiumBg} rounded-t-2xl flex items-center justify-center font-bold text-xs sm:text-sm text-[var(--text-muted)]`}>
+                3
+              </div>
             </div>
           </div>
+        </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[var(--text-muted)]">
-              <span className="text-xs font-medium">Total XP Minted</span>
-              <Zap className="w-4 h-4 text-amber-500" />
+        {/* ═══════════════════════════════════════════════════════════
+         *  4. RANKINGS TABLE (ROWS 4-7 + HIGHLIGHTED YOU ROW)
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-2 sm:p-3 shadow-card space-y-1">
+          {rankings.map((row) => (
+            <div
+              key={row.rank}
+              className="flex items-center justify-between px-4 sm:px-6 py-3.5 hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="w-6 text-xs sm:text-sm font-bold text-[var(--text-muted)]">
+                  {row.rank}
+                </span>
+                <div className={`w-7 h-7 rounded-full ${row.avatarBg} flex items-center justify-center text-[10px] font-bold flex-shrink-0`}>
+                  0x
+                </div>
+                <span className="text-xs sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate font-mono">
+                  {row.address}
+                </span>
+              </div>
+              <span className="text-xs sm:text-[13.5px] font-bold text-[var(--text-primary)] flex-shrink-0">
+                {row.xp}
+              </span>
             </div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
-              5,840,000 XP
-            </div>
-            <div className="text-[11px] text-[var(--text-muted)]">
-              Multiplier active (2.5x)
-            </div>
-          </div>
+          ))}
 
-          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[var(--text-muted)]">
-              <span className="text-xs font-medium">Active Wallets</span>
-              <Users className="w-4 h-4 text-blue-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
-              1,428
-            </div>
-            <div className="text-[11px] text-[var(--text-muted)]">
-              Base Sepolia Testnet
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[var(--text-muted)]">
-              <span className="text-xs font-medium">Season 1 Closes In</span>
-              <Clock className="w-4 h-4 text-purple-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--text-primary)]">
-              14d 08h 24m
-            </div>
-            <div className="text-[11px] text-purple-600 dark:text-purple-400 font-medium">
-              Snapshot on Day 30
-            </div>
-          </div>
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────
-         *  CURRENT USER STANDING CARD
-         * ───────────────────────────────────────────────────────────── */}
-        {currentUserEntry && (
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[var(--bg-card)] via-[var(--bg-app)] to-[var(--bg-card)] border border-[var(--primary)]/40 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          {/* Current User Standing Row (Highlighted in Green / Mint) */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/25 rounded-2xl transition-all mt-1.5 shadow-2xs">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-[var(--primary)] text-white font-extrabold text-base flex items-center justify-center shadow-xs flex-shrink-0">
-                #{currentUserEntry.rank}
+              <span className="w-6 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                {currentUserStanding.rank}
+              </span>
+              <div className="w-7 h-7 rounded-full bg-purple-500 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                0x
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm sm:text-base font-mono font-bold text-[var(--text-primary)]">
-                    {currentUserEntry.walletAddress}
-                  </span>
-                  <span className="px-2 py-0.5 bg-[var(--primary-light)] text-[var(--primary)] text-xs font-bold rounded-md uppercase">
-                    Your Connected Wallet
-                  </span>
-                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-md flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3" />
-                    Verified
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 text-xs sm:text-sm text-[var(--text-muted)] mt-1.5">
-                  <span>
-                    Testnet Top-up: <strong className="text-[var(--text-primary)]">{currentUserEntry.testnetTopupEth} ETH</strong>
-                  </span>
-                  <span>•</span>
-                  <span>
-                    Rank Tier: <strong className="text-amber-500">Top 5%</strong>
-                  </span>
-                </div>
-              </div>
+              <span className="text-xs sm:text-[13.5px] font-bold text-[var(--text-primary)] truncate font-mono">
+                You · {currentUserStanding.address}
+              </span>
             </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs sm:text-[13.5px] font-extrabold text-[var(--text-primary)]">
+                {currentUserStanding.xp}
+              </span>
+              <span className="text-xs font-extrabold text-emerald-500 flex items-center gap-0.5">
+                {currentUserStanding.delta}
+              </span>
+            </div>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-4 self-end md:self-auto flex-shrink-0">
-              <div className="text-right">
-                <div className="flex items-center justify-end gap-1.5 text-base sm:text-lg font-black text-amber-500">
-                  <Zap className="w-4 h-4 fill-current" />
-                  <span>{currentUserEntry.xpPoints.toLocaleString()} XP</span>
-                </div>
-                <span className="text-xs text-[var(--text-muted)]">Season 1 Points</span>
-              </div>
+        {/* ═══════════════════════════════════════════════════════════
+         *  5. TOP ACHIEVEMENTS THIS WEEK SECTION
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="space-y-3.5 pt-2">
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+            Top achievements this week
+          </h2>
 
-              <button
-                onClick={() => setIsTopupOpen(true)}
-                className="px-4 py-2 rounded-xl bg-[var(--primary)] text-white text-xs font-bold hover:opacity-95 transition-all shadow-button-primary cursor-pointer"
+          {/* 8 Badges Grid */}
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-3.5">
+            {achievements.map((badge) => (
+              <motion.div
+                key={badge.id}
+                whileHover={{ y: -3 }}
+                className="flex flex-col items-center text-center p-2.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all shadow-2xs cursor-pointer group"
               >
-                Top up & Boost XP
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ─────────────────────────────────────────────────────────────
-         *  TOP 3 PODIUM CARDS
-         * ───────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* #2 Rank */}
-          {top2 && (
-            <div className="p-5 rounded-2xl bg-[var(--bg-card)] border border-slate-300/40 dark:border-slate-700/50 shadow-2xs relative flex flex-col justify-between order-2 md:order-1">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-300/30 text-slate-600 dark:text-slate-300 flex items-center justify-center font-black text-sm">
-                  🥈 #2
+                <div className="w-11 h-11 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center mb-2 shadow-inner-sm group-hover:scale-105 transition-transform">
+                  {badge.icon}
                 </div>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase">
-                  Silver Tier
+                <span className="text-[11px] font-semibold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors leading-tight">
+                  {badge.name}
                 </span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[var(--text-primary)] block truncate">
-                  {truncateWallet(top2.walletAddress)}
-                </span>
-                <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="text-[var(--text-muted)]">Top-up:</span>
-                  <span className="font-bold font-mono text-[var(--text-primary)]">{top2.testnetTopupEth} ETH</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Total XP:</span>
-                  <span className="font-extrabold font-mono text-amber-500">{top2.xpPoints.toLocaleString()} XP</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* #1 Rank (Gold Center) */}
-          {top1 && (
-            <div className="p-6 rounded-2xl bg-gradient-to-b from-amber-500/10 via-[var(--bg-card)] to-[var(--bg-card)] border-2 border-amber-500/50 shadow-md relative flex flex-col justify-between order-1 md:order-2">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-400/20 text-amber-500 flex items-center justify-center font-black text-base shadow-xs">
-                  👑 #1
-                </div>
-                <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-                  Gold Champion
-                </span>
-              </div>
-              <div className="space-y-1.5">
-                <span className="text-sm font-mono font-black text-[var(--text-primary)] block truncate">
-                  {truncateWallet(top1.walletAddress)}
-                </span>
-                <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="text-[var(--text-muted)]">Top-up Volume:</span>
-                  <span className="font-bold font-mono text-[var(--text-primary)] text-sm">{top1.testnetTopupEth} ETH</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Total XP:</span>
-                  <span className="font-black font-mono text-amber-500 text-sm">{top1.xpPoints.toLocaleString()} XP</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* #3 Rank */}
-          {top3 && (
-            <div className="p-5 rounded-2xl bg-[var(--bg-card)] border border-amber-800/20 dark:border-amber-700/30 shadow-2xs relative flex flex-col justify-between order-3 md:order-3">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-700/20 text-amber-700 dark:text-amber-500 flex items-center justify-center font-black text-sm">
-                  🥉 #3
-                </div>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-700/10 text-amber-700 dark:text-amber-400 uppercase">
-                  Bronze Tier
-                </span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-xs font-mono font-bold text-[var(--text-primary)] block truncate">
-                  {truncateWallet(top3.walletAddress)}
-                </span>
-                <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="text-[var(--text-muted)]">Top-up:</span>
-                  <span className="font-bold font-mono text-[var(--text-primary)]">{top3.testnetTopupEth} ETH</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-muted)]">Total XP:</span>
-                  <span className="font-extrabold font-mono text-amber-500">{top3.xpPoints.toLocaleString()} XP</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────
-         *  TAB FILTERS & SEARCH
-         * ───────────────────────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-          {/* Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)] self-start">
-            <button
-              onClick={() => setActiveTab('season1')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'season1'
-                  ? 'bg-[var(--primary)] text-white shadow-2xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Season 1 (Active)</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('alltime')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'alltime'
-                  ? 'bg-[var(--primary)] text-white shadow-2xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <span>All-Time</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('weekly')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'weekly'
-                  ? 'bg-[var(--primary)] text-white shadow-2xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <span>Weekly Topups</span>
-            </button>
-          </div>
-
-          {/* Search */}
-          <div className="relative min-w-[240px]">
-            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search wallet ID or badge..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-9 pl-9 pr-4 text-xs bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] rounded-xl border border-[var(--border-color)] focus:border-[var(--primary)] outline-none transition-all"
-            />
-          </div>
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────
-         *  FULL LEADERBOARD TABLE
-         * ───────────────────────────────────────────────────────────── */}
-        <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden shadow-2xs">
-          {/* Table Header */}
-          <div className="grid grid-cols-12 px-5 py-3 border-b border-[var(--border-color)] bg-[var(--bg-app)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-            <span className="col-span-2 sm:col-span-1">Rank</span>
-            <span className="col-span-5 sm:col-span-5">Wallet Address</span>
-            <span className="col-span-3 sm:col-span-3 text-right">Testnet Topup</span>
-            <span className="col-span-2 sm:col-span-3 text-right">XP Points</span>
-          </div>
-
-          {/* Table Rows */}
-          <div className="divide-y divide-[var(--border-color)]">
-            {filteredLeaderboard.map((entry) => {
-              const isCurrentUser =
-                entry.isCurrentUser ||
-                entry.walletAddress.toLowerCase() === (userProfile.walletAddress || '').toLowerCase();
-
-              return (
-                <div
-                  key={entry.walletAddress}
-                  className={`grid grid-cols-12 items-center px-5 py-3.5 transition-colors ${
-                    isCurrentUser
-                      ? 'bg-[var(--primary-light)]/50 font-medium'
-                      : 'hover:bg-[var(--bg-hover)]'
-                  }`}
-                >
-                  {/* Rank */}
-                  <div className="col-span-2 sm:col-span-1 flex items-center">
-                    {entry.rank === 1 ? (
-                      <span className="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-500 flex items-center justify-center font-black text-xs">
-                        👑 1
-                      </span>
-                    ) : entry.rank === 2 ? (
-                      <span className="w-7 h-7 rounded-lg bg-slate-300/30 text-slate-600 dark:text-slate-300 flex items-center justify-center font-black text-xs">
-                        🥈 2
-                      </span>
-                    ) : entry.rank === 3 ? (
-                      <span className="w-7 h-7 rounded-lg bg-amber-700/20 text-amber-700 dark:text-amber-500 flex items-center justify-center font-black text-xs">
-                        🥉 3
-                      </span>
-                    ) : (
-                      <span className="font-mono text-xs font-semibold text-[var(--text-muted)] pl-1">
-                        #{entry.rank}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Wallet ID */}
-                  <div className="col-span-5 sm:col-span-5 flex items-center gap-2 min-w-0 pr-2">
-                    <span
-                      className={`font-mono text-xs sm:text-sm truncate ${
-                        isCurrentUser
-                          ? 'font-bold text-[var(--primary)]'
-                          : 'text-[var(--text-primary)]'
-                      }`}
-                    >
-                      {truncateWallet(entry.walletAddress)}
-                    </span>
-
-                    {entry.badge && (
-                      <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] whitespace-nowrap">
-                        {entry.badge}
-                      </span>
-                    )}
-
-                    <button
-                      onClick={() => handleCopy(entry.walletAddress)}
-                      title="Copy Address"
-                      className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0 cursor-pointer"
-                    >
-                      {copiedAddress === entry.walletAddress ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-
-                    <a
-                      href={`https://sepolia.basescan.org/address/${entry.walletAddress}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="View on BaseScan"
-                      className="hidden sm:block p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
-                    >
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-
-                  {/* Testnet Topup */}
-                  <div className="col-span-3 sm:col-span-3 text-right">
-                    <span className="font-mono text-xs sm:text-sm font-bold text-[var(--text-primary)]">
-                      {entry.testnetTopupEth.toFixed(2)} ETH
-                    </span>
-                    <span className="hidden sm:block text-[10.5px] text-[var(--text-muted)]">
-                      Base Sepolia
-                    </span>
-                  </div>
-
-                  {/* XP Points */}
-                  <div className="col-span-2 sm:col-span-3 text-right">
-                    <div className="inline-flex items-center justify-end gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--bg-app)] border border-[var(--border-color)]">
-                      <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span className="font-mono text-xs sm:text-sm font-extrabold text-[var(--text-primary)]">
-                        {entry.xpPoints.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-       *  TOPUP MODAL / POPUP
-       * ───────────────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {isTopupOpen && (
-          <div
-            onClick={() => setIsTopupOpen(false)}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-[var(--bg-card)] rounded-[24px] border border-[var(--border-color)] shadow-flyout p-6 space-y-5"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <Coins className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base text-[var(--text-primary)]">
-                      Top up Base Sepolia Testnet
-                    </h3>
-                    <p className="text-xs text-[var(--text-muted)]">
-                      Deposit testnet ETH to gain leaderboard XP points
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <form onSubmit={handleTopupSubmit} className="space-y-4">
-                <div>
-                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-2">
-                    Select Testnet ETH Amount:
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {['1.0', '2.5', '5.0', '10.0'].map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => setTopupAmount(val)}
-                        className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                          topupAmount === val
-                            ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-xs'
-                            : 'bg-[var(--bg-app)] text-[var(--text-secondary)] border-[var(--border-color)] hover:text-[var(--text-primary)]'
-                        }`}
-                      >
-                        +{val} ETH
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-xs text-[var(--text-muted)] space-y-1">
-                  <div className="flex justify-between">
-                    <span>Est. XP Earned:</span>
-                    <strong className="text-amber-500">
-                      +{(parseFloat(topupAmount || '0') * 25000).toLocaleString()} XP
-                    </strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Target Network:</span>
-                    <span className="font-mono text-[var(--text-primary)]">Base Sepolia (84532)</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsTopupOpen(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-[var(--border-color)] text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--primary)] text-white text-xs font-bold hover:opacity-95 transition-all shadow-button-primary cursor-pointer"
-                  >
-                    Confirm Deposit
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
