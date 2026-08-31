@@ -198,7 +198,7 @@ export const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto h-full px-4 md:px-8 py-6 scroll-smooth">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden h-full px-4 md:px-8 py-6 scroll-smooth">
       <div className="w-full max-w-[1000px] mx-auto space-y-7 pb-16">
         {/* ═══════════════════════════════════════════════════════════
          *  1. TOP GREETING & STATUS BAR
@@ -308,9 +308,9 @@ export const DashboardPage: React.FC = () => {
               opacity: 1,
               y: 0,
               boxShadow: [
-                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(72, 84, 66, 0.12)',
-                '0 6px 24px rgba(72, 84, 66, 0.16), 0 0 0 2px rgba(72, 84, 66, 0.32)',
-                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(72, 84, 66, 0.12)',
+                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1.5px rgba(54, 68, 50, 0.35)',
+                '0 6px 24px rgba(54, 68, 50, 0.2), 0 0 0 2.5px rgba(54, 68, 50, 0.7)',
+                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1.5px rgba(54, 68, 50, 0.35)',
               ],
             }}
             transition={{
@@ -318,7 +318,7 @@ export const DashboardPage: React.FC = () => {
               opacity: { duration: 0.35, delay: 0.05 },
               boxShadow: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' },
             }}
-            className="w-full max-w-[680px] bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[#A4A390] dark:border-[#42473D] hover:border-[#6F7363] dark:hover:border-[#67705F] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#8A9E7F] focus-within:ring-2 focus-within:ring-[#485442]/20 relative"
+            className="w-full max-w-[680px] bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border-2 border-[#364432] dark:border-[#52634C] hover:border-[#283325] dark:hover:border-[#6C8264] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#222B20] dark:focus-within:border-[#86A37C] focus-within:ring-2 focus-within:ring-[#364432]/30 relative"
           >
             {/* Attachments Preview Chips */}
             {attachments.length > 0 && (
