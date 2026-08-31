@@ -7,7 +7,6 @@ import {
   TrendingUp,
   TreePine,
   CircleDot,
-  Globe,
   Heart,
   BookOpen,
   ArrowUpRight,
@@ -20,7 +19,7 @@ import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import type { Attachment } from '../../types/crypto';
 
-type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Macro' | 'Sentiment' | 'Learn';
+type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Sentiment' | 'Learn';
 
 interface CategoryData {
   name: CategoryType;
@@ -106,26 +105,6 @@ const CATEGORIES: CategoryData[] = [
         'What is the historical correlation between Fed rate cuts and Bitcoin bull cycles?',
         'Explain restaking yields on EigenLayer and associated slashing risks.',
         'Which zero-knowledge rollup tokens are experiencing accelerating developer adoption?',
-      ],
-    ],
-  },
-  {
-    name: 'Macro',
-    icon: <Globe className="w-3.5 h-3.5 text-[#3B6678] dark:text-[#5F9AB3]" />,
-    pages: [
-      [
-        'How will upcoming Federal Reserve FOMC rate decisions impact global equities?',
-        'Explain the correlation between US 10-Year Treasury Yield and tech valuations.',
-        'What is the current global M2 money supply trend and liquidity index?',
-        'Analyze US national debt trajectory and long-term inflation implications.',
-        'How does oil price volatility impact headline vs core CPI inflation?',
-      ],
-      [
-        'Compare Bank of Japan yield curve control unwinding to European Central Bank policy.',
-        'What are the economic ramifications of expanding BRICS trade settlement mechanisms?',
-        'Explain how the US Dollar Index (DXY) strength inversely affects emerging markets.',
-        'What are the leading indicators for recession risk according to the Treasury yield curve?',
-        'How does commercial real estate debt maturity in 2025-2026 threaten regional banks?',
       ],
     ],
   },

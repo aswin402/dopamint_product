@@ -10,7 +10,6 @@ import {
   TrendingUp,
   TreePine,
   CircleDot,
-  Globe,
   Heart,
   BookOpen,
   Gift,
@@ -27,7 +26,7 @@ import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import type { Attachment } from '../../types/crypto';
 
-type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Macro' | 'Sentiment' | 'Learn';
+type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Sentiment' | 'Learn';
 
 interface CategoryItem {
   name: CategoryType;
@@ -55,11 +54,6 @@ const CATEGORIES: CategoryItem[] = [
     name: 'Crypto',
     icon: <CircleDot className="w-3.5 h-3.5 text-[#94782A] dark:text-[#D4B257]" />,
     samplePrompt: 'Explain institutional ETF inflows and Base on-chain DEX liquidity.',
-  },
-  {
-    name: 'Macro',
-    icon: <Globe className="w-3.5 h-3.5 text-[#3B6678] dark:text-[#5F9AB3]" />,
-    samplePrompt: 'How will upcoming interest rate decisions impact tech valuations and liquidity?',
   },
   {
     name: 'Sentiment',
@@ -535,22 +529,22 @@ export const DashboardPage: React.FC = () => {
         <motion.div
           whileHover={{ scale: 1.005 }}
           onClick={() => navigate('/refer')}
-          className="w-full p-5 sm:p-6 bg-gradient-to-r from-[#121412] via-[#1a1c18] to-[#121412] text-white rounded-[22px] border border-amber-500/20 shadow-card flex items-center justify-between cursor-pointer group"
+          className="w-full p-5 sm:p-6 bg-[var(--bg-card)] rounded-[22px] border border-[#485442]/30 dark:border-[#55604e]/40 hover:border-[#485442] dark:hover:border-[#7A8F70] shadow-card flex items-center justify-between cursor-pointer group transition-all"
         >
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-bold uppercase">
-              <Gift className="w-3 h-3 text-amber-400" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#485442]/10 dark:bg-[#55604e]/20 border border-[#485442]/25 text-[#485442] dark:text-[#8A9E7F] text-[11px] font-bold uppercase">
+              <Gift className="w-3 h-3 text-[#485442] dark:text-[#8A9E7F]" />
               <span>Refer & earn</span>
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+            <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">
               Invite friends, earn 100 pts each
             </h3>
-            <p className="text-xs sm:text-[13px] text-stone-400 font-medium">
+            <p className="text-xs sm:text-[13px] text-[var(--text-secondary)] font-medium">
               3 friends joined · 450 points earned so far — view your full referral page →
             </p>
           </div>
 
-          <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs rounded-xl shadow-button-primary transition-all flex-shrink-0 cursor-pointer">
+          <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#485442] hover:bg-[#3c4637] dark:bg-[#55604e] dark:hover:bg-[#626f5a] text-white font-bold text-xs rounded-xl shadow-button-primary transition-all flex-shrink-0 cursor-pointer">
             <span>Invite Now</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
