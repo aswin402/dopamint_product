@@ -304,21 +304,9 @@ export const DashboardPage: React.FC = () => {
           {/* Main Prompt Input Box Card */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              boxShadow: [
-                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1.5px rgba(54, 68, 50, 0.35)',
-                '0 6px 24px rgba(54, 68, 50, 0.2), 0 0 0 2.5px rgba(54, 68, 50, 0.7)',
-                '0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1.5px rgba(54, 68, 50, 0.35)',
-              ],
-            }}
-            transition={{
-              y: { duration: 0.35, delay: 0.05 },
-              opacity: { duration: 0.35, delay: 0.05 },
-              boxShadow: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' },
-            }}
-            className="w-full max-w-[680px] bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border-2 border-[#364432] dark:border-[#52634C] hover:border-[#283325] dark:hover:border-[#6C8264] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#222B20] dark:focus-within:border-[#86A37C] focus-within:ring-2 focus-within:ring-[#364432]/30 relative"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            className="w-full max-w-[680px] bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border-2 border-[#364432] dark:border-[#52634C] hover:border-[#283325] dark:hover:border-[#6C8264] p-4 sm:p-5 shadow-md hover:shadow-lg focus-within:shadow-xl space-y-3 transition-all duration-200 focus-within:border-[#222B20] dark:focus-within:border-[#86A37C] relative"
           >
             {/* Attachments Preview Chips */}
             {attachments.length > 0 && (
