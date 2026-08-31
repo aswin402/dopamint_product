@@ -21,20 +21,65 @@ const ChatRouteWrapper: React.FC = () => {
 function App() {
   const isAuthenticated = useCryptoStore((s) => s.isAuthenticated);
 
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppLayout />} />
+        {/* Auth Route */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signin" element={<Navigate to="/login" replace />} />
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
+
+        {/* Protected / Main App Routes */}
+        <Route
+          path="/"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
-        <Route path="/c/:chatId" element={<ChatRouteWrapper />} />
-        <Route path="/leaderboard" element={<AppLayout />} />
-        <Route path="/refer" element={<AppLayout />} />
-        <Route path="/points" element={<AppLayout />} />
+        <Route
+          path="/c/:chatId"
+          element={isAuthenticated ? <ChatRouteWrapper /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/leaderboard"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/refer"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/points"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
         <Route path="/xp" element={<Navigate to="/points" replace />} />
+        <Route
+          path="/settings"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/agents"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/active-agents"
+          element={<Navigate to="/agents" replace />}
+        />
+        <Route
+          path="/buy-credits"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/pro"
+          element={<Navigate to="/buy-credits" replace />}
+        />
+        <Route
+          path="/favourites"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/watchlist"
+          element={<Navigate to="/favourites" replace />}
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

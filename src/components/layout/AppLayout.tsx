@@ -25,6 +25,7 @@ export const AppLayout: React.FC = () => {
   // Activate global shortcut listener (⌘K, ⌘N, ⌘B, ⌘I, Esc)
   useKeyboardShortcuts();
   const theme = useCryptoStore((s) => s.theme);
+  const setModalState = useCryptoStore((s) => s.setModalState);
   const location = useLocation();
 
   useEffect(() => {
@@ -36,6 +37,18 @@ export const AppLayout: React.FC = () => {
   const isLeaderboard = pathname === '/leaderboard';
   const isRefer = pathname === '/refer';
   const isPoints = pathname === '/points' || pathname === '/xp';
+
+  useEffect(() => {
+    if (pathname === '/settings') {
+      setModalState('isSettingsModalOpen', true);
+    } else if (pathname === '/agents' || pathname === '/active-agents') {
+      setModalState('isActiveAgentsModalOpen', true);
+    } else if (pathname === '/buy-credits' || pathname === '/pro') {
+      setModalState('isUpgradeProModalOpen', true);
+    } else if (pathname === '/favourites' || pathname === '/watchlist') {
+      setModalState('isWatchlistModalOpen', true);
+    }
+  }, [pathname, setModalState]);
 
   return (
     <div className="flex h-screen w-screen max-w-[100vw] bg-[var(--bg-app)] text-[var(--text-primary)] overflow-x-hidden overflow-y-hidden antialiased font-sans transition-colors duration-200">

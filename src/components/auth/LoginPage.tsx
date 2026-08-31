@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
@@ -20,6 +21,7 @@ export const LoginPage: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [generatedAddress, setGeneratedAddress] = useState('0x4F2a91C8392F865eE824A1054E5F36423c9E3c76');
 
+  const navigate = useNavigate();
   const theme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
   const login = useCryptoStore((s) => s.login);
@@ -53,6 +55,7 @@ export const LoginPage: React.FC = () => {
 
   const handleFinishLogin = () => {
     login(generatedAddress, email || 'alex@email.com');
+    navigate('/');
   };
 
   const truncateAddress = (addr: string) => {

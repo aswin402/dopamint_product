@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
@@ -22,6 +23,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered 
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const navigate = useNavigate();
   const userProfile = useCryptoStore((s) => s.userProfile);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const theme = useCryptoStore((s) => s.theme);
@@ -201,6 +203,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered 
               onClick={() => {
                 setIsOpen(false);
                 logout();
+                navigate('/login');
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-xl transition-colors text-left cursor-pointer"
             >
