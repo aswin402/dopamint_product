@@ -1,12 +1,12 @@
 import type { Conversation, Message, Folder } from '../types/crypto';
 
 export const INITIAL_FOLDERS: Folder[] = [
-  { id: 'folder-general', name: 'General', icon: '💬', color: '#6366F1', createdAt: '2026-08-20T10:00:00Z' },
-  { id: 'folder-crypto', name: 'Crypto & DeFi', icon: '🪙', color: '#F59E0B', createdAt: '2026-08-20T10:00:00Z' },
-  { id: 'folder-dev', name: 'Developments', icon: '💻', color: '#10B981', createdAt: '2026-08-20T10:00:00Z' },
-  { id: 'folder-ui', name: 'Frontend & UI', icon: '🎨', color: '#EC4899', createdAt: '2026-08-20T10:00:00Z' },
-  { id: 'folder-trading', name: 'Trading & Alpha', icon: '📈', color: '#8B5CF6', createdAt: '2026-08-20T10:00:00Z' },
-  { id: 'folder-research', name: 'Research', icon: '🔬', color: '#3B82F6', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-general', name: 'General', icon: 'message-square', color: '#6366F1', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-crypto', name: 'Crypto & DeFi', icon: 'coins', color: '#F59E0B', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-dev', name: 'Developments', icon: 'code', color: '#10B981', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-ui', name: 'Frontend & UI', icon: 'palette', color: '#EC4899', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-trading', name: 'Trading & Alpha', icon: 'trending-up', color: '#8B5CF6', createdAt: '2026-08-20T10:00:00Z' },
+  { id: 'folder-research', name: 'Research', icon: 'microscope', color: '#3B82F6', createdAt: '2026-08-20T10:00:00Z' },
 ];
 
 export const INITIAL_CONVERSATIONS: Conversation[] = [

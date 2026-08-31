@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 import type { PriceSnapshot } from '../../types/crypto';
 import { formatCurrency, formatPercentage, generateSvgCurvePath } from '../../lib/formatters';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import { TokenIcon } from '../common/TokenIcon';
 
 interface InlineCryptoCardProps {
   snapshot: PriceSnapshot;
@@ -21,9 +22,7 @@ export const InlineCryptoCard: React.FC<InlineCryptoCardProps> = ({ snapshot }) 
   return (
     <div className="my-4 p-3.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-soft flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center font-bold text-sm text-[var(--text-primary)] shadow-2xs">
-          {snapshot.symbol}
-        </div>
+        <TokenIcon symbol={snapshot.symbol} size={36} />
         <div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-sm text-[var(--text-primary)]">{snapshot.name}</span>

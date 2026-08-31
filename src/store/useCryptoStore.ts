@@ -409,12 +409,12 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
 
   setActiveSidebarTab: (activeSidebarTab) => set({ activeSidebarTab }),
 
-  createFolder: (name, icon = '📁', color = '#6366F1') => {
+  createFolder: (name, icon = 'folder', color = '#6366F1') => {
     const newFolderId = `folder-${Date.now()}`;
     const newFolder: Folder = {
       id: newFolderId,
       name: name.trim() || 'New Folder',
-      icon: icon || '📁',
+      icon: icon || 'folder',
       color: color || '#6366F1',
       createdAt: new Date().toISOString(),
     };

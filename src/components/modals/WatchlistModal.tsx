@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { formatCurrency, formatPercentage, formatTimestamp } from '../../lib/formatters';
+import { TokenIcon } from '../common/TokenIcon';
 
 export const WatchlistModal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chats' | 'tokens'>('chats');
@@ -171,12 +172,7 @@ export const WatchlistModal: React.FC = () => {
                       <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : 'text-[var(--text-muted)]'}`} />
                     </button>
 
-                    <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white"
-                      style={{ backgroundColor: coin.color }}
-                    >
-                      {coin.symbol.slice(0, 3)}
-                    </div>
+                    <TokenIcon symbol={coin.symbol} size={32} />
 
                     <div>
                       <h5 className="font-bold text-xs text-[var(--text-primary)]">{coin.name}</h5>

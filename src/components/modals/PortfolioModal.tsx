@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Plus, PieChart, Trash2 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { formatCurrency, formatPercentage } from '../../lib/formatters';
+import { TokenIcon } from '../common/TokenIcon';
 import { triggerConfetti } from '../../lib/confetti';
 
 export const PortfolioModal: React.FC = () => {
@@ -240,12 +241,7 @@ export const PortfolioModal: React.FC = () => {
                 className="flex items-center justify-between p-3.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl hover:border-[var(--primary)]/50 transition-colors shadow-2xs"
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs text-white shadow-2xs"
-                    style={{ backgroundColor: pos.color }}
-                  >
-                    {pos.symbol.slice(0, 3)}
-                  </div>
+                  <TokenIcon symbol={pos.symbol} size={36} />
                   <div>
                     <h5 className="font-bold text-xs text-[var(--text-primary)]">{pos.name}</h5>
                     <p className="text-[11px] text-[var(--text-muted)]">

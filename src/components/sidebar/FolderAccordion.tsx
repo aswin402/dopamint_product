@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { Folder, Conversation } from '../../types/crypto';
 import { ConversationItem } from './ConversationItem';
+import { FolderIconRenderer } from '../common/FolderIconRenderer';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -63,7 +64,7 @@ export const FolderAccordion: React.FC<FolderAccordionProps> = ({
               isOpen ? 'rotate-90 text-[var(--text-primary)]' : ''
             }`}
           />
-          <span className="text-sm">{folder.icon || '📁'}</span>
+          <FolderIconRenderer iconName={folder.icon} className="w-3.5 h-3.5 text-[var(--primary)]" />
           <span className="text-xs font-bold truncate text-[var(--text-primary)]">
             {folder.name}
           </span>

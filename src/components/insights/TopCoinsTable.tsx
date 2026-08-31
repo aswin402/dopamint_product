@@ -2,6 +2,7 @@ import React from 'react';
 import { TrendingUp, TrendingDown, Star } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { formatCurrency, formatPercentage } from '../../lib/formatters';
+import { TokenIcon } from '../common/TokenIcon';
 
 export const TopCoinsTable: React.FC = () => {
   const coins = useCryptoStore((s) => s.coins);
@@ -56,12 +57,7 @@ export const TopCoinsTable: React.FC = () => {
                   />
                 </button>
 
-                <div
-                  className="w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0"
-                  style={{ backgroundColor: coin.color }}
-                >
-                  {coin.symbol.slice(0, 3)}
-                </div>
+                <TokenIcon symbol={coin.symbol} size={24} />
 
                 <div className="truncate">
                   <p className="font-bold text-xs text-[var(--text-primary)] truncate">{coin.name}</p>

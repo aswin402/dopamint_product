@@ -263,15 +263,15 @@ export const LeaderboardModal: React.FC = () => {
                   <div className="col-span-2 sm:col-span-1 flex items-center gap-1">
                     {entry.rank === 1 ? (
                       <span className="w-6 h-6 rounded-lg bg-amber-400/20 text-amber-500 flex items-center justify-center font-extrabold text-xs">
-                        👑 1
+                        1
                       </span>
                     ) : entry.rank === 2 ? (
                       <span className="w-6 h-6 rounded-lg bg-slate-300/30 text-slate-600 dark:text-slate-300 flex items-center justify-center font-extrabold text-xs">
-                        🥈 2
+                        2
                       </span>
                     ) : entry.rank === 3 ? (
                       <span className="w-6 h-6 rounded-lg bg-amber-700/20 text-amber-700 dark:text-amber-500 flex items-center justify-center font-extrabold text-xs">
-                        🥉 3
+                        3
                       </span>
                     ) : (
                       <span className="font-mono text-xs font-semibold text-[var(--text-muted)] pl-1.5">

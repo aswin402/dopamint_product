@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import { TokenIcon } from '../common/TokenIcon';
 import type { Attachment } from '../../types/crypto';
 
 type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Macro' | 'Sentiment' | 'Learn';
@@ -438,7 +439,7 @@ export const DashboardPage: React.FC = () => {
                 className="p-3.5 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all cursor-pointer shadow-2xs group"
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className={`w-3.5 h-3.5 rounded-full ${token.iconColor}`} />
+                  <TokenIcon symbol={token.symbol} size={18} />
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
                     {token.symbol}
                   </span>

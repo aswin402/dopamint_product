@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import type { Conversation } from '../../types/crypto';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import { FolderIconRenderer } from '../common/FolderIconRenderer';
+import { TokenIcon } from '../common/TokenIcon';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -56,35 +58,19 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
   const renderIcon = () => {
     switch (conversation.iconName) {
       case 'bitcoin':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#FFF4E6] dark:bg-[#382613] flex items-center justify-center flex-shrink-0 text-[#F97316]">
-            <span className="text-[11px] font-bold">₿</span>
-          </div>
-        );
+        return <TokenIcon symbol="BTC" size={20} />;
       case 'ethereum':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#EEF2FF] dark:bg-[#1a203a] flex items-center justify-center flex-shrink-0 text-[#6366F1]">
-            <span className="text-[11px] font-bold">♦</span>
-          </div>
-        );
+        return <TokenIcon symbol="ETH" size={20} />;
       case 'defi':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#E0F2FE] dark:bg-[#122b3d] flex items-center justify-center flex-shrink-0 text-[#0284C7]">
-            <span className="text-[11px] font-bold">A</span>
-          </div>
-        );
+        return <TokenIcon symbol="AERO" size={20} />;
       case 'staking':
         return (
           <div className="w-5 h-5 rounded-full bg-[#ECFDF5] dark:bg-[#133327] flex items-center justify-center flex-shrink-0 text-[#10B981]">
-            <CircleDot className="w-3 h-3" />
+            <CircleDot className="w-3.5 h-3.5" />
           </div>
         );
       case 'solana':
-        return (
-          <div className="w-5 h-5 rounded-full bg-[#F5F3FF] dark:bg-[#2c1c3f] flex items-center justify-center flex-shrink-0 text-[#9333EA]">
-            <span className="text-[10px] font-extrabold">≡</span>
-          </div>
-        );
+        return <TokenIcon symbol="SOL" size={20} />;
       case 'tax':
         return (
           <div className="w-5 h-5 rounded-full bg-[var(--bg-app)] flex items-center justify-center flex-shrink-0 text-[var(--text-secondary)] border border-[var(--border-color)]">
@@ -225,7 +211,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
                         }`}
                       >
                         <div className="flex items-center gap-1.5 truncate">
-                          <span>{f.icon || '📁'}</span>
+                          <FolderIconRenderer iconName={f.icon} className="w-3.5 h-3.5 text-[var(--primary)] flex-shrink-0" />
                           <span className="truncate">{f.name}</span>
                         </div>
                         {conversation.folderId === f.id && <Check className="w-3 h-3 flex-shrink-0" />}

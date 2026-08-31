@@ -25,7 +25,7 @@ export const PointsXpPage: React.FC = () => {
     { day: 'Day 4', xp: '+2,500 XP', done: true },
     { day: 'Day 5', xp: '+5,000 XP', done: true, isToday: true },
     { day: 'Day 6', xp: '+7,500 XP', done: false },
-    { day: 'Day 7', xp: '+15k XP + 🎁', done: false, isBonus: true },
+    { day: 'Day 7', xp: '+15k XP Bonus', done: false, isBonus: true },
   ];
 
   const handleClaimDaily = () => {
@@ -274,8 +274,9 @@ export const PointsXpPage: React.FC = () => {
                 </div>
               </div>
 
-              <span className="text-xs font-black text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                🔥 5 Days
+              <span className="inline-flex items-center text-xs font-black text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                <Flame className="w-3.5 h-3.5 mr-1 fill-amber-500" />
+                <span>5 Days</span>
               </span>
             </div>
 

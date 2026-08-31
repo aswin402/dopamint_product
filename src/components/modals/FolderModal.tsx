@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Folder, Sparkles } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import { FolderIconRenderer } from '../common/FolderIconRenderer';
 
 const COLOR_PRESETS = [
   { label: 'Indigo', hex: '#6366F1' },
@@ -14,7 +15,20 @@ const COLOR_PRESETS = [
   { label: 'Cyan', hex: '#06B6D4' },
 ];
 
-const EMOJI_PRESETS = ['📁', '💬', '🪙', '💻', '🎨', '📈', '🔬', '⚡', '🤖', '📚', '🎯', '🚀'];
+const ICON_PRESETS = [
+  { id: 'folder', label: 'Folder' },
+  { id: 'message-square', label: 'Chat' },
+  { id: 'coins', label: 'Crypto' },
+  { id: 'code', label: 'Develop' },
+  { id: 'palette', label: 'Design' },
+  { id: 'trending-up', label: 'Trading' },
+  { id: 'microscope', label: 'Research' },
+  { id: 'zap', label: 'Speed' },
+  { id: 'bot', label: 'Agent' },
+  { id: 'book-open', label: 'Learn' },
+  { id: 'target', label: 'Target' },
+  { id: 'rocket', label: 'Launch' },
+];
 
 const FolderModalContent: React.FC = () => {
   const editingFolderId = useCryptoStore((s) => s.editingFolderId);
@@ -26,7 +40,7 @@ const FolderModalContent: React.FC = () => {
   const editingFolder = folders.find((f) => f.id === editingFolderId);
 
   const [name, setName] = useState(editingFolder?.name || '');
-  const [selectedEmoji, setSelectedEmoji] = useState(editingFolder?.icon || '📁');
+  const [selectedIcon, setSelectedIcon] = useState(editingFolder?.icon || 'folder');
   const [selectedColor, setSelectedColor] = useState(editingFolder?.color || '#6366F1');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -34,9 +48,9 @@ const FolderModalContent: React.FC = () => {
     if (!name.trim()) return;
 
     if (editingFolderId) {
-      renameFolder(editingFolderId, name.trim(), selectedEmoji, selectedColor);
+      renameFolder(editingFolderId, name.trim(), selectedIcon, selectedColor);
     } else {
-      createFolder(name.trim(), selectedEmoji, selectedColor);
+      createFolder(name.trim(), selectedIcon, selectedColor);
     }
   };
 
@@ -62,7 +76,7 @@ const FolderModalContent: React.FC = () => {
         <div className="flex items-center justify-between pb-4 border-b border-[var(--border-color)]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center text-sm font-bold">
-              {selectedEmoji}
+              <FolderIconRenderer iconName={selectedIcon} className="w-4 h-4" />
             </div>
             <h2 className="text-base font-bold">
               {editingFolderId ? 'Edit Folder' : 'Create New Folder'}
@@ -96,24 +110,25 @@ const FolderModalContent: React.FC = () => {
             </div>
           </div>
 
-          {/* Choose Icon / Emoji */}
+          {/* Choose SVG Icon */}
           <div>
             <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
               Icon
             </label>
-            <div className="flex flex-wrap gap-1.5">
-              {EMOJI_PRESETS.map((emoji) => (
+            <div className="grid grid-cols-6 gap-1.5">
+              {ICON_PRESETS.map((iconItem) => (
                 <button
-                  key={emoji}
+                  key={iconItem.id}
                   type="button"
-                  onClick={() => setSelectedEmoji(emoji)}
-                  className={`w-8 h-8 rounded-xl text-base flex items-center justify-center transition-all cursor-pointer ${
-                    selectedEmoji === emoji
-                      ? 'bg-[var(--primary-light)] border border-[var(--primary)] scale-110 shadow-xs'
-                      : 'bg-[var(--bg-app)] border border-[var(--border-color)] hover:bg-[var(--bg-hover)]'
+                  onClick={() => setSelectedIcon(iconItem.id)}
+                  title={iconItem.label}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                    selectedIcon === iconItem.id
+                      ? 'bg-[var(--primary-light)] border border-[var(--primary)] text-[var(--primary)] scale-105 shadow-xs'
+                      : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
                   }`}
                 >
-                  {emoji}
+                  <FolderIconRenderer iconName={iconItem.id} className="w-4 h-4" />
                 </button>
               ))}
             </div>

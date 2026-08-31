@@ -496,7 +496,7 @@ export const Sidebar: React.FC = () => {
                       folder={{
                         id: 'folder-uncategorized',
                         name: 'Uncategorized',
-                        icon: '📁',
+                        icon: 'folder',
                         color: '#94A3B8',
                         createdAt: '',
                       }}
