@@ -152,11 +152,11 @@ export const Sidebar: React.FC = () => {
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Trophy className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                <Trophy className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Leaderboard</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase flex-shrink-0">
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] uppercase flex-shrink-0">
                   XP
                 </span>
               )}
@@ -173,11 +173,11 @@ export const Sidebar: React.FC = () => {
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Gift className="w-5 h-5 text-pink-500 flex-shrink-0" />
+                <Gift className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Refer & Earn</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-pink-500/10 text-pink-600 dark:text-pink-400 font-bold rounded-md border border-pink-500/20 flex-shrink-0">
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
                   +20%
                 </span>
               )}
@@ -194,11 +194,11 @@ export const Sidebar: React.FC = () => {
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Zap className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                <Zap className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Points & XP</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase flex-shrink-0">
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] uppercase flex-shrink-0">
                   LVL 7
                 </span>
               )}
@@ -213,23 +213,17 @@ export const Sidebar: React.FC = () => {
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Star
-                  className={`w-5 h-5 flex-shrink-0 ${
-                    favouriteCount > 0
-                      ? 'text-amber-400 fill-amber-400'
-                      : 'text-[var(--text-muted)]'
-                  }`}
-                />
+                <Star className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Favourites</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
+                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
                   {favouriteCount}
                 </span>
               )}
             </button>
 
-            {/* 7. Active Agents */}
+            {/* 6. Active Agents */}
             <button
               onClick={() => setModalState('isActiveAgentsModalOpen', true)}
               title={`Active Agents (${activeAgentsCount})`}
@@ -239,22 +233,22 @@ export const Sidebar: React.FC = () => {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative flex-shrink-0">
-                  <Bot className="w-5 h-5 text-emerald-500" />
+                  <Bot className="w-5 h-5" />
                   {activeAgentsCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500" />
                   )}
                 </div>
                 {isRailHovered && <span className="truncate">Active Agents</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[11px] px-1.5 py-0.2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold rounded-md flex items-center gap-1 flex-shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] flex items-center gap-1.5 flex-shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   {activeAgentsCount} Active
                 </span>
               )}
             </button>
 
-            {/* 8. Theme Toggle (Direct Sun/Moon Switcher) */}
+            {/* 7. Theme Toggle (Direct Sun/Moon Switcher) */}
             <button
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -264,22 +258,22 @@ export const Sidebar: React.FC = () => {
             >
               <div className="flex items-center gap-3 min-w-0">
                 {theme === 'dark' ? (
-                  <Sun className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                  <Sun className="w-5 h-5 flex-shrink-0" />
                 ) : (
-                  <Moon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
+                  <Moon className="w-5 h-5 flex-shrink-0" />
                 )}
                 {isRailHovered && (
                   <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
                 )}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-bold rounded-md uppercase border border-[var(--border-color)]">
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md uppercase border border-[var(--border-color)]">
                   {theme}
                 </span>
               )}
             </button>
 
-            {/* 9. Settings */}
+            {/* 8. Settings */}
             <button
               onClick={() => setModalState('isSettingsModalOpen', true)}
               title="Settings"
@@ -287,24 +281,24 @@ export const Sidebar: React.FC = () => {
                 isRailHovered ? 'justify-start gap-3' : 'justify-center'
               }`}
             >
-              <Settings className="w-5 h-5 text-[var(--text-muted)] flex-shrink-0" />
+              <Settings className="w-5 h-5 flex-shrink-0" />
               {isRailHovered && <span className="truncate">Settings</span>}
             </button>
 
-            {/* 10. Buy Credits */}
+            {/* 9. Buy Credits */}
             <button
               onClick={() => setModalState('isUpgradeProModalOpen', true)}
               title="Buy Credits"
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-semibold text-[var(--primary)] hover:bg-[var(--primary-light)] transition-colors cursor-pointer ${
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
                 isRailHovered ? 'justify-between' : 'justify-center'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Coins className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
+                <Coins className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Buy Credits</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--primary)] text-white font-bold rounded-md flex-shrink-0">
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] uppercase flex-shrink-0">
                   TOP UP
                 </span>
               )}
