@@ -392,7 +392,7 @@ export const DashboardPage: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
-            className="w-full max-w-[680px] flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-3 pb-1 no-scrollbar"
+            className="w-full max-w-[680px] flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-3 pb-1"
           >
             {CATEGORIES.map((cat) => {
               const isSelected = cat.name === selectedCategory;
@@ -400,7 +400,7 @@ export const DashboardPage: React.FC = () => {
                 <button
                   key={cat.name}
                   onClick={() => handleCategoryClick(cat)}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all duration-180 cursor-pointer flex-shrink-0 ${
+                  className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs transition-all duration-180 cursor-pointer ${
                     isSelected
                       ? 'bg-[var(--bg-card)] dark:bg-[#161616] border border-[#485442] dark:border-[#8A9E7F] text-[#1A1A1A] dark:text-[#ECECEC] font-medium shadow-2xs'
                       : 'bg-[var(--bg-card)] dark:bg-[#161616] border border-[var(--border-color)] dark:border-[#262626] text-[#4F534C] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white hover:border-[#485442]'
