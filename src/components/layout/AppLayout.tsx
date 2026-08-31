@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Sidebar } from '../sidebar/Sidebar';
 import { ChatContainer } from '../chat/ChatContainer';
 import { LeaderboardPage } from '../leaderboard/LeaderboardPage';
+import { ReferEarnPage } from '../refer/ReferEarnPage';
+import { PointsXpPage } from '../points/PointsXpPage';
 import { InsightsPanel } from '../insights/InsightsPanel';
 import { CommandPalette } from '../modals/CommandPalette';
 import { PortfolioModal } from '../modals/PortfolioModal';
@@ -33,9 +35,17 @@ export const AppLayout: React.FC = () => {
       {/* 1. Left Sidebar (Dual panel) */}
       <Sidebar />
 
-      {/* 2. Center Canvas (ChatContainer for Dashboard, LeaderboardPage for Leaderboard) */}
+      {/* 2. Center Canvas (ChatContainer for Dashboard, LeaderboardPage, ReferEarnPage, PointsXpPage) */}
       <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-card)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
-        {activePage === 'leaderboard' ? <LeaderboardPage /> : <ChatContainer />}
+        {activePage === 'leaderboard' ? (
+          <LeaderboardPage />
+        ) : activePage === 'refer' ? (
+          <ReferEarnPage />
+        ) : activePage === 'points' ? (
+          <PointsXpPage />
+        ) : (
+          <ChatContainer />
+        )}
       </main>
 
       {/* 3. Right Insights Panel (340px) */}

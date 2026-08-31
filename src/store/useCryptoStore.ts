@@ -33,8 +33,8 @@ interface CryptoStoreState {
   logout: () => void;
 
   // Navigation & Layout
-  activePage: 'dashboard' | 'leaderboard';
-  setActivePage: (page: 'dashboard' | 'leaderboard') => void;
+  activePage: 'dashboard' | 'leaderboard' | 'refer' | 'points';
+  setActivePage: (page: 'dashboard' | 'leaderboard' | 'refer' | 'points') => void;
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
   userDismissedInsights: boolean;

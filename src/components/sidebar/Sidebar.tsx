@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
-  Plus,
-  Search,
   Trophy,
+  Gift,
+  Zap,
   Star,
   Bot,
   Settings,
   Coins,
+  Plus,
+  Search,
   Command,
   PanelLeft,
   PanelLeftClose,
@@ -55,7 +57,8 @@ export const Sidebar: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════
        *  PANEL 1 — Utility Rail (Always Visible)
        *  Normally icon-only (w-[60px]); on hover expands to (w-[230px])
-       *  Items moved to TOP: Dashboard, Leaderboard, Favourites, Agents, Settings, Buy Credits
+       *  Items: Dashboard, Leaderboard, Refer & Earn, Points & XP,
+       *         Favourites, Agents, Settings, Buy Credits
        *  Bottom: User Profile
        * ═══════════════════════════════════════════════════════════ */}
       <aside
@@ -116,6 +119,48 @@ export const Sidebar: React.FC = () => {
               {isRailHovered && (
                 <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase flex-shrink-0">
                   XP
+                </span>
+              )}
+            </button>
+
+            {/* 3. Refer & Earn */}
+            <button
+              onClick={() => setActivePage('refer')}
+              title="Refer & Earn (+20% XP)"
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                activePage === 'refer'
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Gift className="w-5 h-5 text-pink-500 flex-shrink-0" />
+                {isRailHovered && <span className="truncate">Refer & Earn</span>}
+              </div>
+              {isRailHovered && (
+                <span className="text-[10px] px-1.5 py-0.2 bg-pink-500/10 text-pink-600 dark:text-pink-400 font-bold rounded-md border border-pink-500/20 flex-shrink-0">
+                  +20%
+                </span>
+              )}
+            </button>
+
+            {/* 4. Points & XP */}
+            <button
+              onClick={() => setActivePage('points')}
+              title="Points & XP Hub"
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                activePage === 'points'
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Zap className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                {isRailHovered && <span className="truncate">Points & XP</span>}
+              </div>
+              {isRailHovered && (
+                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold rounded-md border border-amber-500/20 uppercase flex-shrink-0">
+                  LVL 7
                 </span>
               )}
             </button>
