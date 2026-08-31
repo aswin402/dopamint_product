@@ -12,18 +12,21 @@ import {
   FileText,
   CircleDot,
   Check,
+  Folder,
+  X,
 } from 'lucide-react';
 import type { Conversation } from '../../types/crypto';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
 interface ConversationItemProps {
   conversation: Conversation;
-  isActive: boolean;
+  isActive?: boolean;
 }
 
-export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation, isActive }) => {
+export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation, isActive = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showFolderPicker, setShowFolderPicker] = useState(false);
 
   const navigate = useNavigate();
   const setActiveConversation = useCryptoStore((s) => s.setActiveConversation);
@@ -31,6 +34,8 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
   const duplicateChat = useCryptoStore((s) => s.duplicateConversation);
   const openRenameModal = useCryptoStore((s) => s.openRenameModal);
   const openDeleteModal = useCryptoStore((s) => s.openDeleteModal);
+  const folders = useCryptoStore((s) => s.folders);
+  const moveConversationToFolder = useCryptoStore((s) => s.moveConversationToFolder);
 
   const renderTimestamp = () => {
     try {
@@ -172,13 +177,84 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
               <Pin className={`w-3.5 h-3.5 ${conversation.isPinned ? 'fill-[var(--primary)]' : ''}`} />
             </button>
 
+            {/* Move to Folder Button */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFolderPicker(!showFolderPicker);
+                }}
+                title="Move to Folder"
+                className={`p-1 rounded-md transition-colors cursor-pointer ${
+                  conversation.folderId
+                    ? 'text-[var(--primary)] hover:bg-[var(--primary-light)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                }`}
+              >
+                <Folder className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Folder Selector Dropdown */}
+              {showFolderPicker && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFolderPicker(false);
+                    }}
+                  />
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute right-0 top-6 z-50 w-44 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-flyout p-1.5 text-xs space-y-0.5"
+                  >
+                    <span className="block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      Move to folder
+                    </span>
+                    {folders.map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => {
+                          moveConversationToFolder(conversation.id, f.id);
+                          setShowFolderPicker(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
+                          conversation.folderId === f.id
+                            ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold'
+                            : 'hover:bg-[var(--bg-hover)] text-[var(--text-primary)]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span>{f.icon || '📁'}</span>
+                          <span className="truncate">{f.name}</span>
+                        </div>
+                        {conversation.folderId === f.id && <Check className="w-3 h-3 flex-shrink-0" />}
+                      </button>
+                    ))}
+                    {conversation.folderId && (
+                      <button
+                        onClick={() => {
+                          moveConversationToFolder(conversation.id, null);
+                          setShowFolderPicker(false);
+                        }}
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-left text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer border-t border-[var(--border-color)] mt-1 pt-1.5"
+                      >
+                        <X className="w-3 h-3" />
+                        <span>Remove from folder</span>
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 openRenameModal(conversation.id);
               }}
               title="Rename"
-              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -186,7 +262,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
             <button
               onClick={handleDuplicate}
               title="Duplicate"
-              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
@@ -197,7 +273,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
                 openDeleteModal(conversation.id);
               }}
               title="Delete"
-              className="p-1 rounded-md text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
+              className="p-1 rounded-md text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>

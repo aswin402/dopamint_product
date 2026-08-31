@@ -3,6 +3,7 @@ import type {
   Attachment,
   Conversation,
   CryptoCoin,
+  Folder,
   MarketOverviewData,
   Message,
   NewsItem,
@@ -14,7 +15,7 @@ import type {
   AIAgent,
 } from '../types/crypto';
 import { INITIAL_COINS, INITIAL_MARKET_OVERVIEW } from '../data/cryptoData';
-import { INITIAL_CONVERSATIONS, INITIAL_MESSAGES } from '../data/conversations';
+import { INITIAL_CONVERSATIONS, INITIAL_FOLDERS, INITIAL_MESSAGES } from '../data/conversations';
 import { INITIAL_NEWS } from '../data/newsData';
 import { INITIAL_LEADERBOARD } from '../data/leaderboardData';
 import { INITIAL_AGENTS } from '../data/agentsData';
@@ -54,12 +55,26 @@ interface CryptoStoreState {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   setActiveConversation: (id: string) => void;
-  createNewChat: (initialPrompt?: string) => string;
+  createNewChat: (initialPrompt?: string, folderId?: string) => string;
   renameConversation: (id: string, newTitle: string) => void;
   deleteConversation: (id: string) => void;
   togglePinConversation: (id: string) => void;
   toggleFavouriteConversation: (id: string) => void;
   duplicateConversation: (id: string) => void;
+
+  // Folders & Categories
+  folders: Folder[];
+  activeSidebarTab: 'recent' | 'folders';
+  setActiveSidebarTab: (tab: 'recent' | 'folders') => void;
+  createFolder: (name: string, icon?: string, color?: string) => string;
+  renameFolder: (id: string, name: string, icon?: string, color?: string) => void;
+  deleteFolder: (id: string, deleteChats?: boolean) => void;
+  moveConversationToFolder: (chatId: string, folderId: string | null) => void;
+  isFolderModalOpen: boolean;
+  editingFolderId: string | null;
+  openCreateFolderModal: () => void;
+  openEditFolderModal: (folderId: string) => void;
+  closeFolderModal: () => void;
 
   // Messages
   messages: Record<string, Message[]>;
@@ -283,12 +298,13 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     set({ activeConversationId, activePage: 'dashboard' });
   },
 
-  createNewChat: (initialPrompt?: string) => {
+  createNewChat: (initialPrompt?: string, folderId?: string) => {
     const newId = `chat-${Date.now()}`;
     const newChat: Conversation = {
       id: newId,
       title: initialPrompt ? initialPrompt.slice(0, 26) : 'New Conversation',
       isPinned: false,
+      folderId: folderId,
       group: 'today',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -384,6 +400,84 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
       },
     }));
   },
+
+  // Folders & Categories State & Methods
+  folders: INITIAL_FOLDERS,
+  activeSidebarTab: 'recent',
+  isFolderModalOpen: false,
+  editingFolderId: null,
+
+  setActiveSidebarTab: (activeSidebarTab) => set({ activeSidebarTab }),
+
+  createFolder: (name, icon = '📁', color = '#6366F1') => {
+    const newFolderId = `folder-${Date.now()}`;
+    const newFolder: Folder = {
+      id: newFolderId,
+      name: name.trim() || 'New Folder',
+      icon: icon || '📁',
+      color: color || '#6366F1',
+      createdAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      folders: [...state.folders, newFolder],
+      isFolderModalOpen: false,
+      editingFolderId: null,
+    }));
+    return newFolderId;
+  },
+
+  renameFolder: (id, name, icon, color) => {
+    set((state) => ({
+      folders: state.folders.map((f) =>
+        f.id === id
+          ? {
+              ...f,
+              name: name.trim() || f.name,
+              icon: icon !== undefined ? icon : f.icon,
+              color: color !== undefined ? color : f.color,
+            }
+          : f
+      ),
+      isFolderModalOpen: false,
+      editingFolderId: null,
+    }));
+  },
+
+  deleteFolder: (id, deleteChats = false) => {
+    set((state) => {
+      const updatedMessages = { ...state.messages };
+      let updatedConversations: Conversation[];
+
+      if (deleteChats) {
+        const chatsToDelete = state.conversations.filter((c) => c.folderId === id);
+        chatsToDelete.forEach((c) => delete updatedMessages[c.id]);
+        updatedConversations = state.conversations.filter((c) => c.folderId !== id);
+      } else {
+        // Move chats out of this folder (uncategorize)
+        updatedConversations = state.conversations.map((c) =>
+          c.folderId === id ? { ...c, folderId: undefined } : c
+        );
+      }
+
+      return {
+        folders: state.folders.filter((f) => f.id !== id),
+        conversations: updatedConversations,
+        messages: updatedMessages,
+      };
+    });
+  },
+
+  moveConversationToFolder: (chatId, folderId) => {
+    set((state) => ({
+      conversations: state.conversations.map((c) =>
+        c.id === chatId ? { ...c, folderId: folderId || undefined } : c
+      ),
+    }));
+  },
+
+  openCreateFolderModal: () => set({ isFolderModalOpen: true, editingFolderId: null }),
+  openEditFolderModal: (editingFolderId) => set({ isFolderModalOpen: true, editingFolderId }),
+  closeFolderModal: () => set({ isFolderModalOpen: false, editingFolderId: null }),
 
   // Messages
   messages: INITIAL_MESSAGES,

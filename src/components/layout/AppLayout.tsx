@@ -19,6 +19,7 @@ import { LeaderboardModal } from '../modals/LeaderboardModal';
 import { ActiveAgentsModal } from '../modals/ActiveAgentsModal';
 import { RenameModal } from '../modals/RenameModal';
 import { DeleteModal } from '../modals/DeleteModal';
+import { FolderModal } from '../modals/FolderModal';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
@@ -87,6 +88,7 @@ export const AppLayout: React.FC = () => {
       <ActiveAgentsModal />
       <RenameModal />
       <DeleteModal />
+      <FolderModal />
     </div>
   );
 };

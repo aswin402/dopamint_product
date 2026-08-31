@@ -62,11 +62,20 @@ export interface Message {
 
 export type ConversationGroup = 'today' | 'yesterday' | 'last7days' | 'older';
 
+export interface Folder {
+  id: string;
+  name: string;
+  icon?: string;
+  color?: string;
+  createdAt: string;
+}
+
 export interface Conversation {
   id: string;
   title: string;
   isPinned: boolean;
   isFavourite?: boolean;
+  folderId?: string;
   group: ConversationGroup;
   createdAt: string;
   updatedAt: string;

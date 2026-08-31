@@ -15,11 +15,17 @@ import {
   PanelLeft,
   PanelLeftClose,
   MessageSquare,
+  Folder,
+  FolderPlus,
+  Clock,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import logoDope from '../../assets/logo_dope.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { HistoryGroup } from './HistoryGroup';
+import { FolderAccordion } from './FolderAccordion';
 import { UserProfileCard } from './UserProfileCard';
 
 export const Sidebar: React.FC = () => {
@@ -31,6 +37,9 @@ export const Sidebar: React.FC = () => {
   const searchQuery = useCryptoStore((s) => s.searchQuery);
   const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
 
+  const theme = useCryptoStore((s) => s.theme);
+  const toggleTheme = useCryptoStore((s) => s.toggleTheme);
+
   const isSidebarOpen = useCryptoStore((s) => s.isSidebarOpen);
   const toggleSidebar = useCryptoStore((s) => s.toggleSidebar);
   const conversations = useCryptoStore((s) => s.conversations);
@@ -38,6 +47,11 @@ export const Sidebar: React.FC = () => {
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const agents = useCryptoStore((s) => s.agents);
+
+  const folders = useCryptoStore((s) => s.folders);
+  const activeSidebarTab = useCryptoStore((s) => s.activeSidebarTab);
+  const setActiveSidebarTab = useCryptoStore((s) => s.setActiveSidebarTab);
+  const openCreateFolderModal = useCryptoStore((s) => s.openCreateFolderModal);
 
   // Filter conversations
   const filtered = conversations.filter((c) =>
@@ -54,6 +68,9 @@ export const Sidebar: React.FC = () => {
   const favouriteCount = conversations.filter((c) => c.isFavourite).length;
   const activeChat = conversations.find((c) => c.id === activeConversationId);
 
+  // Uncategorized conversations
+  const uncategorizedList = filtered.filter((c) => !c.folderId);
+
   // Pathname checks
   const pathname = location.pathname;
   const isDashboard = pathname === '/' || pathname === '/dashboard';
@@ -66,13 +83,18 @@ export const Sidebar: React.FC = () => {
     navigate(`/c/${newId}`);
   };
 
+  const handleOpenFolders = () => {
+    if (!isSidebarOpen) toggleSidebar();
+    setActiveSidebarTab('folders');
+  };
+
   return (
     <div className="hidden lg:flex h-screen flex-shrink-0">
       {/* ═══════════════════════════════════════════════════════════
        *  PANEL 1 — Utility Rail (Always Visible)
        *  Normally icon-only (w-[60px]); on hover expands to (w-[230px])
        *  Items: Dashboard, Leaderboard, Refer & Earn, Points & XP,
-       *         Favourites, Agents, Settings, Buy Credits
+       *         Folders, Favourites, Agents, Theme Toggle, Settings, Buy Credits
        *  Bottom: User Profile
        * ═══════════════════════════════════════════════════════════ */}
       <aside
@@ -103,7 +125,7 @@ export const Sidebar: React.FC = () => {
             )}
           </div>
 
-          {/* Nav Items (Moved UP right under logo) */}
+          {/* Nav Items */}
           <div className="space-y-1">
             {/* 1. Dashboard */}
             <button
@@ -182,7 +204,28 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 5. Favourites */}
+            {/* 5. Folders / Categories */}
+            <button
+              onClick={handleOpenFolders}
+              title={`Folders & Categories (${folders.length})`}
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                activeSidebarTab === 'folders' && isSidebarOpen
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Folder className="w-5 h-5 text-indigo-500 flex-shrink-0" />
+                {isRailHovered && <span className="truncate">Folders</span>}
+              </div>
+              {isRailHovered && (
+                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
+                  {folders.length}
+                </span>
+              )}
+            </button>
+
+            {/* 6. Favourites */}
             <button
               onClick={() => setModalState('isWatchlistModalOpen', true)}
               title={`Favourites (${favouriteCount})`}
@@ -207,7 +250,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 6. Active Agents */}
+            {/* 7. Active Agents */}
             <button
               onClick={() => setModalState('isActiveAgentsModalOpen', true)}
               title={`Active Agents (${activeAgentsCount})`}
@@ -232,7 +275,32 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 7. Settings */}
+            {/* 8. Theme Toggle (Direct Sun/Moon Switcher) */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
+                isRailHovered ? 'justify-between' : 'justify-center'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                {theme === 'dark' ? (
+                  <Sun className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                ) : (
+                  <Moon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
+                )}
+                {isRailHovered && (
+                  <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                )}
+              </div>
+              {isRailHovered && (
+                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-bold rounded-md uppercase border border-[var(--border-color)]">
+                  {theme}
+                </span>
+              )}
+            </button>
+
+            {/* 9. Settings */}
             <button
               onClick={() => setModalState('isSettingsModalOpen', true)}
               title="Settings"
@@ -244,7 +312,7 @@ export const Sidebar: React.FC = () => {
               {isRailHovered && <span className="truncate">Settings</span>}
             </button>
 
-            {/* 8. Buy Credits */}
+            {/* 10. Buy Credits */}
             <button
               onClick={() => setModalState('isUpgradeProModalOpen', true)}
               title="Buy Credits"
@@ -272,23 +340,23 @@ export const Sidebar: React.FC = () => {
       </aside>
 
       {/* ═══════════════════════════════════════════════════════════
-       *  PANEL 2 — Chat History Menubar
-       *  When Open (w-[260px]): Full chat titles, search, new chat
+       *  PANEL 2 — Chat History & Folders Menubar
+       *  When Open (w-[260px]): Full chat titles, search, tabs, folders
        *  When Closed (w-[54px]): Icon rail with Expand, +, Search, Chat
        * ═══════════════════════════════════════════════════════════ */}
       {isSidebarOpen ? (
         <aside className="w-[260px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex flex-col justify-between p-4 transition-all duration-200 ease-out flex-shrink-0">
           <div className="flex flex-col h-full min-w-0">
-            {/* Top — Header, New Chat & Search */}
-            <div className="space-y-3.5 flex-shrink-0">
+            {/* Top — Header, New Chat, Search & Tabs */}
+            <div className="space-y-3 flex-shrink-0">
               {/* Header Title + Collapse Icon */}
               <div className="flex items-center justify-between px-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  Chats
+                  {activeSidebarTab === 'folders' ? 'Folders' : 'Chats'}
                 </span>
                 <button
                   onClick={toggleSidebar}
-                  title="Collapse Chats"
+                  title="Collapse Sidebar"
                   className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
                 >
                   <PanelLeftClose className="w-4.5 h-4.5" />
@@ -304,12 +372,12 @@ export const Sidebar: React.FC = () => {
                 <span>New Chat</span>
               </button>
 
-              {/* Search Chats Input */}
+              {/* Search Input */}
               <div className="relative">
                 <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search chats..."
+                  placeholder={activeSidebarTab === 'folders' ? 'Search in folders...' : 'Search chats...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-8.5 pl-8.5 pr-10 text-[12.5px] bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] focus:bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] rounded-lg border border-[var(--border-color)] focus:border-[var(--primary)] outline-none transition-all"
@@ -322,47 +390,119 @@ export const Sidebar: React.FC = () => {
                   <span>K</span>
                 </button>
               </div>
+
+              {/* Recent vs Folders Tab Switcher */}
+              <div className="grid grid-cols-2 p-0.5 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl text-xs font-bold">
+                <button
+                  onClick={() => setActiveSidebarTab('recent')}
+                  className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    activeSidebarTab === 'recent'
+                      ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-2xs'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Recent</span>
+                </button>
+                <button
+                  onClick={() => setActiveSidebarTab('folders')}
+                  className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    activeSidebarTab === 'folders'
+                      ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-2xs'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  <Folder className="w-3.5 h-3.5" />
+                  <span>Folders</span>
+                  <span className="text-[10px] px-1 bg-[var(--bg-hover)] rounded-md font-semibold text-[var(--text-muted)]">
+                    {folders.length}
+                  </span>
+                </button>
+              </div>
             </div>
 
-            {/* Middle — Scrollable Conversation History */}
+            {/* Middle — Scrollable Content based on Tab */}
             <div className="flex-1 overflow-y-auto my-3 pr-1 -mr-1 scroll-smooth">
-              {pinnedList.length > 0 && (
-                <HistoryGroup
-                  title="Pinned"
-                  conversations={pinnedList}
-                  activeConversationId={activeConversationId}
-                />
-              )}
+              {activeSidebarTab === 'recent' ? (
+                /* ── RECENT VIEW ── */
+                <>
+                  {pinnedList.length > 0 && (
+                    <HistoryGroup
+                      title="Pinned"
+                      conversations={pinnedList}
+                      activeConversationId={activeConversationId}
+                    />
+                  )}
 
-              <HistoryGroup
-                title="Today"
-                conversations={todayList}
-                activeConversationId={activeConversationId}
-              />
+                  <HistoryGroup
+                    title="Today"
+                    conversations={todayList}
+                    activeConversationId={activeConversationId}
+                  />
 
-              <HistoryGroup
-                title="Yesterday"
-                conversations={yesterdayList}
-                activeConversationId={activeConversationId}
-              />
+                  <HistoryGroup
+                    title="Yesterday"
+                    conversations={yesterdayList}
+                    activeConversationId={activeConversationId}
+                  />
 
-              <HistoryGroup
-                title="Last 7 days"
-                conversations={last7DaysList}
-                activeConversationId={activeConversationId}
-              />
+                  <HistoryGroup
+                    title="Last 7 days"
+                    conversations={last7DaysList}
+                    activeConversationId={activeConversationId}
+                  />
 
-              {olderList.length > 0 && (
-                <HistoryGroup
-                  title="Older"
-                  conversations={olderList}
-                  activeConversationId={activeConversationId}
-                />
-              )}
+                  {olderList.length > 0 && (
+                    <HistoryGroup
+                      title="Older"
+                      conversations={olderList}
+                      activeConversationId={activeConversationId}
+                    />
+                  )}
 
-              {filtered.length === 0 && (
-                <div className="text-center py-8 px-2">
-                  <p className="text-xs text-[var(--text-muted)]">No conversations found</p>
+                  {filtered.length === 0 && (
+                    <div className="text-center py-8 px-2">
+                      <p className="text-xs text-[var(--text-muted)]">No conversations found</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* ── FOLDERS VIEW ── */
+                <div className="space-y-2">
+                  {/* + New Folder Action Button */}
+                  <button
+                    onClick={openCreateFolderModal}
+                    className="w-full flex items-center justify-center gap-2 py-2 border border-dashed border-[var(--border-color)] hover:border-[var(--primary)] hover:bg-[var(--primary-light)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-xl text-xs font-bold transition-all cursor-pointer mb-2"
+                  >
+                    <FolderPlus className="w-4 h-4" />
+                    <span>Create New Folder</span>
+                  </button>
+
+                  {/* Folder Accordions */}
+                  {folders.map((folder) => {
+                    const folderChats = filtered.filter((c) => c.folderId === folder.id);
+                    return (
+                      <FolderAccordion
+                        key={folder.id}
+                        folder={folder}
+                        conversations={folderChats}
+                      />
+                    );
+                  })}
+
+                  {/* Uncategorized Folder (if any) */}
+                  {uncategorizedList.length > 0 && (
+                    <FolderAccordion
+                      folder={{
+                        id: 'folder-uncategorized',
+                        name: 'Uncategorized',
+                        icon: '📁',
+                        color: '#94A3B8',
+                        createdAt: '',
+                      }}
+                      conversations={uncategorizedList}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -398,6 +538,15 @@ export const Sidebar: React.FC = () => {
               className="w-10 h-10 flex items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
             >
               <Search className="w-5 h-5" />
+            </button>
+
+            {/* Quick Folders Toggle Button */}
+            <button
+              onClick={handleOpenFolders}
+              title="View Folders"
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+            >
+              <Folder className="w-5 h-5" />
             </button>
           </div>
 
