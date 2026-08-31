@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Pin,
@@ -24,6 +25,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
   const [isHovered, setIsHovered] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const navigate = useNavigate();
   const setActiveConversation = useCryptoStore((s) => s.setActiveConversation);
   const togglePin = useCryptoStore((s) => s.togglePinConversation);
   const duplicateChat = useCryptoStore((s) => s.duplicateConversation);
@@ -123,7 +125,10 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({ conversation
       layout
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => setActiveConversation(conversation.id)}
+      onClick={() => {
+        setActiveConversation(conversation.id);
+        navigate(`/c/${conversation.id}`);
+      }}
       className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-180 cursor-pointer ${
         isActive
           ? 'bg-[var(--primary-light)] text-[var(--text-primary)] font-semibold shadow-xs'

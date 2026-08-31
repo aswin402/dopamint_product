@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search,
@@ -19,6 +20,7 @@ export const CommandPalette: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const navigate = useNavigate();
   const isOpen = useCryptoStore((s) => s.isCommandPaletteOpen);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const conversations = useCryptoStore((s) => s.conversations);
@@ -50,6 +52,7 @@ export const CommandPalette: React.FC = () => {
       icon: <MessageSquare className="w-4 h-4 text-[var(--primary)]" />,
       action: () => {
         setActiveConversation(c.id);
+        navigate(`/c/${c.id}`);
         setModalState('isCommandPaletteOpen', false);
       },
     }));
@@ -80,7 +83,41 @@ export const CommandPalette: React.FC = () => {
       subtitle: 'Create a fresh crypto chat context (⌘N)',
       icon: <Plus className="w-4 h-4 text-[var(--primary)]" />,
       action: () => {
-        createNewChat();
+        const newId = createNewChat();
+        navigate(`/c/${newId}`);
+        setModalState('isCommandPaletteOpen', false);
+      },
+    },
+    {
+      id: 'act-leaderboard',
+      type: 'action',
+      title: 'Open Leaderboard Page',
+      subtitle: 'View live testnet rankings & season standings',
+      icon: <TrendingUp className="w-4 h-4 text-amber-500" />,
+      action: () => {
+        navigate('/leaderboard');
+        setModalState('isCommandPaletteOpen', false);
+      },
+    },
+    {
+      id: 'act-refer',
+      type: 'action',
+      title: 'Open Refer & Earn Page',
+      subtitle: 'Get your referral link & invite friends (+20% XP)',
+      icon: <Plus className="w-4 h-4 text-pink-500" />,
+      action: () => {
+        navigate('/refer');
+        setModalState('isCommandPaletteOpen', false);
+      },
+    },
+    {
+      id: 'act-points',
+      type: 'action',
+      title: 'Open Points & XP Hub',
+      subtitle: 'Daily streak check-in, quests & rewards',
+      icon: <Star className="w-4 h-4 text-amber-500" />,
+      action: () => {
+        navigate('/points');
         setModalState('isCommandPaletteOpen', false);
       },
     },

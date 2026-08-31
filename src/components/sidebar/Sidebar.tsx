@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Trophy,
@@ -24,8 +25,9 @@ import { UserProfileCard } from './UserProfileCard';
 export const Sidebar: React.FC = () => {
   const [isRailHovered, setIsRailHovered] = useState(false);
 
-  const activePage = useCryptoStore((s) => s.activePage);
-  const setActivePage = useCryptoStore((s) => s.setActivePage);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const searchQuery = useCryptoStore((s) => s.searchQuery);
   const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
 
@@ -52,6 +54,18 @@ export const Sidebar: React.FC = () => {
   const favouriteCount = conversations.filter((c) => c.isFavourite).length;
   const activeChat = conversations.find((c) => c.id === activeConversationId);
 
+  // Pathname checks
+  const pathname = location.pathname;
+  const isDashboard = pathname === '/' || pathname.startsWith('/c/');
+  const isLeaderboard = pathname === '/leaderboard';
+  const isRefer = pathname === '/refer';
+  const isPoints = pathname === '/points' || pathname === '/xp';
+
+  const handleNewChat = () => {
+    const newId = createNewChat();
+    navigate(`/c/${newId}`);
+  };
+
   return (
     <div className="hidden lg:flex h-screen flex-shrink-0">
       {/* ═══════════════════════════════════════════════════════════
@@ -71,7 +85,10 @@ export const Sidebar: React.FC = () => {
         {/* Top Section — Logo & Utility Navigation */}
         <div className="space-y-2">
           {/* Brand Header */}
-          <div className="flex items-center gap-2.5 px-1 py-1 mb-1 min-h-[36px] overflow-hidden">
+          <div
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2.5 px-1 py-1 mb-1 min-h-[36px] overflow-hidden cursor-pointer"
+          >
             <img
               src={crownLogo}
               alt="crown"
@@ -90,10 +107,10 @@ export const Sidebar: React.FC = () => {
           <div className="space-y-1">
             {/* 1. Dashboard */}
             <button
-              onClick={() => setActivePage('dashboard')}
+              onClick={() => navigate('/')}
               title="Dashboard"
               className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
-                activePage === 'dashboard'
+                isDashboard
                   ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               } ${isRailHovered ? 'justify-start gap-3' : 'justify-center'}`}
@@ -104,10 +121,10 @@ export const Sidebar: React.FC = () => {
 
             {/* 2. Leaderboard */}
             <button
-              onClick={() => setActivePage('leaderboard')}
+              onClick={() => navigate('/leaderboard')}
               title="Leaderboard"
               className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
-                activePage === 'leaderboard'
+                isLeaderboard
                   ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
@@ -125,10 +142,10 @@ export const Sidebar: React.FC = () => {
 
             {/* 3. Refer & Earn */}
             <button
-              onClick={() => setActivePage('refer')}
+              onClick={() => navigate('/refer')}
               title="Refer & Earn (+20% XP)"
               className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
-                activePage === 'refer'
+                isRefer
                   ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
@@ -146,10 +163,10 @@ export const Sidebar: React.FC = () => {
 
             {/* 4. Points & XP */}
             <button
-              onClick={() => setActivePage('points')}
+              onClick={() => navigate('/points')}
               title="Points & XP Hub"
               className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
-                activePage === 'points'
+                isPoints
                   ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
               } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
@@ -165,7 +182,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 2. Favourites */}
+            {/* 5. Favourites */}
             <button
               onClick={() => setModalState('isWatchlistModalOpen', true)}
               title={`Favourites (${favouriteCount})`}
@@ -190,7 +207,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 3. Active Agents */}
+            {/* 6. Active Agents */}
             <button
               onClick={() => setModalState('isActiveAgentsModalOpen', true)}
               title={`Active Agents (${activeAgentsCount})`}
@@ -215,7 +232,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 4. Settings */}
+            {/* 7. Settings */}
             <button
               onClick={() => setModalState('isSettingsModalOpen', true)}
               title="Settings"
@@ -227,7 +244,7 @@ export const Sidebar: React.FC = () => {
               {isRailHovered && <span className="truncate">Settings</span>}
             </button>
 
-            {/* 5. Buy Credits */}
+            {/* 8. Buy Credits */}
             <button
               onClick={() => setModalState('isUpgradeProModalOpen', true)}
               title="Buy Credits"
@@ -280,7 +297,7 @@ export const Sidebar: React.FC = () => {
 
               {/* New Chat Primary Button */}
               <button
-                onClick={() => createNewChat()}
+                onClick={handleNewChat}
                 className="w-full h-10 bg-[var(--primary)] hover:opacity-95 text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2 shadow-button-primary transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -367,7 +384,7 @@ export const Sidebar: React.FC = () => {
 
             {/* Quick New Chat Button */}
             <button
-              onClick={() => createNewChat()}
+              onClick={handleNewChat}
               title="New Chat"
               className="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--primary)] text-white hover:opacity-95 transition-all shadow-button-primary cursor-pointer"
             >
