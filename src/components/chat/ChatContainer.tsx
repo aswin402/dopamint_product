@@ -69,7 +69,7 @@ export const ChatContainer: React.FC = () => {
           isWelcomeScreen ? 'pt-2 pb-8' : 'py-6'
         } scroll-smooth`}
       >
-        <div className="max-w-[820px] mx-auto w-full">
+        <div className={`mx-auto w-full ${isWelcomeScreen ? 'max-w-[1000px]' : 'max-w-[820px]'}`}>
           {isWelcomeScreen ? (
             /* Reference Design Welcome Hero Section with Embedded Prompt Box, Tabs & Paginated Questions */
             <WelcomeHeroSection />
