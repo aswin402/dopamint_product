@@ -1,21 +1,152 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
+  Crown,
   Bell,
+  Search,
+  Copy,
+  Check,
   Zap,
-  Gift,
-  Target,
   Flame,
   Trophy,
-  Rocket,
+  Target,
+  Gift,
   Diamond,
-  Medal,
+  Rocket,
+  TrendingUp,
 } from 'lucide-react';
-import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
+
+interface LeaderboardUser {
+  rank: number;
+  walletAddress: string;
+  fullAddress: string;
+  tagline: string;
+  xpWeek: number;
+  xpAllTime: number;
+  swaps: number;
+  referrals: number;
+  streakDays: number;
+  isCurrentUser?: boolean;
+}
+
+const LEADERBOARD_USERS: LeaderboardUser[] = [
+  {
+    rank: 1,
+    walletAddress: '0x71Cd...9B02',
+    fullAddress: '0x71Cd4231865eE824A1054E5F36423c9E9B02',
+    tagline: '50 swaps · 20 referrals · Season 1 Leader',
+    xpWeek: 128420,
+    xpAllTime: 1455000,
+    swaps: 50,
+    referrals: 20,
+    streakDays: 42,
+  },
+  {
+    rank: 2,
+    walletAddress: '0x9A2b...44Fe',
+    fullAddress: '0x9A2b38291054E5F36423c9E3c76A105444Fe',
+    tagline: '30-day streak · 38 swaps',
+    xpWeek: 86140,
+    xpAllTime: 1128000,
+    swaps: 38,
+    referrals: 15,
+    streakDays: 30,
+  },
+  {
+    rank: 3,
+    walletAddress: '0x3E44...7710',
+    fullAddress: '0x3E4491C8392F865eE824A1054E5F364237710',
+    tagline: '10 swaps · 14 referrals',
+    xpWeek: 54280,
+    xpAllTime: 894000,
+    swaps: 10,
+    referrals: 14,
+    streakDays: 19,
+  },
+  {
+    rank: 4,
+    walletAddress: '0xD219...5C3A',
+    fullAddress: '0xD2193b8291054E5F36423c9E3c76A10545C3A',
+    tagline: 'Priority quant tester · 12 referrals',
+    xpWeek: 32960,
+    xpAllTime: 642000,
+    swaps: 24,
+    referrals: 12,
+    streakDays: 14,
+  },
+  {
+    rank: 5,
+    walletAddress: '0xA8F1...C920',
+    fullAddress: '0xA8F11054E5F36423c9E3c76A105444FeC920',
+    tagline: 'Early tester · 8 swaps',
+    xpWeek: 21480,
+    xpAllTime: 510000,
+    swaps: 8,
+    referrals: 7,
+    streakDays: 11,
+  },
+  {
+    rank: 6,
+    walletAddress: '0xE802...19BD',
+    fullAddress: '0xE80291C8392F865eE824A1054E5F3642319BD',
+    tagline: 'Automated research analyst',
+    xpWeek: 14760,
+    xpAllTime: 437500,
+    swaps: 6,
+    referrals: 5,
+    streakDays: 9,
+  },
+  {
+    rank: 7,
+    walletAddress: '0xC5A0...7E14',
+    fullAddress: '0xC5A038291054E5F36423c9E3c76A10547E14',
+    tagline: 'Active contributor · 4 swaps',
+    xpWeek: 11250,
+    xpAllTime: 362000,
+    swaps: 4,
+    referrals: 3,
+    streakDays: 7,
+  },
+  {
+    rank: 8,
+    walletAddress: '0x19B3...52DE',
+    fullAddress: '0x19B3865eE824A1054E5F36423c9E9B0252DE',
+    tagline: 'Community researcher · 2 referrals',
+    xpWeek: 8940,
+    xpAllTime: 298000,
+    swaps: 3,
+    referrals: 2,
+    streakDays: 5,
+  },
+  {
+    rank: 9,
+    walletAddress: '0x8842...31AA',
+    fullAddress: '0x884238291054E5F36423c9E3c76A105431AA',
+    tagline: 'DeFi yield scout',
+    xpWeek: 6450,
+    xpAllTime: 245000,
+    swaps: 2,
+    referrals: 1,
+    streakDays: 4,
+  },
+  {
+    rank: 10,
+    walletAddress: '0x49F0...B210',
+    fullAddress: '0x49F01054E5F36423c9E3c76A105444FeB210',
+    tagline: 'Multi-agent prompt tester',
+    xpWeek: 4200,
+    xpAllTime: 198000,
+    swaps: 2,
+    referrals: 1,
+    streakDays: 3,
+  },
+];
 
 export const LeaderboardPage: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'week' | 'alltime'>('week');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
   const setModalState = useCryptoStore((s) => s.setModalState);
   const userProfile = useCryptoStore((s) => s.userProfile);
@@ -25,141 +156,64 @@ export const LeaderboardPage: React.FC = () => {
     return `${addr.slice(0, 5)}...${addr.slice(-4)}`;
   };
 
-  // Top 3 Podium Data
-  const top1 = {
-    rank: 1,
-    address: '0x71Cd...9B02',
-    fullAddress: '0x71Cd4231865eE824A1054E5F36423c9E9B02',
-    xp: timeframe === 'week' ? '6,140' : '84,500',
-    swaps: 50,
-    referrals: 20,
-    avatarColor: 'from-amber-400 to-orange-500',
-    podiumHeight: 'h-28 sm:h-32',
-    podiumBg: 'bg-gradient-to-t from-amber-500/25 to-amber-500/10 border-t-2 border-amber-500',
+  const handleCopy = (address: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(address);
+    setCopiedAddress(address);
+    setTimeout(() => setCopiedAddress(null), 2000);
   };
 
-  const top2 = {
-    rank: 2,
-    address: '0x9A2b...44Fe',
-    fullAddress: '0x9A2b38291054E5F36423c9E3c76A105444Fe',
-    xp: timeframe === 'week' ? '4,820' : '62,100',
-    streak: '30-day streak',
-    avatarColor: 'from-blue-400 to-indigo-500',
-    podiumHeight: 'h-20 sm:h-24',
-    podiumBg: 'bg-gradient-to-t from-slate-400/20 to-slate-400/5 border-t-2 border-slate-400',
-  };
+  const filteredUsers = useMemo(() => {
+    return LEADERBOARD_USERS.filter((user) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        user.walletAddress.toLowerCase().includes(q) ||
+        user.fullAddress.toLowerCase().includes(q) ||
+        user.tagline.toLowerCase().includes(q)
+      );
+    });
+  }, [searchQuery]);
 
-  const top3 = {
-    rank: 3,
-    address: '0x3E44...7710',
-    fullAddress: '0x3E4491C8392F865eE824A1054E5F364237710',
-    xp: timeframe === 'week' ? '4,110' : '48,900',
-    swaps: 10,
-    avatarColor: 'from-emerald-400 to-teal-600',
-    podiumHeight: 'h-14 sm:h-18',
-    podiumBg: 'bg-gradient-to-t from-amber-700/20 to-amber-700/5 border-t-2 border-amber-700',
-  };
-
-  // Table rankings 4-7
-  const rankings = [
-    {
-      rank: 4,
-      address: '0xD219...5C3A',
-      xp: timeframe === 'week' ? '3,890 XP' : '41,200 XP',
-      avatarBg: 'bg-[#C9A984] text-white',
-    },
-    {
-      rank: 5,
-      address: '0xA8F1...C920',
-      xp: timeframe === 'week' ? '3,650 XP' : '38,750 XP',
-      avatarBg: 'bg-[#89A8D4] text-white',
-    },
-    {
-      rank: 6,
-      address: '0xE802...19BD',
-      xp: timeframe === 'week' ? '3,402 XP' : '35,400 XP',
-      avatarBg: 'bg-[#D288A3] text-white',
-    },
-    {
-      rank: 7,
-      address: '0xC5A0...7E14',
-      xp: timeframe === 'week' ? '3,190 XP' : '32,150 XP',
-      avatarBg: 'bg-[#A888D4] text-white',
-    },
-  ];
-
-  // Current User Standing
-  const currentUserStanding = {
+  const currentUserData = {
     rank: 128,
-    address: truncateAddress(userProfile.walletAddress),
-    xp: '2,140 XP',
-    delta: '▲12',
+    walletAddress: truncateAddress(userProfile.walletAddress),
+    fullAddress: userProfile.walletAddress || '0x4F2d6C781054E5F36423c9E3c76A10548Ae1',
+    tagline: 'Top 5% · Active Beta Tester',
+    xpWeek: 2140,
+    xpAllTime: 48500,
+    delta: '+12',
   };
 
-  // Top Achievements This Week
+  // 8 Minimalist Achievements
   const achievements = [
-    {
-      id: 'first-swap',
-      name: 'First swap',
-      icon: <Medal className="w-5 h-5 text-amber-500" />,
-      bg: 'bg-gradient-to-b from-amber-400 to-amber-600',
-    },
-    {
-      id: '10-swaps',
-      name: '10 Swaps',
-      icon: <Target className="w-5 h-5 text-red-500" />,
-      bg: 'bg-gradient-to-b from-red-400 to-red-600',
-    },
-    {
-      id: '50-swaps',
-      name: '50 Swaps',
-      icon: <Trophy className="w-5 h-5 text-amber-500" />,
-      bg: 'bg-gradient-to-b from-amber-300 to-amber-500',
-    },
-    {
-      id: '7-streak',
-      name: '7-day streak',
-      icon: <Flame className="w-5 h-5 text-orange-500" />,
-      bg: 'bg-gradient-to-b from-orange-400 to-orange-600',
-    },
-    {
-      id: '30-streak',
-      name: '30-day streak',
-      icon: <Zap className="w-5 h-5 text-amber-400" />,
-      bg: 'bg-gradient-to-b from-yellow-300 to-amber-500',
-    },
-    {
-      id: '5-ref',
-      name: '5 Referrals',
-      icon: <Gift className="w-5 h-5 text-pink-500" />,
-      bg: 'bg-gradient-to-b from-pink-400 to-rose-600',
-    },
-    {
-      id: '20-ref',
-      name: '20 Referrals',
-      icon: <Diamond className="w-5 h-5 text-cyan-400" />,
-      bg: 'bg-gradient-to-b from-cyan-300 to-blue-500',
-    },
-    {
-      id: 'top-100',
-      name: 'Top 100',
-      icon: <Rocket className="w-5 h-5 text-purple-400" />,
-      bg: 'bg-gradient-to-b from-purple-400 to-indigo-600',
-    },
+    { id: 'first-swap', name: 'First swap', desc: 'Executed 1st DEX trade', icon: Target },
+    { id: '10-swaps', name: '10 Swaps', desc: 'Active testnet trader', icon: Zap },
+    { id: '50-swaps', name: '50 Swaps', desc: 'Power DeFi explorer', icon: Trophy },
+    { id: '7-streak', name: '7-day streak', desc: 'Consistent check-ins', icon: Flame },
+    { id: '30-streak', name: '30-day streak', desc: 'Daily alpha researcher', icon: Flame },
+    { id: '5-ref', name: '5 Referrals', desc: 'Ecosystem growth builder', icon: Gift },
+    { id: '20-ref', name: '20 Referrals', desc: 'Alpha syndicator tier', icon: Diamond },
+    { id: 'top-100', name: 'Top 100', desc: 'Elite Leaderboard rank', icon: Rocket },
   ];
 
   return (
     <div className="flex-1 h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-4 sm:px-8 md:px-12 py-6 scroll-smooth transition-colors duration-200">
-      <div className="max-w-[1000px] mx-auto space-y-6 pb-20">
+      <div className="max-w-[860px] mx-auto space-y-6 pb-20">
         {/* ═══════════════════════════════════════════════════════════
-         *  1. TOP BAR
+         *  TOP BAR HEADER
          * ═══════════════════════════════════════════════════════════ */}
         <div className="flex items-center justify-between">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-            Leaderboard
-          </h1>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+              Leaderboard
+            </h1>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+              Track top community testers and earn XP rewards on Base testnet
+            </p>
+          </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setModalState('isAlertsModalOpen', true)}
               title="Notifications"
@@ -168,44 +222,51 @@ export const LeaderboardPage: React.FC = () => {
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--primary)]" />
             </button>
-
-            <div
-              className="w-8.5 h-8.5 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 p-0.5 flex items-center justify-center text-white font-bold text-xs shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
-              title="Your Standing"
-            >
-              <div className="w-full h-full bg-[#18181b] dark:bg-[#121214] rounded-[10px] flex items-center justify-center">
-                <span className="text-[11px] font-mono text-purple-400 font-bold">0x</span>
-              </div>
-            </div>
           </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  2. SUB-HEADER WITH TIMEFRAME PILL
+         *  CONTROLS: SEARCH & TIMEFRAME PILL
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="flex items-center justify-between">
-          <p className="text-xs sm:text-[13.5px] text-[var(--text-muted)] font-medium">
-            Top testers by XP this week
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] focus-within:border-[var(--primary)] rounded-xl text-xs w-full sm:w-72 transition-colors">
+            <Search className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search wallet ID or address..."
+              className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
 
           {/* Timeframe Switcher */}
-          <div className="inline-flex items-center p-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-2xs">
+          <div className="inline-flex items-center p-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-2xs self-start sm:self-auto">
             <button
               onClick={() => setTimeframe('week')}
-              className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-3.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 timeframe === 'week'
-                  ? 'bg-[var(--text-primary)] text-[var(--bg-app)] shadow-2xs'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                  ? 'bg-[var(--primary)] text-white shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              This week
+              Last 7 days
             </button>
             <button
               onClick={() => setTimeframe('alltime')}
-              className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-3.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 timeframe === 'alltime'
-                  ? 'bg-[var(--text-primary)] text-[var(--bg-app)] shadow-2xs'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                  ? 'bg-[var(--primary)] text-white shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               All time
@@ -214,170 +275,166 @@ export const LeaderboardPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  3. TOP 3 PODIUM SECTION
+         *  MODERN MINIMAL LEADERBOARD CARD (MATCHING REFERENCE EXACTLY)
          * ═══════════════════════════════════════════════════════════ */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[26px] p-6 sm:p-10 shadow-card relative overflow-hidden"
+          transition={{ duration: 0.25 }}
+          className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card overflow-hidden"
         >
-          <div className="flex items-end justify-center gap-4 sm:gap-10 pt-8 pb-2">
-            {/* Rank 2 Podium (Left) */}
-            <div className="flex flex-col items-center flex-1 max-w-[170px]">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 p-0.5 shadow-md flex items-center justify-center mb-2.5">
-                <div className="w-full h-full rounded-full bg-[#181a20] flex items-center justify-center text-xs sm:text-sm font-bold text-blue-300 font-mono">
-                  #2
-                </div>
-              </div>
-              <span className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tracking-tight">
-                {top2.address}
-              </span>
-              <span className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">
-                {top2.xp} XP
-              </span>
-              <div className="flex items-center gap-1 text-[11px] font-medium text-amber-500 mt-1 mb-3">
-                <Flame className="w-3 h-3 fill-amber-500" />
-                <span>{top2.streak}</span>
-              </div>
-              <div className={`w-full ${top2.podiumHeight} ${top2.podiumBg} rounded-t-2xl flex items-center justify-center font-bold text-xs sm:text-sm text-[var(--text-muted)]`}>
-                2
-              </div>
+          {/* Card Header */}
+          <div className="flex items-center justify-between px-6 py-4.5 border-b border-[var(--border-color)]">
+            <div>
+              <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">
+                Top testers by XP
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                {timeframe === 'week' ? 'Last 7 days' : 'All-time total points'}
+              </p>
             </div>
 
-            {/* Rank 1 Podium (Center - Elevated) */}
-            <div className="flex flex-col items-center flex-1 max-w-[190px] -mt-6">
-              <div className="relative mb-2.5">
-                {/* Crown on top */}
-                <img
-                  src={crownLogo}
-                  alt="crown"
-                  className="w-7 h-7 sm:w-8 sm:h-8 absolute -top-5 left-1/2 -translate-x-1/2 object-contain filter drop-shadow-sm"
-                />
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
-                  <div className="w-full h-full rounded-full bg-[#1f1a14] flex items-center justify-center text-sm sm:text-base font-extrabold text-amber-400 font-mono">
-                    #1
+            <span className="text-xs font-semibold px-3 py-1 bg-[var(--bg-app)] text-[var(--text-secondary)] rounded-full border border-[var(--border-color)]">
+              Top {filteredUsers.length}
+            </span>
+          </div>
+
+          {/* Table List Rows */}
+          <div className="divide-y divide-[var(--border-color)]">
+            {filteredUsers.map((user) => {
+              const isRank1 = user.rank === 1;
+              const formattedRank = user.rank < 10 ? `0${user.rank}` : `${user.rank}`;
+              const xpDisplay =
+                timeframe === 'week'
+                  ? `${user.xpWeek.toLocaleString()} XP`
+                  : `${user.xpAllTime.toLocaleString()} XP`;
+
+              return (
+                <div
+                  key={user.rank}
+                  className="group flex items-center justify-between px-6 py-4 hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                >
+                  {/* Left & Center: Rank + Wallet info */}
+                  <div className="flex items-center gap-5 sm:gap-6 min-w-0 pr-4">
+                    {/* Rank Column */}
+                    <div className="w-6 sm:w-8 flex items-center justify-start flex-shrink-0">
+                      {isRank1 ? (
+                        <Crown className="w-5 h-5 text-[var(--text-primary)] dark:text-amber-400 stroke-[2]" />
+                      ) : (
+                        <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
+                          {formattedRank}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Wallet ID & Subtitle Details */}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm sm:text-[15px] text-[var(--text-primary)] font-mono tracking-tight group-hover:text-[var(--primary)] transition-colors truncate">
+                          {user.walletAddress}
+                        </span>
+                        <button
+                          onClick={(e) => handleCopy(user.fullAddress, e)}
+                          title="Copy Full Address"
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-[var(--bg-app)] rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+                        >
+                          {copiedAddress === user.fullAddress ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">
+                        {user.tagline}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: XP Score */}
+                  <div className="text-right flex-shrink-0">
+                    <span className="font-bold text-sm sm:text-[15px] text-[var(--text-primary)] tabular-nums">
+                      {xpDisplay}
+                    </span>
                   </div>
                 </div>
-              </div>
-              <span className="text-xs sm:text-sm font-extrabold text-[var(--text-primary)] tracking-tight">
-                {top1.address}
-              </span>
-              <span className="text-xs sm:text-[13px] text-amber-500 font-bold mt-0.5">
-                {top1.xp} XP
-              </span>
-              <div className="flex items-center gap-2 text-[10.5px] sm:text-[11px] font-medium text-[var(--text-muted)] mt-1 mb-3">
-                <span className="flex items-center gap-0.5">
-                  <Gift className="w-3 h-3 text-pink-500" /> {top1.referrals} ref
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-0.5">
-                  <Target className="w-3 h-3 text-red-500" /> {top1.swaps} swaps
+              );
+            })}
+          </div>
+
+          {/* Current User Standing Row (Pinned at bottom of card) */}
+          <div className="border-t-2 border-[var(--border-color)] bg-[var(--bg-app)]/70 px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-5 sm:gap-6 min-w-0 pr-4">
+              <div className="w-6 sm:w-8 flex items-center justify-start flex-shrink-0">
+                <span className="font-mono text-xs sm:text-[13px] font-bold text-[var(--primary)]">
+                  {currentUserData.rank}
                 </span>
               </div>
-              <div className={`w-full ${top1.podiumHeight} ${top1.podiumBg} rounded-t-2xl flex items-center justify-center font-extrabold text-sm sm:text-base text-amber-500 shadow-xs`}>
-                1
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm sm:text-[15px] text-[var(--text-primary)] font-mono tracking-tight truncate">
+                    You · {currentUserData.walletAddress}
+                  </span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] rounded-md">
+                    Connected
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">
+                  {currentUserData.tagline}
+                </p>
               </div>
             </div>
 
-            {/* Rank 3 Podium (Right) */}
-            <div className="flex flex-col items-center flex-1 max-w-[170px]">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-600 p-0.5 shadow-md flex items-center justify-center mb-2.5">
-                <div className="w-full h-full rounded-full bg-[#141d18] flex items-center justify-center text-xs sm:text-sm font-bold text-emerald-400 font-mono">
-                  #3
-                </div>
-              </div>
-              <span className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tracking-tight">
-                {top3.address}
+            <div className="flex items-center gap-3 text-right flex-shrink-0">
+              <span className="font-extrabold text-sm sm:text-[15px] text-[var(--text-primary)] tabular-nums">
+                {timeframe === 'week'
+                  ? `${currentUserData.xpWeek.toLocaleString()} XP`
+                  : `${currentUserData.xpAllTime.toLocaleString()} XP`}
               </span>
-              <span className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">
-                {top3.xp} XP
+              <span className="text-xs font-bold text-emerald-500 flex items-center gap-0.5">
+                <TrendingUp className="w-3 h-3" />
+                {currentUserData.delta}
               </span>
-              <div className="flex items-center gap-1 text-[11px] font-medium text-red-500 mt-1 mb-3">
-                <Target className="w-3 h-3" />
-                <span>{top3.swaps} swaps</span>
-              </div>
-              <div className={`w-full ${top3.podiumHeight} ${top3.podiumBg} rounded-t-2xl flex items-center justify-center font-bold text-xs sm:text-sm text-[var(--text-muted)]`}>
-                3
-              </div>
             </div>
           </div>
         </motion.div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  4. RANKINGS TABLE (ROWS 4-7 + HIGHLIGHTED YOU ROW)
+         *  TOP ACHIEVEMENTS THIS WEEK (CLEAN MINIMAL SVG ICONS)
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-2 sm:p-3 shadow-card space-y-1">
-          {rankings.map((row) => (
-            <div
-              key={row.rank}
-              className="flex items-center justify-between px-4 sm:px-6 py-3.5 hover:bg-[var(--bg-hover)] rounded-xl transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="w-6 text-xs sm:text-sm font-bold text-[var(--text-muted)]">
-                  {row.rank}
-                </span>
-                <div className={`w-7 h-7 rounded-full ${row.avatarBg} flex items-center justify-center text-[10px] font-bold flex-shrink-0`}>
-                  0x
-                </div>
-                <span className="text-xs sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate font-mono">
-                  {row.address}
-                </span>
-              </div>
-              <span className="text-xs sm:text-[13.5px] font-bold text-[var(--text-primary)] flex-shrink-0">
-                {row.xp}
-              </span>
-            </div>
-          ))}
-
-          {/* Current User Standing Row (Highlighted in Green / Mint) */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/25 rounded-2xl transition-all mt-1.5 shadow-2xs">
-            <div className="flex items-center gap-4 min-w-0">
-              <span className="w-6 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                {currentUserStanding.rank}
-              </span>
-              <div className="w-7 h-7 rounded-full bg-purple-500 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                0x
-              </div>
-              <span className="text-xs sm:text-[13.5px] font-bold text-[var(--text-primary)] truncate font-mono">
-                You · {currentUserStanding.address}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xs sm:text-[13.5px] font-extrabold text-[var(--text-primary)]">
-                {currentUserStanding.xp}
-              </span>
-              <span className="text-xs font-extrabold text-emerald-500 flex items-center gap-0.5">
-                {currentUserStanding.delta}
-              </span>
-            </div>
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+              Weekly Achievements
+            </h3>
+            <span className="text-xs text-[var(--text-muted)]">
+              Unlock milestones to boost multiplier
+            </span>
           </div>
-        </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  5. TOP ACHIEVEMENTS THIS WEEK SECTION
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="space-y-3.5 pt-2">
-          <h2 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
-            Top achievements this week
-          </h2>
-
-          {/* 8 Badges Grid */}
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 sm:gap-3.5">
-            {achievements.map((badge) => (
-              <motion.div
-                key={badge.id}
-                whileHover={{ y: -3 }}
-                className="flex flex-col items-center text-center p-2.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all shadow-2xs cursor-pointer group"
-              >
-                <div className="w-11 h-11 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center mb-2 shadow-inner-sm group-hover:scale-105 transition-transform">
-                  {badge.icon}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {achievements.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/50 rounded-2xl transition-all shadow-2xs group flex items-start gap-3 cursor-pointer"
+                >
+                  <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-primary)] group-hover:text-[var(--primary)] group-hover:scale-105 transition-all flex-shrink-0">
+                    <IconComponent className="w-4 h-4 stroke-[2]" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-bold text-[var(--text-primary)] truncate group-hover:text-[var(--primary)] transition-colors">
+                      {item.name}
+                    </h4>
+                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5 truncate">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-                <span className="text-[11px] font-semibold text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors leading-tight">
-                  {badge.name}
-                </span>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
