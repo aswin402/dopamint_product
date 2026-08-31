@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Sidebar } from '../sidebar/Sidebar';
 import { ChatContainer } from '../chat/ChatContainer';
+import { LeaderboardPage } from '../leaderboard/LeaderboardPage';
 import { InsightsPanel } from '../insights/InsightsPanel';
 import { CommandPalette } from '../modals/CommandPalette';
 import { PortfolioModal } from '../modals/PortfolioModal';
@@ -21,6 +22,7 @@ export const AppLayout: React.FC = () => {
   // Activate global shortcut listener (⌘K, ⌘N, ⌘B, ⌘I, Esc)
   useKeyboardShortcuts();
   const theme = useCryptoStore((s) => s.theme);
+  const activePage = useCryptoStore((s) => s.activePage);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -28,12 +30,12 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen w-screen max-w-[100vw] bg-[var(--bg-app)] text-[var(--text-primary)] overflow-x-hidden overflow-y-hidden antialiased font-sans transition-colors duration-200">
-      {/* 1. Left Sidebar (280px) */}
+      {/* 1. Left Sidebar (Dual panel) */}
       <Sidebar />
 
-      {/* 2. Center Chat Canvas (Flex 1, Max 820px inner) */}
+      {/* 2. Center Canvas (ChatContainer for Dashboard, LeaderboardPage for Leaderboard) */}
       <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-card)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
-        <ChatContainer />
+        {activePage === 'leaderboard' ? <LeaderboardPage /> : <ChatContainer />}
       </main>
 
       {/* 3. Right Insights Panel (340px) */}

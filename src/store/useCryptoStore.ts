@@ -33,6 +33,8 @@ interface CryptoStoreState {
   logout: () => void;
 
   // Navigation & Layout
+  activePage: 'dashboard' | 'leaderboard';
+  setActivePage: (page: 'dashboard' | 'leaderboard') => void;
   isSidebarOpen: boolean;
   isInsightsOpen: boolean;
   userDismissedInsights: boolean;
@@ -230,6 +232,8 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   },
 
   // Navigation & Layout
+  activePage: 'dashboard',
+  setActivePage: (activePage) => set({ activePage }),
   isSidebarOpen: true,
   isInsightsOpen: false,
   userDismissedInsights: false,
@@ -276,7 +280,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     if (get().isStreaming) {
       get().stopGeneration();
     }
-    set({ activeConversationId });
+    set({ activeConversationId, activePage: 'dashboard' });
   },
 
   createNewChat: (initialPrompt?: string) => {
@@ -296,6 +300,7 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     set((state) => ({
       conversations: [newChat, ...state.conversations],
       activeConversationId: newId,
+      activePage: 'dashboard',
       messages: {
         ...state.messages,
         [newId]: [],

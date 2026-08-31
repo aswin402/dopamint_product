@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  LayoutDashboard,
   Plus,
   Search,
   Trophy,
@@ -21,6 +22,8 @@ import { UserProfileCard } from './UserProfileCard';
 export const Sidebar: React.FC = () => {
   const [isRailHovered, setIsRailHovered] = useState(false);
 
+  const activePage = useCryptoStore((s) => s.activePage);
+  const setActivePage = useCryptoStore((s) => s.setActivePage);
   const searchQuery = useCryptoStore((s) => s.searchQuery);
   const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
 
@@ -52,7 +55,7 @@ export const Sidebar: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════
        *  PANEL 1 — Utility Rail (Always Visible)
        *  Normally icon-only (w-[60px]); on hover expands to (w-[230px])
-       *  Items moved to TOP: Leaderboard, Favourites, Agents, Settings, Buy Credits
+       *  Items moved to TOP: Dashboard, Leaderboard, Favourites, Agents, Settings, Buy Credits
        *  Bottom: User Profile
        * ═══════════════════════════════════════════════════════════ */}
       <aside
@@ -82,13 +85,29 @@ export const Sidebar: React.FC = () => {
 
           {/* Nav Items (Moved UP right under logo) */}
           <div className="space-y-1">
-            {/* 1. Leaderboard */}
+            {/* 1. Dashboard */}
             <button
-              onClick={() => setModalState('isLeaderboardModalOpen', true)}
+              onClick={() => setActivePage('dashboard')}
+              title="Dashboard"
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                activePage === 'dashboard'
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-start gap-3' : 'justify-center'}`}
+            >
+              <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+              {isRailHovered && <span className="truncate">Dashboard</span>}
+            </button>
+
+            {/* 2. Leaderboard */}
+            <button
+              onClick={() => setActivePage('leaderboard')}
               title="Leaderboard"
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
-                isRailHovered ? 'justify-between' : 'justify-center'
-              }`}
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                activePage === 'leaderboard'
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Trophy className="w-5 h-5 text-amber-500 flex-shrink-0" />
