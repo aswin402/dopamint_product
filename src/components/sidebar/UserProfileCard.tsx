@@ -13,7 +13,11 @@ import {
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
-export const UserProfileCard: React.FC = () => {
+interface UserProfileCardProps {
+  isRailHovered?: boolean;
+}
+
+export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered = true }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -47,9 +51,12 @@ export const UserProfileCard: React.FC = () => {
     <div className="relative pt-2 border-t border-[var(--border-color)]" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-2 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors group text-left cursor-pointer"
+        title={userProfile.name}
+        className={`w-full flex items-center p-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors group text-left cursor-pointer ${
+          isRailHovered ? 'justify-between' : 'justify-center'
+        }`}
       >
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           {/* Web3 Wallet Identicon Avatar */}
           <div className="relative flex-shrink-0">
             <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#3b4635] via-[#485442] to-[#8A9E7F] flex items-center justify-center text-white ring-2 ring-[var(--border-color)] shadow-2xs">
@@ -58,27 +65,31 @@ export const UserProfileCard: React.FC = () => {
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-[var(--bg-card)]" />
           </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-mono font-bold text-[var(--text-primary)] truncate tracking-tight">
-                {userProfile.name}
-              </span>
-              <span className="px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] text-[9.5px] font-bold rounded-md uppercase">
-                PRO
-              </span>
+          {isRailHovered && (
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-mono font-bold text-[var(--text-primary)] truncate tracking-tight">
+                  {userProfile.name}
+                </span>
+                <span className="px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] text-[9.5px] font-bold rounded-md uppercase">
+                  PRO
+                </span>
+              </div>
+              <p className="text-[11px] font-medium text-[var(--text-muted)] truncate flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                <span>{userProfile.ensName || 'Ethereum Mainnet'}</span>
+              </p>
             </div>
-            <p className="text-[11px] font-medium text-[var(--text-muted)] truncate flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-              <span>{userProfile.ensName || 'Ethereum Mainnet'}</span>
-            </p>
-          </div>
+          )}
         </div>
 
-        <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-transform duration-200 ${
-            isOpen ? 'transform rotate-180' : ''
-          }`}
-        />
+        {isRailHovered && (
+          <ChevronDown
+            className={`w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-transform duration-200 ${
+              isOpen ? 'transform rotate-180' : ''
+            }`}
+          />
+        )}
       </button>
 
       {/* Account Popover Menu */}
@@ -89,7 +100,7 @@ export const UserProfileCard: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 right-0 mb-2 p-2 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-flyout z-50 space-y-1"
+            className="absolute bottom-full left-0 w-64 mb-2 p-2 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] shadow-flyout z-50 space-y-1"
           >
             {/* Wallet Address Copy Card */}
             <div className="px-3 py-2.5 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)] mb-1.5 space-y-1.5">
