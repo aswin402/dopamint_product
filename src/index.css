@@ -6,31 +6,31 @@
 :root {
   /* ========================================================
      dopamint LIGHT THEME
-     - Canvas Background: #fcfbf9 (Clean Off-White)
-     - Card / Component Background: #f7f6ec (Lighter Warm Cream)
-     - Primary Accent:   #485442 (Dark Forest Olive)
-     - Primary Text:     #1a1a1a
-     - Borders:          #eae7da
+     - Canvas Background: oklch(0.988 0.005 95.0)
+     - Card / Component Background (#f7f6ec): oklch(0.971 0.0132 102.0)
+     - Primary Accent (#485442): oklch(0.415 0.032 135.0)
+     - Primary Text (#1a1a1a):   oklch(0.200 0.005 95.0)
+     - Borders (#eae7da):        oklch(0.925 0.012 100.0)
      ======================================================== */
-  --bg-app: #fcfbf9;
-  --bg-card: #f7f6ec;
-  --bg-card-subtle: #f0eee1;
-  --bg-hover: #ecead9;
-  --bg-active: #e4e2cf;
-  --bg-chat-user: #f7f6ec;
+  --bg-app: oklch(0.988 0.005 95.0);
+  --bg-card: oklch(0.971 0.0132 102.0);        /* #f7f6ec Warm Cream */
+  --bg-card-subtle: oklch(0.952 0.015 102.0); /* #f0eee1 */
+  --bg-hover: oklch(0.938 0.017 102.0);       /* #ecead9 */
+  --bg-active: oklch(0.915 0.020 102.0);      /* #e4e2cf */
+  --bg-chat-user: oklch(0.971 0.0132 102.0);   /* #f7f6ec */
   
-  --primary: #485442;                         /* Dark Olive Forest */
-  --primary-hover: #3b4635;
-  --primary-light: #e8ede3;
+  --primary: oklch(0.415 0.032 135.0);        /* #485442 Dark Olive Forest */
+  --primary-hover: oklch(0.360 0.030 135.0);
+  --primary-light: oklch(0.940 0.020 135.0);
   --primary-glow: rgba(72, 84, 66, 0.15);
   --primary-text: #FFFFFF;
   
-  --border-color: #eae7da;
-  --border-subtle: #f1efe4;
+  --border-color: oklch(0.925 0.012 100.0);
+  --border-subtle: oklch(0.950 0.008 100.0);
   
-  --text-primary: #1a1a1a;
-  --text-secondary: #555850;
-  --text-muted: #7a7d75;
+  --text-primary: oklch(0.200 0.005 95.0);
+  --text-secondary: oklch(0.450 0.010 100.0);
+  --text-muted: oklch(0.580 0.010 100.0);
   
   --green-trend: oklch(0.65 0.17 145);
   --green-light: oklch(0.95 0.04 145);
