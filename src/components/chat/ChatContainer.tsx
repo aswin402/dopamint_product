@@ -17,6 +17,8 @@ export const ChatContainer: React.FC = () => {
   const currentMessages = allMessages[activeId] || [];
   const isStreaming = useCryptoStore((s) => s.isStreaming);
 
+  const isWelcomeScreen = currentMessages.length === 0;
+
   const scrollToBottom = useCallback((smooth: boolean = true) => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -28,15 +30,16 @@ export const ChatContainer: React.FC = () => {
     }
   }, []);
 
-  const isWelcomeScreen = currentMessages.length === 0;
-
+  // When switching chats, scroll to top on welcome screen
   useEffect(() => {
-    if (isWelcomeScreen) {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = 0;
-      }
-      return;
+    if (scrollRef.current && isWelcomeScreen) {
+      scrollRef.current.scrollTop = 0;
     }
+  }, [activeId, isWelcomeScreen]);
+
+  // Auto-scroll to bottom during message streaming or new messages
+  useEffect(() => {
+    if (isWelcomeScreen) return;
 
     if (!showScrollBottom && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -44,6 +47,7 @@ export const ChatContainer: React.FC = () => {
   }, [currentMessages.length, isStreaming, showScrollBottom, isWelcomeScreen]);
 
   const handleScroll = () => {
+    if (isWelcomeScreen) return;
     if (scrollRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
@@ -66,7 +70,7 @@ export const ChatContainer: React.FC = () => {
         ref={scrollRef}
         onScroll={handleScroll}
         className={`flex-1 overflow-y-auto px-4 md:px-8 ${
-          isWelcomeScreen ? 'pt-2 pb-8' : 'py-6'
+          isWelcomeScreen ? 'pt-2 pb-12' : 'py-6'
         } scroll-smooth`}
       >
         <div className={`mx-auto w-full ${isWelcomeScreen ? 'max-w-[1000px]' : 'max-w-[820px]'}`}>
@@ -92,7 +96,7 @@ export const ChatContainer: React.FC = () => {
 
       {/* Floating Scroll to Bottom Button */}
       <AnimatePresence>
-        {showScrollBottom && (
+        {!isWelcomeScreen && showScrollBottom && (
           <motion.button
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
