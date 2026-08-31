@@ -2,27 +2,87 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+  Plus,
+  ArrowUp,
   ArrowRight,
   Sparkles,
   Flame,
   TrendingUp,
   TrendingDown,
+  TreePine,
+  CircleDot,
+  Globe,
+  Heart,
+  BookOpen,
   Gift,
   Check,
   Bell,
   Crown,
   Repeat,
   ChevronRight,
+  Paperclip,
+  X,
   Zap,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import type { Attachment } from '../../types/crypto';
+
+type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Macro' | 'Sentiment' | 'Learn';
+
+interface CategoryItem {
+  name: CategoryType;
+  icon: React.ReactNode;
+  samplePrompt: string;
+}
+
+const CATEGORIES: CategoryItem[] = [
+  {
+    name: 'Trending',
+    icon: <Flame className="w-3.5 h-3.5 text-[#A06C3E] dark:text-[#D4A373]" />,
+    samplePrompt: 'What are the top trending tokens across Base and Layer-2 blockchains today?',
+  },
+  {
+    name: 'Stock',
+    icon: <TrendingUp className="w-3.5 h-3.5 text-[#486B52] dark:text-[#74A883]" />,
+    samplePrompt: 'Compare semiconductor stocks and AI infrastructure data center demand.',
+  },
+  {
+    name: 'Pre-IPO',
+    icon: <TreePine className="w-3.5 h-3.5 text-[#3C784C] dark:text-[#67B57B]" />,
+    samplePrompt: 'What is the estimated secondary market valuation for leading AI startups?',
+  },
+  {
+    name: 'Crypto',
+    icon: <CircleDot className="w-3.5 h-3.5 text-[#94782A] dark:text-[#D4B257]" />,
+    samplePrompt: 'Explain institutional ETF inflows and Base on-chain DEX liquidity.',
+  },
+  {
+    name: 'Macro',
+    icon: <Globe className="w-3.5 h-3.5 text-[#3B6678] dark:text-[#5F9AB3]" />,
+    samplePrompt: 'How will upcoming interest rate decisions impact tech valuations and liquidity?',
+  },
+  {
+    name: 'Sentiment',
+    icon: <Heart className="w-3.5 h-3.5 text-[#8A4A4A] dark:text-[#BF7373]" />,
+    samplePrompt: 'Analyze current market sentiment, Fear & Greed index, and derivatives funding rates.',
+  },
+  {
+    name: 'Learn',
+    icon: <BookOpen className="w-3.5 h-3.5 text-[#635587] dark:text-[#9A87C7]" />,
+    samplePrompt: 'Explain Automated Market Makers (AMM) and impermanent loss for beginners.',
+  },
+];
 
 export const DashboardPage: React.FC = () => {
   const [inputText, setInputText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Trending');
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [claimedStreak, setClaimedStreak] = useState(false);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
   const sendMessage = useCryptoStore((s) => s.sendMessage);
@@ -54,11 +114,13 @@ export const DashboardPage: React.FC = () => {
 
   const handleSend = (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
-    if (!text || isStreaming) return;
-    const newId = createNewChat(text);
+    if ((!text && attachments.length === 0) || isStreaming) return;
+    const prompt = text || 'Analyze market data';
+    const newId = createNewChat(prompt);
     navigate(`/c/${newId}`);
-    sendMessage(text);
+    sendMessage(prompt, attachments);
     setInputText('');
+    setAttachments([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -68,11 +130,22 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
-  const quickPromptPills = [
-    { label: 'Check my portfolio', prompt: 'Analyze my current portfolio allocation and performance' },
-    { label: 'Swap tokens', prompt: 'How do I swap tokens with low slippage on Base?' },
-    { label: 'Which Base tokens are worth watching?', prompt: 'Which Base ecosystem tokens have the highest momentum and active DEX volume right now?' },
-  ];
+  const handleFileUpload = (files: FileList | null) => {
+    if (!files) return;
+    const newAttachments: Attachment[] = Array.from(files).map((file) => ({
+      id: `att-${Date.now()}-${Math.random()}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file),
+    }));
+    setAttachments((prev) => [...prev, ...newAttachments]);
+  };
+
+  const handleCategoryClick = (cat: CategoryItem) => {
+    setSelectedCategory(cat.name);
+    handleSend(cat.samplePrompt);
+  };
 
   const trendingTokens = [
     {
@@ -81,7 +154,6 @@ export const DashboardPage: React.FC = () => {
       price: '$3,412.90',
       change: '+3.1%',
       isPositive: true,
-      bg: 'bg-blue-500/10 text-blue-500 dark:bg-blue-500/20',
       iconColor: 'bg-blue-600',
     },
     {
@@ -90,7 +162,6 @@ export const DashboardPage: React.FC = () => {
       price: '$1.14',
       change: '+6.7%',
       isPositive: true,
-      bg: 'bg-purple-500/10 text-purple-500 dark:bg-purple-500/20',
       iconColor: 'bg-purple-600',
     },
     {
@@ -99,7 +170,6 @@ export const DashboardPage: React.FC = () => {
       price: '$0.842',
       change: '-1.8%',
       isPositive: false,
-      bg: 'bg-blue-600/10 text-blue-600 dark:bg-blue-600/20',
       iconColor: 'bg-blue-500',
     },
     {
@@ -108,7 +178,6 @@ export const DashboardPage: React.FC = () => {
       price: '$0.0041',
       change: '+9.2%',
       isPositive: true,
-      bg: 'bg-violet-500/10 text-violet-500 dark:bg-violet-500/20',
       iconColor: 'bg-violet-600',
     },
   ];
@@ -150,7 +219,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="flex-1 overflow-y-auto h-full px-4 md:px-8 py-6 scroll-smooth">
-      <div className="w-full max-w-[1000px] mx-auto space-y-6 pb-16">
+      <div className="w-full max-w-[1000px] mx-auto space-y-7 pb-16">
         {/* ═══════════════════════════════════════════════════════════
          *  1. TOP GREETING & STATUS BAR
          * ═══════════════════════════════════════════════════════════ */}
@@ -231,107 +300,167 @@ export const DashboardPage: React.FC = () => {
         </AnimatePresence>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  2. MAIN HERO SEARCH & TRENDING CARD
+         *  2. HERO SECTION — IMAGE 2 STYLE
+         *  Crown Center + Ask Dope Title + Prompt Box + Category Pills
          * ═══════════════════════════════════════════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[26px] p-6 sm:p-7 shadow-card space-y-6 relative overflow-hidden"
-        >
-          {/* Card Header: Icon + Badge + Title */}
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/25 flex items-center justify-center flex-shrink-0 shadow-2xs">
-              <img src={crownLogo} alt="crown" className="w-6 h-6 object-contain filter drop-shadow-xs" />
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[var(--primary-light)] text-[var(--primary)] text-[11px] font-bold tracking-tight mb-1">
-                <Sparkles className="w-3 h-3" />
-                <span>Ask Dope</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-                What do you want to know today?
-              </h2>
-            </div>
-          </div>
+        <div className="w-full flex flex-col items-center pt-2 pb-1">
+          {/* Centered Crown & Ask Dope Title */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="flex flex-col items-center justify-center text-center mb-6 gap-2.5"
+          >
+            <img
+              src={crownLogo}
+              alt="dopamint crown"
+              className="w-13 h-13 sm:w-15 sm:h-15 object-contain filter drop-shadow-sm flex-shrink-0"
+            />
+            <h1 className="font-serif text-[34px] sm:text-[42px] md:text-[46px] font-normal text-[#1A1A1A] dark:text-[#ECECEC] tracking-tight leading-tight">
+              Ask Dope
+            </h1>
+          </motion.div>
 
-          {/* Input Bar with Arrow Button */}
-          <div className="relative flex items-center bg-[var(--bg-app)] border border-[var(--border-color)] hover:border-[var(--primary)] focus-within:border-[var(--primary)] rounded-2xl transition-all shadow-inner-sm p-1.5">
+          {/* Main Prompt Input Box Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            className="w-full bg-[var(--bg-card)] dark:bg-[#161616] rounded-[22px] border border-[var(--border-color)] dark:border-[#262626] p-4 sm:p-5 shadow-card space-y-3 transition-all focus-within:border-[#485442] dark:focus-within:border-[#55604e]"
+          >
+            {/* Attachments Preview Chips */}
+            {attachments.length > 0 && (
+              <div className="flex flex-wrap gap-2 pb-2 border-b border-[var(--border-color)] dark:border-[#262626]">
+                {attachments.map((att) => (
+                  <div
+                    key={att.id}
+                    className="flex items-center gap-1.5 px-3 py-1 bg-[var(--bg-app)] dark:bg-[#1C1C1C] border border-[var(--border-color)] dark:border-[#262626] rounded-xl text-xs text-[#1A1A1A] dark:text-[#ECECEC]"
+                  >
+                    <Paperclip className="w-3 h-3 text-[#485442] dark:text-[#8A9E7F]" />
+                    <span className="font-medium truncate max-w-[140px]">{att.name}</span>
+                    <button
+                      onClick={() => setAttachments((prev) => prev.filter((a) => a.id !== att.id))}
+                      className="p-0.5 hover:text-red-500 rounded-full"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Text Area */}
             <textarea
               ref={textareaRef}
               rows={1}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about a token, your portfolio, or the market..."
-              className="w-full bg-transparent px-3.5 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] resize-none outline-none leading-relaxed min-h-[42px] max-h-[120px]"
+              placeholder="Ask anything about stock, crypto and more."
+              className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] placeholder-[#6E7169] dark:placeholder-[#666666] outline-none resize-none overflow-y-auto leading-relaxed min-h-[38px] max-h-[120px]"
             />
-            <button
-              onClick={() => handleSend()}
-              disabled={!inputText.trim() || isStreaming}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all cursor-pointer ${
-                inputText.trim() && !isStreaming
-                  ? 'bg-[var(--primary)] text-white hover:opacity-95 shadow-button-primary'
-                  : 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed opacity-60'
-              }`}
-            >
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
 
-          {/* Quick Suggestion Pills */}
-          <div className="flex flex-wrap items-center gap-2">
-            {quickPromptPills.map((pill, idx) => (
+            {/* Action Controls Row */}
+            <div className="flex items-center justify-between pt-1">
+              {/* Left Button: Plus Attachment */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={(e) => handleFileUpload(e.target.files)}
+                  className="hidden"
+                  multiple
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Attach File or Image"
+                  className="w-7 h-7 rounded-full bg-transparent hover:bg-[var(--bg-hover)] dark:hover:bg-[#222] text-[#555] dark:text-[#AAA] border border-[#D5D2BE] dark:border-[#333] flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Right Button: Olive Green Send Arrow Button (↑) */}
               <button
-                key={idx}
-                onClick={() => handleSend(pill.prompt)}
-                className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)] transition-all cursor-pointer shadow-2xs active:scale-97"
+                onClick={() => handleSend()}
+                title="Send (Enter)"
+                className="w-8 h-8 rounded-full bg-[#485442] dark:bg-[#55604e] hover:opacity-90 text-white flex items-center justify-center shadow-button-primary cursor-pointer transition-opacity"
               >
-                {pill.label}
+                <ArrowUp className="w-4 h-4 stroke-[2.5]" />
               </button>
-            ))}
-          </div>
+            </div>
+          </motion.div>
 
-          {/* Trending Markets Header */}
-          <div className="pt-2 border-t border-[var(--border-color)]">
+          {/* Category Navigation Pills (Trending, Stock, Pre-IPO, Crypto, Macro, Sentiment, Learn) */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            className="w-full flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-3 pb-1 no-scrollbar"
+          >
+            {CATEGORIES.map((cat) => {
+              const isSelected = cat.name === selectedCategory;
+              return (
+                <button
+                  key={cat.name}
+                  onClick={() => handleCategoryClick(cat)}
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all duration-180 cursor-pointer flex-shrink-0 ${
+                    isSelected
+                      ? 'bg-[var(--bg-card)] dark:bg-[#161616] border border-[#485442] dark:border-[#8A9E7F] text-[#1A1A1A] dark:text-[#ECECEC] font-medium shadow-2xs'
+                      : 'bg-[var(--bg-card)] dark:bg-[#161616] border border-[var(--border-color)] dark:border-[#262626] text-[#4F534C] dark:text-[#A0A0A0] hover:text-[#1A1A1A] dark:hover:text-white hover:border-[#485442]'
+                  }`}
+                >
+                  {cat.icon}
+                  <span>{cat.name}</span>
+                </button>
+              );
+            })}
+          </motion.div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+         *  3. TRENDING ON BASE RIGHT NOW (4 Live Token Cards)
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-5 sm:p-6 shadow-card space-y-3">
+          <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase">
               Trending on Base right now
             </span>
-
-            {/* 4 Trending Tokens Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
-              {trendingTokens.map((token) => (
-                <motion.div
-                  key={token.symbol}
-                  whileHover={{ y: -2 }}
-                  onClick={() => handleSend(`Analyze ${token.name} (${token.symbol}) price momentum, volume, and catalysts`)}
-                  className="p-3.5 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all cursor-pointer shadow-2xs group"
-                >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className={`w-3.5 h-3.5 rounded-full ${token.iconColor}`} />
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
-                      {token.symbol}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-sm font-semibold text-[var(--text-primary)]">{token.price}</span>
-                    <span
-                      className={`text-xs font-bold flex items-center gap-0.5 ${
-                        token.isPositive ? 'text-emerald-500' : 'text-rose-500'
-                      }`}
-                    >
-                      {token.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {token.change}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <span className="text-[11px] text-[var(--text-muted)] font-medium">Real-time DEX Data</span>
           </div>
-        </motion.div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {trendingTokens.map((token) => (
+              <motion.div
+                key={token.symbol}
+                whileHover={{ y: -2 }}
+                onClick={() => handleSend(`Analyze ${token.name} (${token.symbol}) price momentum, volume, and catalysts`)}
+                className="p-3.5 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all cursor-pointer shadow-2xs group"
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className={`w-3.5 h-3.5 rounded-full ${token.iconColor}`} />
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
+                    {token.symbol}
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-sm font-semibold text-[var(--text-primary)]">{token.price}</span>
+                  <span
+                    className={`text-xs font-bold flex items-center gap-0.5 ${
+                      token.isPositive ? 'text-emerald-500' : 'text-rose-500'
+                    }`}
+                  >
+                    {token.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    {token.change}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  3. 4-METRIC STATS GRID
+         *  4. 4-METRIC STATS GRID
          * ═══════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Card 1: XP POINTS */}
@@ -446,7 +575,7 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  4. REFERRAL CALLOUT BANNER
+         *  5. REFERRAL CALLOUT BANNER
          * ═══════════════════════════════════════════════════════════ */}
         <motion.div
           whileHover={{ scale: 1.005 }}
@@ -473,7 +602,7 @@ export const DashboardPage: React.FC = () => {
         </motion.div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  5. RECENT ACTIVITY LIST
+         *  6. RECENT ACTIVITY LIST
          * ═══════════════════════════════════════════════════════════ */}
         <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-5 sm:p-6 shadow-card space-y-4">
           <div className="flex items-center justify-between">
