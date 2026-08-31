@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
   Plus,
   Search,
@@ -9,7 +8,9 @@ import {
   Settings,
   Coins,
   Command,
-  X,
+  PanelLeft,
+  MessageSquare,
+  Wallet,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import logoDope from '../../assets/logo_dope.png';
@@ -28,6 +29,7 @@ export const Sidebar: React.FC = () => {
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const agents = useCryptoStore((s) => s.agents);
+  const userProfile = useCryptoStore((s) => s.userProfile);
 
   // Filter conversations
   const filtered = conversations.filter((c) =>
@@ -43,11 +45,119 @@ export const Sidebar: React.FC = () => {
   const activeAgentsCount = agents.filter((a) => a.status === 'running' || a.status === 'active').length;
   const favouriteCount = conversations.filter((c) => c.isFavourite).length;
 
+  /* ───────────────────────────────────────────────
+   * COLLAPSED ICON RAIL (shown when sidebar is closed on desktop)
+   * ─────────────────────────────────────────────── */
+  if (!isSidebarOpen) {
+    return (
+      <aside className="hidden lg:flex fixed lg:relative z-40 inset-y-0 left-0 w-[60px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex-col items-center justify-between py-4 transition-all duration-250 ease-out">
+        {/* Top Icons */}
+        <div className="flex flex-col items-center gap-1">
+          {/* Crown Logo / Brand */}
+          <button
+            onClick={toggleSidebar}
+            title="Open Sidebar"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer mb-2"
+          >
+            <img
+              src={crownLogo}
+              alt="dopamint"
+              className="w-7 h-7 object-contain filter drop-shadow-xs"
+            />
+          </button>
+
+          {/* New Chat */}
+          <button
+            onClick={() => createNewChat()}
+            title="New Chat"
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] transition-colors cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+
+          {/* Search / Command */}
+          <button
+            onClick={() => setModalState('isCommandPaletteOpen', true)}
+            title="Search (⌘K)"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Recent Chats (open sidebar) */}
+          <button
+            onClick={toggleSidebar}
+            title="Chat History"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          >
+            <MessageSquare className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Bottom Icons */}
+        <div className="flex flex-col items-center gap-1">
+          {/* Leaderboard */}
+          <button
+            onClick={() => setModalState('isLeaderboardModalOpen', true)}
+            title="Leaderboard"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-amber-500"
+          >
+            <Trophy className="w-5 h-5" />
+          </button>
+
+          {/* Favourites */}
+          <button
+            onClick={() => setModalState('isWatchlistModalOpen', true)}
+            title={`Favourites (${favouriteCount})`}
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          >
+            <Star className={`w-5 h-5 ${favouriteCount > 0 ? 'text-amber-400 fill-amber-400' : ''}`} />
+          </button>
+
+          {/* Active Agents */}
+          <button
+            onClick={() => setModalState('isActiveAgentsModalOpen', true)}
+            title={`Active Agents (${activeAgentsCount})`}
+            className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-emerald-500"
+          >
+            <Bot className="w-5 h-5" />
+            {activeAgentsCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+          </button>
+
+          {/* Settings */}
+          <button
+            onClick={() => setModalState('isSettingsModalOpen', true)}
+            title="Settings"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          {/* User Avatar */}
+          <div className="mt-2 pt-2 border-t border-[var(--border-color)]/60">
+            <button
+              onClick={toggleSidebar}
+              title={userProfile.name || 'Profile'}
+              className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#3b4635] via-[#485442] to-[#8A9E7F] flex items-center justify-center text-white ring-2 ring-[var(--border-color)] shadow-2xs cursor-pointer hover:ring-[var(--primary)] transition-all"
+            >
+              <Wallet className="w-4 h-4 text-white" />
+            </button>
+          </div>
+        </div>
+      </aside>
+    );
+  }
+
+  /* ───────────────────────────────────────────────
+   * EXPANDED FULL SIDEBAR (existing design)
+   * ─────────────────────────────────────────────── */
   return (
     <aside
       className={`fixed lg:relative z-40 inset-y-0 left-0 w-[280px] h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] flex flex-col justify-between p-4 transition-all duration-250 ease-out ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      } ${!isSidebarOpen ? 'lg:hidden' : ''}`}
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
     >
       {/* Top Header & New Chat */}
       <div className="space-y-3.5">
@@ -71,25 +181,24 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* Close drawer on mobile */}
+          {/* Collapse sidebar button */}
           <button
             onClick={toggleSidebar}
-            className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)] cursor-pointer"
+            title="Collapse sidebar"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
           >
-            <X className="w-5 h-5" />
+            <PanelLeft className="w-5 h-5" />
           </button>
         </div>
 
         {/* New Chat Primary Button */}
-        <motion.button
-          whileHover={{ scale: 1.015, y: -1 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={() => createNewChat()}
           className="w-full h-11 bg-[var(--primary)] hover:opacity-95 text-white font-semibold text-sm rounded-2xl flex items-center justify-center gap-2 shadow-button-primary transition-all duration-180 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Chat</span>
-        </motion.button>
+        </button>
 
         {/* Search Chats Input */}
         <div className="relative">
