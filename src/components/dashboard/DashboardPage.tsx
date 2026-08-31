@@ -8,7 +8,6 @@ import {
   Sparkles,
   Flame,
   TrendingUp,
-  TrendingDown,
   TreePine,
   CircleDot,
   Globe,
@@ -26,7 +25,6 @@ import {
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
-import { TokenIcon } from '../common/TokenIcon';
 import type { Attachment } from '../../types/crypto';
 
 type CategoryType = 'Trending' | 'Stock' | 'Pre-IPO' | 'Crypto' | 'Macro' | 'Sentiment' | 'Learn';
@@ -147,41 +145,6 @@ export const DashboardPage: React.FC = () => {
     setSelectedCategory(cat.name);
     handleSend(cat.samplePrompt);
   };
-
-  const trendingTokens = [
-    {
-      symbol: 'ETH',
-      name: 'Ethereum',
-      price: '$3,412.90',
-      change: '+3.1%',
-      isPositive: true,
-      iconColor: 'bg-blue-600',
-    },
-    {
-      symbol: 'AERO',
-      name: 'Aerodrome',
-      price: '$1.14',
-      change: '+6.7%',
-      isPositive: true,
-      iconColor: 'bg-purple-600',
-    },
-    {
-      symbol: 'BASE',
-      name: 'Base Protocol',
-      price: '$0.842',
-      change: '-1.8%',
-      isPositive: false,
-      iconColor: 'bg-blue-500',
-    },
-    {
-      symbol: 'DEGEN',
-      name: 'Degen',
-      price: '$0.0041',
-      change: '+9.2%',
-      isPositive: true,
-      iconColor: 'bg-violet-600',
-    },
-  ];
 
   const recentActivities = [
     {
@@ -420,48 +383,7 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  3. TRENDING ON BASE RIGHT NOW (4 Live Token Cards)
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-5 sm:p-6 shadow-card space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase">
-              Trending on Base right now
-            </span>
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">Real-time DEX Data</span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {trendingTokens.map((token) => (
-              <motion.div
-                key={token.symbol}
-                whileHover={{ y: -2 }}
-                onClick={() => handleSend(`Analyze ${token.name} (${token.symbol}) price momentum, volume, and catalysts`)}
-                className="p-3.5 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] hover:border-[var(--primary)] rounded-2xl transition-all cursor-pointer shadow-2xs group"
-              >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <TokenIcon symbol={token.symbol} size={18} />
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
-                    {token.symbol}
-                  </span>
-                </div>
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-semibold text-[var(--text-primary)]">{token.price}</span>
-                  <span
-                    className={`text-xs font-bold flex items-center gap-0.5 ${
-                      token.isPositive ? 'text-emerald-500' : 'text-rose-500'
-                    }`}
-                  >
-                    {token.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    {token.change}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════
-         *  4. 4-METRIC STATS GRID
+         *  3. 4-METRIC STATS GRID
          * ═══════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Card 1: XP POINTS */}
