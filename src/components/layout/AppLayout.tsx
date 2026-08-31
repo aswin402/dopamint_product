@@ -58,7 +58,7 @@ export const AppLayout: React.FC = () => {
       <Sidebar />
 
       {/* 2. Center Canvas based on URL (Dashboard, Chat, Leaderboard, Refer, Points) */}
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-card)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-app)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
         {isLeaderboard ? (
           <LeaderboardPage />
         ) : isRefer ? (

@@ -6,13 +6,13 @@
 :root {
   /* ========================================================
      dopamint LIGHT THEME
-     - Canvas Background: oklch(0.988 0.005 95.0)
+     - Canvas Background (#fcfbf7): oklch(0.988 0.0054 95.1)
      - Card / Component Background (#f7f6ec): oklch(0.971 0.0132 102.0)
      - Primary Accent (#485442): oklch(0.415 0.032 135.0)
      - Primary Text (#1a1a1a):   oklch(0.200 0.005 95.0)
      - Borders (#eae7da):        oklch(0.925 0.012 100.0)
      ======================================================== */
-  --bg-app: oklch(0.988 0.005 95.0);
+  --bg-app: oklch(0.988 0.0054 95.1);          /* #fcfbf7 Canvas Background */
   --bg-card: oklch(0.971 0.0132 102.0);        /* #f7f6ec Warm Cream */
   --bg-card-subtle: oklch(0.952 0.015 102.0); /* #f0eee1 */
   --bg-hover: oklch(0.938 0.017 102.0);       /* #ecead9 */
