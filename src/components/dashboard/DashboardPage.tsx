@@ -329,16 +329,32 @@ export const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {/* Text Area */}
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={PROMPT_HINTS[hintIndex]}
-              className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] placeholder-[#6E7169] dark:placeholder-[#777777] outline-none resize-none overflow-y-auto leading-relaxed min-h-[38px] max-h-[120px] transition-all"
-            />
+            {/* Text Area with Smooth Fade In-Out Animated Placeholder */}
+            <div className="relative min-h-[38px] flex items-start">
+              <AnimatePresence mode="wait">
+                {!inputText && (
+                  <motion.div
+                    key={hintIndex}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -3 }}
+                    transition={{ duration: 0.45, ease: 'easeInOut' }}
+                    className="absolute inset-x-0 top-0 text-[15px] sm:text-[16px] text-[#6E7169] dark:text-[#777777] pointer-events-none select-none truncate leading-relaxed"
+                  >
+                    {PROMPT_HINTS[hintIndex]}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-transparent text-[15px] sm:text-[16px] text-[#1A1A1A] dark:text-[#ECECEC] outline-none resize-none overflow-y-auto leading-relaxed min-h-[38px] max-h-[120px] relative z-10"
+              />
+            </div>
 
             {/* Action Controls Row */}
             <div className="flex items-center justify-between pt-1">
