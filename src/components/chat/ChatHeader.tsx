@@ -4,7 +4,6 @@ import {
   Star,
   Share2,
   MoreHorizontal,
-  PanelLeft,
   PanelRight,
   Pencil,
   Trash2,
@@ -27,7 +26,6 @@ export const ChatHeader: React.FC = () => {
   const userProfile = useCryptoStore((s) => s.userProfile);
 
   const toggleFavourite = useCryptoStore((s) => s.toggleFavouriteConversation);
-  const toggleSidebar = useCryptoStore((s) => s.toggleSidebar);
   const toggleInsights = useCryptoStore((s) => s.toggleInsights);
   const setModalState = useCryptoStore((s) => s.setModalState);
   const openRenameModal = useCryptoStore((s) => s.openRenameModal);
@@ -67,16 +65,8 @@ export const ChatHeader: React.FC = () => {
 
   return (
     <header className="h-16 px-4 md:px-8 border-b border-[var(--border-color)] bg-[var(--bg-app)] flex items-center justify-between flex-shrink-0 z-20 transition-colors duration-200">
-      {/* Left side: Mobile Sidebar Toggle + Chat Title Switcher */}
+      {/* Left side: Chat Title Switcher */}
       <div className="flex items-center gap-3 min-w-0">
-        <button
-          onClick={toggleSidebar}
-          title="Toggle Sidebar (⌘B)"
-          className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
-        >
-          <PanelLeft className="w-5 h-5" />
-        </button>
-
         {/* Chat Title dropdown / model badge */}
         <div className="relative" ref={modelRef}>
           <button
