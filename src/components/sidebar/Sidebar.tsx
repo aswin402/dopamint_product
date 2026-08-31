@@ -204,28 +204,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 5. Folders / Categories */}
-            <button
-              onClick={handleOpenFolders}
-              title={`Folders & Categories (${folders.length})`}
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
-                activeSidebarTab === 'folders' && isSidebarOpen
-                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <Folder className="w-5 h-5 text-indigo-500 flex-shrink-0" />
-                {isRailHovered && <span className="truncate">Folders</span>}
-              </div>
-              {isRailHovered && (
-                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-secondary)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
-                  {folders.length}
-                </span>
-              )}
-            </button>
-
-            {/* 6. Favourites */}
+            {/* 5. Favourites */}
             <button
               onClick={() => setModalState('isWatchlistModalOpen', true)}
               title={`Favourites (${favouriteCount})`}
