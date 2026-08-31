@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from '../sidebar/Sidebar';
+import { DashboardPage } from '../dashboard/DashboardPage';
 import { ChatContainer } from '../chat/ChatContainer';
 import { LeaderboardPage } from '../leaderboard/LeaderboardPage';
 import { ReferEarnPage } from '../refer/ReferEarnPage';
@@ -55,7 +56,7 @@ export const AppLayout: React.FC = () => {
       {/* 1. Left Sidebar (Dual panel) */}
       <Sidebar />
 
-      {/* 2. Center Canvas based on URL (Leaderboard, Refer, Points, or Chat) */}
+      {/* 2. Center Canvas based on URL (Dashboard, Chat, Leaderboard, Refer, Points) */}
       <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-card)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
         {isLeaderboard ? (
           <LeaderboardPage />
@@ -63,8 +64,10 @@ export const AppLayout: React.FC = () => {
           <ReferEarnPage />
         ) : isPoints ? (
           <PointsXpPage />
-        ) : (
+        ) : pathname.startsWith('/c/') ? (
           <ChatContainer />
+        ) : (
+          <DashboardPage />
         )}
       </main>
 

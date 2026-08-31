@@ -56,7 +56,7 @@ export const Sidebar: React.FC = () => {
 
   // Pathname checks
   const pathname = location.pathname;
-  const isDashboard = pathname === '/' || pathname.startsWith('/c/');
+  const isDashboard = pathname === '/' || pathname === '/dashboard';
   const isLeaderboard = pathname === '/leaderboard';
   const isRefer = pathname === '/refer';
   const isPoints = pathname === '/points' || pathname === '/xp';
