@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import { LoginPage } from './components/auth/LoginPage';
 import { useCryptoStore } from './store/useCryptoStore';
 
 const ChatRouteWrapper: React.FC = () => {
@@ -18,33 +19,70 @@ const ChatRouteWrapper: React.FC = () => {
 };
 
 function App() {
+  const isAuthenticated = useCryptoStore((s) => s.isAuthenticated);
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* Main App Homepage (Dashboard) */}
-        <Route path="/" element={<AppLayout />} />
+        {/* Auth Route: 2-step Login & Wallet Ready flow */}
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+        />
+        <Route path="/signin" element={<Navigate to="/login" replace />} />
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
+
+        {/* Protected / Main App Routes */}
+        <Route
+          path="/"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
-
-        {/* Redirect any legacy auth routes directly to homepage */}
-        <Route path="/login" element={<Navigate to="/" replace />} />
-        <Route path="/signin" element={<Navigate to="/" replace />} />
-        <Route path="/auth" element={<Navigate to="/" replace />} />
-
-        {/* Core Product Routes */}
-        <Route path="/c/:chatId" element={<ChatRouteWrapper />} />
-        <Route path="/leaderboard" element={<AppLayout />} />
-        <Route path="/refer" element={<AppLayout />} />
-        <Route path="/points" element={<AppLayout />} />
+        <Route
+          path="/c/:chatId"
+          element={isAuthenticated ? <ChatRouteWrapper /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/leaderboard"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/refer"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/points"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
         <Route path="/xp" element={<Navigate to="/points" replace />} />
-        <Route path="/settings" element={<AppLayout />} />
-        <Route path="/agents" element={<AppLayout />} />
-        <Route path="/active-agents" element={<Navigate to="/agents" replace />} />
-        <Route path="/buy-credits" element={<AppLayout />} />
-        <Route path="/pro" element={<Navigate to="/buy-credits" replace />} />
-        <Route path="/favourites" element={<AppLayout />} />
-        <Route path="/watchlist" element={<Navigate to="/favourites" replace />} />
-
-        {/* Catch-all fallback */}
+        <Route
+          path="/settings"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/agents"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/active-agents"
+          element={<Navigate to="/agents" replace />}
+        />
+        <Route
+          path="/buy-credits"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/pro"
+          element={<Navigate to="/buy-credits" replace />}
+        />
+        <Route
+          path="/favourites"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/watchlist"
+          element={<Navigate to="/favourites" replace />}
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
