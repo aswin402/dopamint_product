@@ -191,3 +191,21 @@ export interface AIAgent {
   iconType: 'shield' | 'trending' | 'zap' | 'globe' | 'search' | 'cpu';
   systemPrompt: string;
 }
+
+export type WidgetType =
+  | 'crypto-news'
+  | 'crypto-calendar'
+  | 'market-stats'
+  | 'trending-coins'
+  | 'xp-quests'
+  | 'portfolio-summary';
+
+export interface WidgetConfig {
+  id: string;
+  type: WidgetType;
+  title: string;
+  isExpanded?: boolean;
+  order: number;
+  settings?: Record<string, unknown>;
+}
+

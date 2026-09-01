@@ -13,12 +13,15 @@ import type {
   UserProfile,
   LeaderboardEntry,
   AIAgent,
+  WidgetConfig,
+  WidgetType,
 } from '../types/crypto';
 import { INITIAL_COINS, INITIAL_MARKET_OVERVIEW } from '../data/cryptoData';
 import { INITIAL_CONVERSATIONS, INITIAL_FOLDERS, INITIAL_MESSAGES } from '../data/conversations';
 import { INITIAL_NEWS } from '../data/newsData';
 import { INITIAL_LEADERBOARD } from '../data/leaderboardData';
 import { INITIAL_AGENTS } from '../data/agentsData';
+import { DEFAULT_ACTIVE_WIDGETS, WIDGET_CATALOG } from '../data/widgetsData';
 import { generateCryptoResponse } from '../lib/aiResponseGenerator';
 import { formatTimestamp } from '../lib/formatters';
 
@@ -48,6 +51,19 @@ interface CryptoStoreState {
   openSourceInPanel: (sourceIdentifier?: string | null) => void;
   setSidebarOpen: (open: boolean) => void;
   setInsightsOpen: (open: boolean) => void;
+
+  // Right Panel Tabs & Widgets
+  activeRightTab: 'sources' | 'widgets';
+  setActiveRightTab: (tab: 'sources' | 'widgets') => void;
+  widgets: WidgetConfig[];
+  addWidget: (type: WidgetType, customTitle?: string) => void;
+  removeWidget: (id: string) => void;
+  toggleWidgetExpand: (id: string) => void;
+  moveWidgetUp: (id: string) => void;
+  moveWidgetDown: (id: string) => void;
+  resetWidgetsToDefault: () => void;
+  isAddWidgetModalOpen: boolean;
+  setIsAddWidgetModalOpen: (open: boolean) => void;
 
   // Conversations
   conversations: Conversation[];
@@ -180,6 +196,21 @@ const getInitialAuth = (): boolean => {
   return false;
 };
 
+const getInitialWidgets = (): WidgetConfig[] => {
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('dopamint-widgets');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return DEFAULT_ACTIVE_WIDGETS;
+};
+
 export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
   // Theme
   theme: getInitialTheme(),
@@ -271,6 +302,83 @@ export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
     }),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
   setInsightsOpen: (open) => set({ isInsightsOpen: open }),
+
+  // Right Panel Tabs & Widgets
+  activeRightTab: 'widgets',
+  setActiveRightTab: (activeRightTab) => set({ activeRightTab }),
+  widgets: getInitialWidgets(),
+  isAddWidgetModalOpen: false,
+  setIsAddWidgetModalOpen: (isAddWidgetModalOpen) => set({ isAddWidgetModalOpen }),
+
+  addWidget: (type, customTitle) => {
+    const catalogItem = WIDGET_CATALOG.find((c) => c.type === type);
+    const title = customTitle || catalogItem?.defaultTitle || 'Widget';
+    const newWidget: WidgetConfig = {
+      id: `w-${type}-${Date.now()}`,
+      type,
+      title,
+      isExpanded: true,
+      order: get().widgets.length,
+    };
+    const updated = [...get().widgets, newWidget];
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-widgets', JSON.stringify(updated));
+    }
+    set({ widgets: updated, activeRightTab: 'widgets' });
+  },
+
+  removeWidget: (id) => {
+    const updated = get().widgets.filter((w) => w.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-widgets', JSON.stringify(updated));
+    }
+    set({ widgets: updated });
+  },
+
+  toggleWidgetExpand: (id) => {
+    const updated = get().widgets.map((w) =>
+      w.id === id ? { ...w, isExpanded: !w.isExpanded } : w
+    );
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-widgets', JSON.stringify(updated));
+    }
+    set({ widgets: updated });
+  },
+
+  moveWidgetUp: (id) => {
+    const list = [...get().widgets];
+    const index = list.findIndex((w) => w.id === id);
+    if (index > 0) {
+      const temp = list[index];
+      list[index] = list[index - 1];
+      list[index - 1] = temp;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dopamint-widgets', JSON.stringify(list));
+      }
+      set({ widgets: list });
+    }
+  },
+
+  moveWidgetDown: (id) => {
+    const list = [...get().widgets];
+    const index = list.findIndex((w) => w.id === id);
+    if (index >= 0 && index < list.length - 1) {
+      const temp = list[index];
+      list[index] = list[index + 1];
+      list[index + 1] = temp;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dopamint-widgets', JSON.stringify(list));
+      }
+      set({ widgets: list });
+    }
+  },
+
+  resetWidgetsToDefault: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dopamint-widgets', JSON.stringify(DEFAULT_ACTIVE_WIDGETS));
+    }
+    set({ widgets: DEFAULT_ACTIVE_WIDGETS });
+  },
 
   // Conversations
   conversations: [
