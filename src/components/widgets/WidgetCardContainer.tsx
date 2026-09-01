@@ -36,20 +36,38 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
   const moveWidgetUp = useCryptoStore((s) => s.moveWidgetUp);
   const moveWidgetDown = useCryptoStore((s) => s.moveWidgetDown);
 
-  const getWidgetIcon = (type: WidgetType) => {
+  const getWidgetIconBadge = (type: WidgetType) => {
     switch (type) {
       case 'crypto-news':
-        return <Newspaper className="w-3.5 h-3.5 text-[#485442] dark:text-[#8A9E7F]" />;
+        return {
+          icon: <Newspaper className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-500/20',
+        };
       case 'crypto-calendar':
-        return <Calendar className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />;
+        return {
+          icon: <Calendar className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/20',
+        };
       case 'market-stats':
-        return <BarChart2 className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />;
+        return {
+          icon: <BarChart2 className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-purple-500 to-violet-600 shadow-purple-500/20',
+        };
       case 'trending-coins':
-        return <TrendingUp className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />;
+        return {
+          icon: <TrendingUp className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20',
+        };
       case 'xp-quests':
-        return <Award className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />;
+        return {
+          icon: <Award className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/20',
+        };
       case 'portfolio-summary':
-        return <Wallet className="w-3.5 h-3.5 text-[#485442] dark:text-[#8A9E7F]" />;
+        return {
+          icon: <Wallet className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-[#485442] to-[#2B3527] shadow-emerald-950/20',
+        };
     }
   };
 
@@ -72,6 +90,8 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
     }
   };
 
+  const badge = getWidgetIconBadge(widget.type);
+
   return (
     <motion.div
       layout
@@ -79,31 +99,31 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95, y: -6 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs overflow-hidden transition-colors"
+      className="group rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-[0_3px_14px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] overflow-hidden transition-all duration-200"
     >
-      {/* Widget Header Bar */}
-      <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-[var(--border-color)]/60 bg-[var(--bg-card-subtle)]/40 select-none">
-        {/* Left: Icon & Title */}
+      {/* iOS Widget Header Bar */}
+      <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-[var(--border-color)]/50 bg-[var(--bg-card-subtle)]/30 select-none">
+        {/* Left: App Icon Badge & Bold Title */}
         <div
           onClick={() => toggleWidgetExpand(widget.id)}
-          className="flex items-center gap-2 min-w-0 cursor-pointer flex-1 group"
+          className="flex items-center gap-2.5 min-w-0 cursor-pointer flex-1"
         >
-          <div className="p-1 rounded-lg bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs group-hover:border-[#485442]/40 transition-colors">
-            {getWidgetIcon(widget.type)}
+          <div className={`w-6 h-6 rounded-lg ${badge.bg} flex items-center justify-center shadow-xs flex-shrink-0`}>
+            {badge.icon}
           </div>
-          <h4 className="text-[12.5px] font-semibold text-[var(--text-primary)] truncate group-hover:text-[#485442] dark:group-hover:text-[#8A9E7F] transition-colors">
+          <h4 className="text-[13px] font-bold text-[var(--text-primary)] tracking-tight truncate">
             {widget.title}
           </h4>
         </div>
 
-        {/* Right: Controls (Move up/down, Expand, Delete) */}
+        {/* Right: iOS Controls */}
         <div className="flex items-center gap-0.5 flex-shrink-0">
           {/* Move Up */}
           <button
             onClick={() => moveWidgetUp(widget.id)}
             disabled={index === 0}
-            title="Move Widget Up"
-            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-20 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed transition-all"
+            title="Move Up"
+            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-all"
           >
             <ChevronUp className="w-3.5 h-3.5" />
           </button>
@@ -112,13 +132,13 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
           <button
             onClick={() => moveWidgetDown(widget.id)}
             disabled={index === totalCount - 1}
-            title="Move Widget Down"
-            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-20 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed transition-all"
+            title="Move Down"
+            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-all"
           >
             <ChevronDown className="w-3.5 h-3.5" />
           </button>
 
-          {/* Expand/Collapse Toggle */}
+          {/* Expand/Collapse */}
           <button
             onClick={() => toggleWidgetExpand(widget.id)}
             title={widget.isExpanded ? 'Collapse Widget' : 'Expand Widget'}
@@ -136,14 +156,14 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
           <button
             onClick={() => removeWidget(widget.id)}
             title="Remove Widget"
-            className="p-1 rounded-md text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all cursor-pointer ml-0.5"
+            className="p-1 rounded-md text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer ml-0.5"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Widget Body with smooth accordion collapse */}
+      {/* Widget Body */}
       <AnimatePresence initial={false}>
         {widget.isExpanded && (
           <motion.div
@@ -154,7 +174,7 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="p-3">
+            <div className="p-3.5">
               {renderWidgetContent()}
             </div>
           </motion.div>
