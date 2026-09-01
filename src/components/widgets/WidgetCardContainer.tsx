@@ -4,20 +4,24 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-  Newspaper,
-  Calendar,
   BarChart2,
-  TrendingUp,
-  Award,
+  Lock,
+  ListPlus,
+  Compass,
+  ArrowLeftRight,
+  BookOpen,
+  MessageSquare,
   Wallet,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import type { WidgetConfig, WidgetType } from '../../types/crypto';
-import { CryptoNewsWidget } from './CryptoNewsWidget';
-import { CryptoCalendarWidget } from './CryptoCalendarWidget';
-import { MarketStatsWidget } from './MarketStatsWidget';
-import { TrendingCoinsWidget } from './TrendingCoinsWidget';
-import { XpQuestsWidget } from './XpQuestsWidget';
+import { MarketOverviewWidget } from './MarketOverviewWidget';
+import { TokenUnlockWidget } from './TokenUnlockWidget';
+import { ListingFeedWidget } from './ListingFeedWidget';
+import { WhaleTrackingWidget } from './WhaleTrackingWidget';
+import { ExchangeNetflowWidget } from './ExchangeNetflowWidget';
+import { OrderBookDepthWidget } from './OrderBookDepthWidget';
+import { SentimentNewsWidget } from './SentimentNewsWidget';
 import { PortfolioSummaryWidget } from './PortfolioSummaryWidget';
 
 interface WidgetCardContainerProps {
@@ -38,30 +42,40 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
 
   const getWidgetIconBadge = (type: WidgetType) => {
     switch (type) {
-      case 'crypto-news':
-        return {
-          icon: <Newspaper className="w-3.5 h-3.5 text-white" />,
-          bg: 'bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-500/20',
-        };
-      case 'crypto-calendar':
-        return {
-          icon: <Calendar className="w-3.5 h-3.5 text-white" />,
-          bg: 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/20',
-        };
-      case 'market-stats':
+      case 'market-overview':
         return {
           icon: <BarChart2 className="w-3.5 h-3.5 text-white" />,
-          bg: 'bg-gradient-to-br from-purple-500 to-violet-600 shadow-purple-500/20',
-        };
-      case 'trending-coins':
-        return {
-          icon: <TrendingUp className="w-3.5 h-3.5 text-white" />,
           bg: 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20',
         };
-      case 'xp-quests':
+      case 'token-unlock':
         return {
-          icon: <Award className="w-3.5 h-3.5 text-white" />,
+          icon: <Lock className="w-3.5 h-3.5 text-white" />,
           bg: 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/20',
+        };
+      case 'listing-feed':
+        return {
+          icon: <ListPlus className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/20',
+        };
+      case 'whale-tracking':
+        return {
+          icon: <Compass className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-purple-500 to-violet-600 shadow-purple-500/20',
+        };
+      case 'exchange-netflow':
+        return {
+          icon: <ArrowLeftRight className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20',
+        };
+      case 'order-book':
+        return {
+          icon: <BookOpen className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20',
+        };
+      case 'sentiment-news':
+        return {
+          icon: <MessageSquare className="w-3.5 h-3.5 text-white" />,
+          bg: 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20',
         };
       case 'portfolio-summary':
         return {
@@ -73,16 +87,20 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
 
   const renderWidgetContent = () => {
     switch (widget.type) {
-      case 'crypto-news':
-        return <CryptoNewsWidget />;
-      case 'crypto-calendar':
-        return <CryptoCalendarWidget />;
-      case 'market-stats':
-        return <MarketStatsWidget />;
-      case 'trending-coins':
-        return <TrendingCoinsWidget />;
-      case 'xp-quests':
-        return <XpQuestsWidget />;
+      case 'market-overview':
+        return <MarketOverviewWidget />;
+      case 'token-unlock':
+        return <TokenUnlockWidget />;
+      case 'listing-feed':
+        return <ListingFeedWidget />;
+      case 'whale-tracking':
+        return <WhaleTrackingWidget />;
+      case 'exchange-netflow':
+        return <ExchangeNetflowWidget />;
+      case 'order-book':
+        return <OrderBookDepthWidget />;
+      case 'sentiment-news':
+        return <SentimentNewsWidget />;
       case 'portfolio-summary':
         return <PortfolioSummaryWidget />;
       default:

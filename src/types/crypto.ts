@@ -193,11 +193,13 @@ export interface AIAgent {
 }
 
 export type WidgetType =
-  | 'crypto-news'
-  | 'crypto-calendar'
-  | 'market-stats'
-  | 'trending-coins'
-  | 'xp-quests'
+  | 'market-overview'
+  | 'token-unlock'
+  | 'listing-feed'
+  | 'whale-tracking'
+  | 'exchange-netflow'
+  | 'order-book'
+  | 'sentiment-news'
   | 'portfolio-summary';
 
 export interface WidgetConfig {

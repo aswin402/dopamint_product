@@ -6,11 +6,13 @@ import {
   Check,
   RotateCcw,
   Search,
-  Newspaper,
-  Calendar,
   BarChart2,
-  TrendingUp,
-  Award,
+  Lock,
+  ListPlus,
+  Compass,
+  ArrowLeftRight,
+  BookOpen,
+  MessageSquare,
   Wallet,
   Sparkles,
 } from 'lucide-react';
@@ -30,7 +32,7 @@ export const AddWidgetModal: React.FC = () => {
 
   if (!isOpen) return null;
 
-  const categories = ['All', 'Market', 'News', 'Activity', 'Portfolio'];
+  const categories = ['All', 'Market', 'Whales', 'Flows', 'Portfolio'];
 
   const filteredCatalog = WIDGET_CATALOG.filter((item) => {
     const matchesSearch =
@@ -43,30 +45,40 @@ export const AddWidgetModal: React.FC = () => {
 
   const getWidgetIconBadge = (type: WidgetType) => {
     switch (type) {
-      case 'crypto-news':
-        return {
-          icon: <Newspaper className="w-5 h-5 text-white" />,
-          bg: 'bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-500/20',
-        };
-      case 'crypto-calendar':
-        return {
-          icon: <Calendar className="w-5 h-5 text-white" />,
-          bg: 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/20',
-        };
-      case 'market-stats':
+      case 'market-overview':
         return {
           icon: <BarChart2 className="w-5 h-5 text-white" />,
-          bg: 'bg-gradient-to-br from-purple-500 to-violet-600 shadow-purple-500/20',
-        };
-      case 'trending-coins':
-        return {
-          icon: <TrendingUp className="w-5 h-5 text-white" />,
           bg: 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20',
         };
-      case 'xp-quests':
+      case 'token-unlock':
         return {
-          icon: <Award className="w-5 h-5 text-white" />,
+          icon: <Lock className="w-5 h-5 text-white" />,
           bg: 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/20',
+        };
+      case 'listing-feed':
+        return {
+          icon: <ListPlus className="w-5 h-5 text-white" />,
+          bg: 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/20',
+        };
+      case 'whale-tracking':
+        return {
+          icon: <Compass className="w-5 h-5 text-white" />,
+          bg: 'bg-gradient-to-br from-purple-500 to-violet-600 shadow-purple-500/20',
+        };
+      case 'exchange-netflow':
+        return {
+          icon: <ArrowLeftRight className="w-5 h-5 text-white" />,
+          bg: 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20',
+        };
+      case 'order-book':
+        return {
+          icon: <BookOpen className="w-5 h-5 text-white" />,
+          bg: 'bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20',
+        };
+      case 'sentiment-news':
+        return {
+          icon: <MessageSquare className="w-5 h-5 text-white" />,
+          bg: 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20',
         };
       case 'portfolio-summary':
         return {
@@ -101,10 +113,10 @@ export const AddWidgetModal: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-extrabold text-[var(--text-primary)]">
-                Widget Gallery
+                Trading Widget Gallery
               </h3>
               <p className="text-xs text-[var(--text-secondary)]">
-                Add modular smart widgets to your sidebar.
+                Add modular smart widgets to your crypto sidebar.
               </p>
             </div>
           </div>
@@ -119,14 +131,14 @@ export const AddWidgetModal: React.FC = () => {
 
         {/* Search & Categories Bar */}
         <div className="p-4 border-b border-[var(--border-color)] space-y-3 bg-[var(--bg-card-subtle)]/30">
-          {/* iOS Style Search Input */}
+          {/* Search Input */}
           <div className="relative">
             <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search widgets (News, Unlocks, Gas, Coins...)"
+              placeholder="Search widgets (Unlock, Whale, Orderbook, Netflow...)"
               className="w-full h-10 pl-9.5 pr-4 bg-[var(--bg-app)] border border-[var(--border-color)] focus:border-[#485442] dark:focus:border-[#8A9E7F] rounded-[14px] text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-colors"
             />
           </div>
