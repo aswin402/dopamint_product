@@ -196,13 +196,33 @@ const getInitialAuth = (): boolean => {
   return false;
 };
 
+const VALID_WIDGET_TYPES: WidgetType[] = [
+  'market-overview',
+  'token-unlock',
+  'listing-feed',
+  'whale-tracking',
+  'exchange-netflow',
+  'order-book',
+  'sentiment-news',
+  'portfolio-summary',
+];
+
 const getInitialWidgets = (): WidgetConfig[] => {
   if (typeof window !== 'undefined') {
     try {
       const saved = localStorage.getItem('dopamint-widgets');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const valid = parsed.filter(
+            (w: unknown): w is WidgetConfig =>
+              Boolean(w) &&
+              typeof w === 'object' &&
+              'type' in (w as Record<string, unknown>) &&
+              VALID_WIDGET_TYPES.includes((w as Record<string, unknown>).type as WidgetType)
+          );
+          if (valid.length > 0) return valid;
+        }
       }
     } catch {
       // ignore

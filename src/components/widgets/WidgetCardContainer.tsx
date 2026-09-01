@@ -78,6 +78,7 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
           bg: 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/20',
         };
       case 'portfolio-summary':
+      default:
         return {
           icon: <Wallet className="w-3.5 h-3.5 text-white" />,
           bg: 'bg-gradient-to-br from-[#485442] to-[#2B3527] shadow-emerald-950/20',
@@ -104,7 +105,7 @@ export const WidgetCardContainer: React.FC<WidgetCardContainerProps> = ({
       case 'portfolio-summary':
         return <PortfolioSummaryWidget />;
       default:
-        return null;
+        return <MarketOverviewWidget />;
     }
   };
 
