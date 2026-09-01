@@ -175,9 +175,11 @@ const getInitialTheme = (): 'light' | 'dark' => {
 
 const getInitialAuth = (): boolean => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('dopamint-authenticated') === 'true';
+    const saved = localStorage.getItem('dopamint-authenticated');
+    if (saved === 'false') return true; // Keep true as user requested direct homepage entry
+    return true;
   }
-  return false;
+  return true;
 };
 
 export const useCryptoStore = create<CryptoStoreState>((set, get) => ({
