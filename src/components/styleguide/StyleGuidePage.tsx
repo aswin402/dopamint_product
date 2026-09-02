@@ -6,11 +6,68 @@ import {
   Copy,
   Check,
   ArrowRight,
+  ArrowLeft,
   Code2,
   Search,
   Award,
   Flame,
   Wallet,
+  Compass,
+  MessageSquare,
+  Folder,
+  Plus,
+  Settings,
+  Share2,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Pencil,
+  Trash2,
+  ExternalLink,
+  Lock,
+  Unlock,
+  ShieldCheck,
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  Zap,
+  CreditCard,
+  BarChart2,
+  BarChart3,
+  PieChart,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  ArrowDownLeft,
+  BookOpen,
+  ListPlus,
+  RefreshCw,
+  SlidersHorizontal,
+  Layers,
+  Bot,
+  Send,
+  Mic,
+  Paperclip,
+  Globe,
+  Clock,
+  Star,
+  Users,
+  Gift,
+  Trophy,
+  Target,
+  Cpu,
+  Coins,
+  ThumbsUp,
+  ThumbsDown,
+  CheckCircle,
+  X,
+  HelpCircle,
+  Bell,
+  Eye,
+  Terminal,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { Button, Badge, Card, Input } from '../ui';
@@ -202,6 +259,9 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [inputVal, setInputVal] = useState('Search Bitcoin, Ethereum, Solana...');
   const [activeSection, setActiveSection] = useState('colors');
+  const [switchDemo, setSwitchDemo] = useState(true);
+  const [activeTabDemo, setActiveTabDemo] = useState('Widgets');
+  const [activeCategoryDemo, setActiveCategoryDemo] = useState('Trading');
 
   const storeTheme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
@@ -226,16 +286,20 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
   const navSections = [
     { id: 'colors', label: '1. Color Tokens (OKLCH)' },
     { id: 'typography', label: '2. Typography & Numerals' },
-    { id: 'buttons', label: '3. Buttons & Controls' },
-    { id: 'badges', label: '4. Badges & Token Icons' },
-    { id: 'cards', label: '5. Cards & Surface Elevation' },
-    { id: 'inputs', label: '6. Inputs & Prompt Bar' },
-    { id: 'chat', label: '7. AI Chat & Thinking' },
-    { id: 'widgets', label: '8. 8 iPhone-Grade Widgets' },
-    { id: 'points', label: '9. Points, XP & Streaks' },
-    { id: 'refer', label: '10. Refer & Leaderboard' },
-    { id: 'modals', label: '11. Modals & Dialogs (13)' },
-    { id: 'figma', label: '12. Figma Tokens JSON Export' },
+    { id: 'icons', label: '3. Iconography & Logos' },
+    { id: 'buttons', label: '4. Buttons & Controls' },
+    { id: 'badges', label: '5. Badges & Status Pills' },
+    { id: 'form-controls', label: '6. Switches, Toggles & Tabs' },
+    { id: 'cards', label: '7. Cards & Surface Elevation' },
+    { id: 'dashboard', label: '8. Dashboard & Prompt Hero' },
+    { id: 'chat', label: '9. AI Chat & Reasoning' },
+    { id: 'widgets', label: '10. 8 iPhone-Grade Widgets' },
+    { id: 'points', label: '11. Points, XP & Streaks' },
+    { id: 'refer', label: '12. Refer & Leaderboard' },
+    { id: 'sidebar-nav', label: '13. Sidebar & Nav Elements' },
+    { id: 'feedback', label: '14. Toasts & Alerts Banners' },
+    { id: 'modals', label: '15. Modals Catalog (13)' },
+    { id: 'figma', label: '16. Figma Tokens JSON Export' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -245,6 +309,74 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
       elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  const iconCatalog = [
+    { name: 'Sparkles', icon: <Sparkles className="w-5 h-5" />, category: 'AI & Actions' },
+    { name: 'Bot', icon: <Bot className="w-5 h-5" />, category: 'AI & Actions' },
+    { name: 'Terminal', icon: <Terminal className="w-5 h-5" />, category: 'AI & Actions' },
+    { name: 'Compass', icon: <Compass className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'MessageSquare', icon: <MessageSquare className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'Search', icon: <Search className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'Folder', icon: <Folder className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'Settings', icon: <Settings className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'Layers', icon: <Layers className="w-5 h-5" />, category: 'Navigation' },
+    { name: 'Award', icon: <Award className="w-5 h-5" />, category: 'Gamification' },
+    { name: 'Flame', icon: <Flame className="w-5 h-5" />, category: 'Gamification' },
+    { name: 'Trophy', icon: <Trophy className="w-5 h-5" />, category: 'Gamification' },
+    { name: 'Target', icon: <Target className="w-5 h-5" />, category: 'Gamification' },
+    { name: 'Wallet', icon: <Wallet className="w-5 h-5" />, category: 'Financial' },
+    { name: 'CreditCard', icon: <CreditCard className="w-5 h-5" />, category: 'Financial' },
+    { name: 'Coins', icon: <Coins className="w-5 h-5" />, category: 'Financial' },
+    { name: 'BarChart2', icon: <BarChart2 className="w-5 h-5" />, category: 'Financial' },
+    { name: 'BarChart3', icon: <BarChart3 className="w-5 h-5" />, category: 'Financial' },
+    { name: 'PieChart', icon: <PieChart className="w-5 h-5" />, category: 'Financial' },
+    { name: 'TrendingUp', icon: <TrendingUp className="w-5 h-5" />, category: 'Financial' },
+    { name: 'TrendingDown', icon: <TrendingDown className="w-5 h-5" />, category: 'Financial' },
+    { name: 'Activity', icon: <Activity className="w-5 h-5" />, category: 'Financial' },
+    { name: 'Lock', icon: <Lock className="w-5 h-5" />, category: 'Security' },
+    { name: 'Unlock', icon: <Unlock className="w-5 h-5" />, category: 'Security' },
+    { name: 'ShieldCheck', icon: <ShieldCheck className="w-5 h-5" />, category: 'Security' },
+    { name: 'Zap', icon: <Zap className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Cpu', icon: <Cpu className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Globe', icon: <Globe className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Clock', icon: <Clock className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Send', icon: <Send className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Mic', icon: <Mic className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Paperclip', icon: <Paperclip className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Copy', icon: <Copy className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Share2', icon: <Share2 className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Check', icon: <Check className="w-5 h-5" />, category: 'Utility' },
+    { name: 'CheckCircle', icon: <CheckCircle className="w-5 h-5" />, category: 'Utility' },
+    { name: 'X', icon: <X className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Pencil', icon: <Pencil className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Trash2', icon: <Trash2 className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Plus', icon: <Plus className="w-5 h-5" />, category: 'Utility' },
+    { name: 'ListPlus', icon: <ListPlus className="w-5 h-5" />, category: 'Utility' },
+    { name: 'BookOpen', icon: <BookOpen className="w-5 h-5" />, category: 'Utility' },
+    { name: 'RefreshCw', icon: <RefreshCw className="w-5 h-5" />, category: 'Utility' },
+    { name: 'SlidersHorizontal', icon: <SlidersHorizontal className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Bell', icon: <Bell className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Star', icon: <Star className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Eye', icon: <Eye className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Users', icon: <Users className="w-5 h-5" />, category: 'Utility' },
+    { name: 'Gift', icon: <Gift className="w-5 h-5" />, category: 'Utility' },
+    { name: 'ThumbsUp', icon: <ThumbsUp className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'ThumbsDown', icon: <ThumbsDown className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'AlertTriangle', icon: <AlertTriangle className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'AlertCircle', icon: <AlertCircle className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'Info', icon: <Info className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'HelpCircle', icon: <HelpCircle className="w-5 h-5" />, category: 'Feedback' },
+    { name: 'ArrowRight', icon: <ArrowRight className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ArrowLeft', icon: <ArrowLeft className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ArrowUpRight', icon: <ArrowUpRight className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ArrowDownRight', icon: <ArrowDownRight className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ArrowDownLeft', icon: <ArrowDownLeft className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ChevronDown', icon: <ChevronDown className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ChevronUp', icon: <ChevronUp className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ChevronRight', icon: <ChevronRight className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'ExternalLink', icon: <ExternalLink className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'LogOut', icon: <LogOut className="w-5 h-5" />, category: 'Account' },
+  ];
 
   return (
     <div className={`min-h-screen w-screen max-w-[100vw] bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden selection:bg-[#485442]/30 selection:text-inherit transition-colors duration-200 ${forcedTheme === 'dark' ? 'dark' : ''}`}>
@@ -268,7 +400,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] hidden sm:block">
-              Comprehensive Figma & Developer Style Guide — Complete Component Library
+              Complete Living Component Library & Figma Specification
             </p>
           </div>
         </div>
@@ -536,12 +668,83 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 3: BUTTONS & INTERACTIVE CONTROLS
+           *  SECTION 3: ICONOGRAPHY & VECTOR ASSETS
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="icons" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                3. Iconography & Vector Asset Library
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Curated Lucide icons, crypto token vectors, and official brand assets with standard 24px/20px/16px bounding boxes.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
+              {/* Brand Asset */}
+              <div>
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
+                  Brand Crown Asset
+                </span>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] p-2.5 flex items-center justify-center shadow-2xs">
+                    <img src={crownLogo} alt="dopamint crown" className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[var(--text-primary)]">Dopamint Crown Emblem</h4>
+                    <p className="text-xs text-[var(--text-muted)]">High-res PNG & vector mask</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Token Vectors */}
+              <div className="pt-4 border-t border-[var(--border-color)]">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
+                  Cryptocurrency Token Icons (Multi-size)
+                </span>
+                <div className="flex items-center gap-4 flex-wrap">
+                  {['BTC', 'ETH', 'SOL', 'AERO', 'DEGEN', 'USDC', 'AVAX', 'MATIC', 'BNB', 'LINK', 'UNI', 'ARB', 'OP', 'TIA', 'STRK', 'PYTH', 'JUP'].map((sym) => (
+                    <div key={sym} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs min-w-[70px]">
+                      <TokenIcon symbol={sym} size={28} />
+                      <span className="text-[11px] font-mono font-bold text-[var(--text-primary)]">{sym}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* System Lucide Icons Grid */}
+              <div className="pt-4 border-t border-[var(--border-color)]">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
+                  UI Action & Telemetry Icons (36 Icons)
+                </span>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                  {iconCatalog.map((ic) => (
+                    <div
+                      key={ic.name}
+                      onClick={() => copyToClipboard(`<${ic.name} className="w-4 h-4" />`, ic.name)}
+                      className="p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] hover:border-[#485442]/40 transition-all flex flex-col items-center gap-2 text-center cursor-pointer group shadow-2xs"
+                      title="Click to copy JSX code"
+                    >
+                      <div className="text-[var(--text-secondary)] group-hover:text-[#485442] dark:group-hover:text-[#8A9E7F] transition-colors">
+                        {ic.icon}
+                      </div>
+                      <span className="text-[10.5px] font-mono text-[var(--text-muted)] truncate w-full">
+                        {ic.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 4: BUTTONS & INTERACTIVE CONTROLS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="buttons" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                3. Buttons & Interactive Controls
+                4. Buttons & Interactive Controls
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Multi-variant interactive buttons with haptic spring feedback, elevation shadows, and loading states.
@@ -569,58 +772,117 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 4: BADGES & TOKEN ICONS
+           *  SECTION 5: BADGES & TOKEN ICONS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="badges" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                4. Status Badges, Categories & Token Vectors
+                5. Status Badges, Categories & Sentiment Indicators
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Official vector cryptocurrency logos and semantic status tags.
+                Semantic status tags, category pills, and trend indicators.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-4">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <Badge variant="primary">Primary Brand</Badge>
+                <Badge variant="trend-up">Bullish +2.1%</Badge>
+                <Badge variant="trend-down">Bearish -3.4%</Badge>
+                <Badge variant="gold">Unlock in 3d</Badge>
+                <Badge variant="outline">Base Sepolia</Badge>
+                <Badge variant="neutral">Neutral 62</Badge>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 6: SWITCHES, TOGGLES & SEGMENTED TABS
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="form-controls" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                6. Switches, Toggles, Sliders & Segmented Tabs
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Interactive iOS-style segmented controls, toggles, and form range selectors.
               </p>
             </div>
 
             <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
-              {/* Token Vector Icons */}
+              {/* Segmented Tab Switcher Demo */}
               <div>
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
-                  Cryptocurrency Vector Logos
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                  Segmented Pill Tabs (Right Sidebar Switcher)
                 </span>
-                <div className="flex items-center gap-4 flex-wrap">
-                  {['BTC', 'ETH', 'SOL', 'AERO', 'DEGEN', 'USDC'].map((sym) => (
-                    <div key={sym} className="flex items-center gap-2 p-2 px-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs">
-                      <TokenIcon symbol={sym} size={24} />
-                      <span className="text-xs font-bold text-[var(--text-primary)]">{sym}</span>
-                    </div>
+                <div className="inline-flex p-1 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs">
+                  {['Widgets', 'Sources'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTabDemo(tab)}
+                      className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        activeTabDemo === tab
+                          ? 'bg-[#485442] dark:bg-[#55604e] text-white shadow-2xs'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {tab}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              {/* Status Badges */}
+              {/* iOS Style Toggle Switch */}
+              <div className="pt-4 border-t border-[var(--border-color)] flex items-center justify-between max-w-md">
+                <div>
+                  <h4 className="text-xs font-bold text-[var(--text-primary)]">Real-Time On-Chain Streaming</h4>
+                  <p className="text-[11px] text-[var(--text-muted)]">Sub-second websocket updates for orderbook depth</p>
+                </div>
+                <button
+                  onClick={() => setSwitchDemo(!switchDemo)}
+                  className={`w-12 h-6.5 rounded-full p-0.5 transition-colors cursor-pointer flex items-center ${
+                    switchDemo ? 'bg-[#485442] dark:bg-[#55604e]' : 'bg-black/20 dark:bg-white/20'
+                  }`}
+                >
+                  <div
+                    className={`w-5.5 h-5.5 rounded-full bg-white shadow-md transform transition-transform ${
+                      switchDemo ? 'translate-x-5.5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Category Filter Pills */}
               <div className="pt-4 border-t border-[var(--border-color)]">
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
-                  Status & Sentiment Badges
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                  Category Filter Pills
                 </span>
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <Badge variant="primary">Primary Brand</Badge>
-                  <Badge variant="trend-up">Bullish +2.1%</Badge>
-                  <Badge variant="trend-down">Bearish -3.4%</Badge>
-                  <Badge variant="gold">Unlock in 3d</Badge>
-                  <Badge variant="outline">Base Sepolia</Badge>
-                  <Badge variant="neutral">Neutral 62</Badge>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {['All', 'Trading', 'DeFi', 'Layer 2', 'Security', 'Whales'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategoryDemo(cat)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        activeCategoryDemo === cat
+                          ? 'bg-[#485442] text-white shadow-2xs'
+                          : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 5: CARDS & GEOMETRY
+           *  SECTION 7: CARDS & GEOMETRY
            * ═══════════════════════════════════════════════════════════ */}
           <section id="cards" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                5. Cards & Surface Elevation Architecture
+                7. Cards & Surface Elevation Architecture
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Layered surfaces with 4 distinct radii (`16px`, `20px`, `24px`, `28px`) and soft shadows.
@@ -648,15 +910,15 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 6: INPUTS & PROMPT SEARCH BAR
+           *  SECTION 8: DASHBOARD & PROMPT HERO
            * ═══════════════════════════════════════════════════════════ */}
-          <section id="inputs" className="space-y-4 scroll-mt-24">
+          <section id="dashboard" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                6. Form Inputs & Hero Search Prompt Box
+                8. Dashboard Components & Hero Search Prompt Box
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Centered prompt input box (`max-w-[680px]`) with dark green border `#364432` and animated cycling placeholders.
+                Centered prompt input box (`max-w-[680px]`) with dark green border `#364432` and referral promotional card.
               </p>
             </div>
 
@@ -671,6 +933,22 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
                   <span>dopamint-4o Reasoning Engine</span>
                   <span className="px-2 py-0.5 bg-[#485442] text-white rounded-lg font-semibold">Search (↵)</span>
                 </div>
+              </div>
+
+              {/* Referral Promo Card */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#485442]/15 to-[#364432]/10 border border-[#485442]/30 flex items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#485442] text-white flex items-center justify-center font-bold">
+                    <Gift className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[var(--text-primary)]">Invite Friends & Earn 30% Commission</h4>
+                    <p className="text-xs text-[var(--text-muted)]">Earn instant XP rewards and weekly USDC payouts</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="primary" onClick={() => triggerConfetti()}>
+                  Refer Friends
+                </Button>
               </div>
 
               {/* Standard inputs */}
@@ -692,12 +970,12 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 7: CHAT & AI REASONING COMPONENTS
+           *  SECTION 9: CHAT & AI REASONING COMPONENTS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="chat" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                7. AI Reasoning, Thinking Accordions & Code Blocks
+                9. AI Reasoning, Thinking Accordions & Code Blocks
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Deep research thought processes, synthesized key points, and syntax-highlighted code blocks.
@@ -721,13 +999,13 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 8: 8 IPHONE-GRADE MODULAR WIDGETS
+           *  SECTION 10: 8 IPHONE-GRADE MODULAR WIDGETS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="widgets" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                  8. 8 iPhone-Grade Modular Widgets (Live Showcase)
+                  10. 8 iPhone-Grade Modular Widgets (Live Showcase)
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Complete suite of crypto trading widgets with Apple Squircle geometry, SVG sparklines, and live mockups.
@@ -806,12 +1084,12 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 9: POINTS, XP & STREAKS
+           *  SECTION 11: POINTS, XP & STREAKS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="points" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                9. Points, Level Progression & Daily Streaks
+                11. Points, Level Progression & Daily Streaks
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Gamified on-chain engagement with level progress rings, streak roadmaps, and claimable quest bonuses.
@@ -857,12 +1135,12 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 10: REFERRAL & LEADERBOARD
+           *  SECTION 12: REFERRAL & LEADERBOARD
            * ═══════════════════════════════════════════════════════════ */}
           <section id="refer" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                10. Referral & Leaderboard Podium Components
+                12. Referral & Leaderboard Podium Components
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Viral growth loops with tier progression, referral links, and rank podiums.
@@ -898,12 +1176,91 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 11: MODALS & DIALOGS CATALOG
+           *  SECTION 13: SIDEBAR & NAVIGATION ELEMENTS
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="sidebar-nav" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                13. Left Sidebar & Navigation Micro-Elements
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Active & inactive navigation item states, agent models, and chat history items.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Active Nav Item */}
+                <div className="p-3 rounded-xl bg-[#485442] dark:bg-[#55604e] text-white flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold">
+                    <Compass className="w-4 h-4" />
+                    <span>Explore Feed</span>
+                  </div>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-white/20 font-mono">Active</span>
+                </div>
+
+                {/* Inactive Nav Item */}
+                <div className="p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-semibold">
+                    <Trophy className="w-4 h-4" />
+                    <span>Leaderboard</span>
+                  </div>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[var(--bg-card)] font-mono text-[var(--text-muted)]">#42</span>
+                </div>
+
+                {/* Agent Model Pill */}
+                <div className="p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-primary)] flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold">
+                    <Bot className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />
+                    <span>dopamint-4o</span>
+                  </div>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold">Fast</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 14: TOASTS & FEEDBACK BANNERS
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="feedback" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                14. Toast Notifications & Telemetry Banners
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Feedback banners for confirmations, warnings, and transaction states.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {/* Success Toast */}
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                  <span className="text-xs font-bold text-[var(--text-primary)]">Wallet address copied to clipboard</span>
+                </div>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">SUCCESS</span>
+              </div>
+
+              {/* Warning Banner */}
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                  <span className="text-xs font-medium text-[var(--text-primary)]">Bids left, asks right — spot liquidity thins past $71.6k</span>
+                </div>
+                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-bold">WARNING</span>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 15: MODALS & DIALOGS CATALOG
            * ═══════════════════════════════════════════════════════════ */}
           <section id="modals" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                11. Modal & Flyout Dialog Triggers (13 Modals)
+                15. Modal & Flyout Dialog Triggers (13 Modals)
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Click any modal button below to test its flyout animation, layout, and dismiss behavior.
@@ -953,13 +1310,13 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 12: FIGMA TOKENS JSON EXPORT
+           *  SECTION 16: FIGMA TOKENS JSON EXPORT
            * ═══════════════════════════════════════════════════════════ */}
           <section id="figma" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                  12. Figma Variables & Design Token JSON Spec
+                  16. Figma Variables & Design Token JSON Spec
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Directly exportable JSON payload ready for Figma Tokens Studio / Variables plugin.
