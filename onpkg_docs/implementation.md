@@ -1,11 +1,13 @@
-# Technical Implementation Plan — CryptoGPT
+# Technical Implementation Plan — dopamint / CryptoGPT
+
+Detailed task execution plan is documented in [`docs/superpowers/plans/2026-09-02-codebase-refactor-and-modularization.md`](file:///home/aswin/programming/vscode/celestialabs/dopamint_product/docs/superpowers/plans/2026-09-02-codebase-refactor-and-modularization.md).
 
 ## 1. Stack & Architecture Overview
 - **Runtime & Tooling:** Bun v1.3+, Vite v8, TypeScript 6.0
 - **Framework:** React 19 (Hooks, Suspense, Concurrent Rendering)
-- **Styling:** Tailwind CSS v4, Custom CSS Variables, `@fontsource-variable/inter`
-- **Animation & Motion:** Framer Motion (v12) with physics-based spring transitions (180ms, 220ms, 250ms), GSAP for precision path drawing and counter interpolations
-- **State Management:** Zustand with local storage persistence and optimistic updates
+- **Styling:** Tailwind CSS v4, Custom OKLCH CSS Variables, `@fontsource-variable/inter`
+- **Animation & Motion:** Framer Motion (v12) with physics-based spring transitions (180ms, 220ms, 250ms), GSAP for precision path drawing
+- **State Management:** Sliced Zustand Store (`uiSlice`, `authSlice`, `chatSlice`, `marketSlice`, `widgetSlice`) with `persist` middleware
 - **Icons:** Lucide React
 - **Celebration Effects:** Canvas Confetti
 
@@ -15,10 +17,15 @@
 
 ```
 src/
-├── api/                   # Market telemetry & mock data endpoints
-├── assets/                # Logos, badges, crypto token SVG icons
+├── api/                           # Service layer & API adapters
+│   ├── chatService.ts             # LLM stream parser & simulation adapter
+│   ├── marketService.ts           # Token prices & ticker updates
+│   ├── walletService.ts           # Faucet & auth endpoints
+│   └── index.ts
+├── assets/                        # Logos, badges, crypto token SVG icons
 ├── components/
-│   ├── chat/              # Chat message stream, bubbles, input console, markdown renderer
+│   ├── auth/                      # Login & dynamic wallet onboarding
+│   ├── chat/                      # Chat message stream, bubbles, input console
 │   │   ├── ChatContainer.tsx
 │   │   ├── ChatHeader.tsx
 │   │   ├── ChatInputArea.tsx
@@ -29,70 +36,44 @@ src/
 │   │   ├── InlineCryptoCard.tsx
 │   │   ├── SuggestedPrompts.tsx
 │   │   └── VoiceVisualizer.tsx
-│   ├── insights/          # Market overview, live charts, top coins, news feed
-│   │   ├── InsightsPanel.tsx
-│   │   ├── MarketOverviewCard.tsx
-│   │   ├── FearGreedGauge.tsx
-│   │   ├── TopCoinsTable.tsx
-│   │   ├── InteractiveChart.tsx
-│   │   └── NewsFeedCard.tsx
-│   ├── layout/            # 3-column desktop layout & responsive drawers
-│   │   └── AppLayout.tsx
-│   ├── modals/            # Command palette, portfolio, watchlist, settings, share, modals
-│   │   ├── CommandPalette.tsx
-│   │   ├── PortfolioModal.tsx
-│   │   ├── WatchlistModal.tsx
-│   │   ├── AlertsModal.tsx
-│   │   ├── ShareModal.tsx
-│   │   ├── SettingsModal.tsx
-│   │   ├── UpgradeProModal.tsx
-│   │   ├── RenameModal.tsx
-│   │   └── DeleteModal.tsx
-│   ├── sidebar/           # Left navigation, conversation history, user profile
-│   │   ├── Sidebar.tsx
-│   │   ├── HistoryGroup.tsx
-│   │   ├── ConversationItem.tsx
-│   │   └── UserProfileCard.tsx
-│   └── ui/                # Accessible primitives (buttons, tooltips, dialogs, badges)
-├── data/                  # Preloaded seed conversations, crypto token database, market metrics
-│   ├── conversations.ts
-│   ├── cryptoData.ts
-│   └── newsData.ts
-├── hooks/                 # Custom hooks for speech recognition, TTS, keyboard shortcuts, media queries
-│   ├── useSpeechRecognition.ts
-│   ├── useTextToSpeech.ts
-│   ├── useKeyboardShortcuts.ts
-│   └── useMediaQuery.ts
-├── lib/                   # Utility helpers, number formatters, chart math, clipboard
-│   └── utils.ts
-├── store/                 # Zustand global application state
-│   └── useCryptoStore.ts
-├── types/                 # TypeScript interfaces and schemas
-│   └── crypto.ts
-├── App.tsx
-├── index.css
-└── main.tsx
+│   ├── common/                    # Folder icons, token icons
+│   ├── dashboard/                 # Main discovery canvas
+│   ├── insights/                  # Telemetry panel & Sources citations
+│   ├── layout/                    # Responsive 3-column app shell
+│   ├── leaderboard/               # Ranked wallets & Faucet top-ups
+│   ├── modals/                    # Specific modal contents
+│   ├── points/                    # Quests & XP system
+│   ├── refer/                     # Referral commission engine
+│   ├── sidebar/                   # Dual-rail navigation & folders
+│   ├── ui/                        # Reusable UI primitives
+│   │   ├── Modal.tsx              # Shared accessible modal container
+│   │   ├── Button.tsx             # Standardized button variants
+│   │   ├── Badge.tsx              # Trend & status badges
+│   │   ├── Card.tsx               # Surface card container
+│   │   ├── Input.tsx              # Styled form input & focus ring
+│   │   └── index.ts
+│   └── widgets/                   # 15 customizable financial widgets
+├── data/                          # Seed datasets
+├── hooks/                         # Speech recognition, TTS, keyboard shortcuts
+├── lib/                           # Formatters, utils, confetti
+├── providers/                     # React Query provider
+├── store/                         # Modular Zustand store architecture
+│   ├── slices/
+│   │   ├── uiSlice.ts             # Theme, sidebar, insights, modal states
+│   │   ├── authSlice.ts           # User profile, wallet state, login/logout
+│   │   ├── chatSlice.ts           # Conversations, messages, folders, streaming
+│   │   ├── marketSlice.ts         # Coins, market overview, watchlist, alerts
+│   │   └── widgetSlice.ts         # Widget ordering, add/remove, expand
+│   └── useCryptoStore.ts          # Root combined store
+└── types/
+    └── crypto.ts                  # TypeScript interfaces and schemas
 ```
 
 ---
 
-## 3. Real-Time Streaming & AI Response Simulator
-- Implements a token-by-token async generator with dynamic pauses (15ms - 35ms per chunk).
-- Supports Deep Research chain-of-thought steps before final markdown output.
-- Emits rich key point badges with custom SVG bullet icons matching the provided reference screenshot.
-- Dynamically attaches inline live token metrics cards when specific coins are mentioned.
-
----
-
-## 4. Voice Input & Audio Speech (TTS)
-- **Speech Recognition (STT):** Integrates browser Web Speech API `webkitSpeechRecognition` with fallback simulation + real-time microphone Web Audio API frequency analysis driving an animated canvas audio waveform.
-- **Text-to-Speech (TTS):** Uses `window.speechSynthesis` with speech rate/pitch options, animated sound equalizer indicator, and pause/resume/stop controls.
-
----
-
-## 5. Keyboard Navigation & Command Palette (`⌘K`)
-- Global shortcut listener for `⌘K` (Mac) and `Ctrl+K` (Windows/Linux) to open the Command Palette.
-- `⌘N` for New Chat.
-- `/` to focus the main chat input.
-- `Esc` to dismiss all active overlays and modals.
-- Full arrow-key selection in the Command Palette and history lists.
+## 3. Implementation Roadmap
+1. **Shared UI Primitives**: Build `<Modal />`, `<Button />`, `<Card />`, `<Badge />`, and `<Input />` in `src/components/ui/`.
+2. **Store Slicing**: Decompose `useCryptoStore.ts` into 5 domain slices with Zustand `persist`.
+3. **API Layer Extraction**: Create `chatService.ts`, `marketService.ts`, and `walletService.ts` in `src/api/`.
+4. **Modal Migration**: Refactor all 13 modals in `src/components/modals/` to use `<Modal />`.
+5. **Streaming Optimization**: Add 50ms batching for token state dispatches.

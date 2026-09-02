@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './components/auth/LoginPage';
+import { StyleGuidePage } from './components/styleguide/StyleGuidePage';
 import { useCryptoStore } from './store/useCryptoStore';
 
 const ChatRouteWrapper: React.FC = () => {
@@ -24,6 +25,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Hidden Developer & Designer Style Guide Route */}
+        <Route path="/style-guide" element={<StyleGuidePage />} />
+        <Route path="/design-system" element={<Navigate to="/style-guide" replace />} />
+
         {/* Auth Route: 2-step Login & Wallet Ready flow */}
         <Route
           path="/login"

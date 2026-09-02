@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Folder, Sparkles } from 'lucide-react';
+import { Folder, Sparkles } from 'lucide-react';
+import { Modal, Button } from '../ui';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { FolderIconRenderer } from '../common/FolderIconRenderer';
 
@@ -30,7 +30,8 @@ const ICON_PRESETS = [
   { id: 'rocket', label: 'Launch' },
 ];
 
-const FolderModalContent: React.FC = () => {
+export const FolderModal: React.FC = () => {
+  const isOpen = useCryptoStore((s) => s.isFolderModalOpen);
   const editingFolderId = useCryptoStore((s) => s.editingFolderId);
   const folders = useCryptoStore((s) => s.folders);
   const createFolder = useCryptoStore((s) => s.createFolder);
@@ -55,139 +56,95 @@ const FolderModalContent: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={closeFolderModal}
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs"
-      />
-
-      {/* Dialog Content */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative w-full max-w-md bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-flyout p-6 text-[var(--text-primary)] z-10"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[var(--border-color)]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center text-sm font-bold">
-              <FolderIconRenderer iconName={selectedIcon} className="w-4 h-4" />
-            </div>
-            <h2 className="text-base font-bold">
-              {editingFolderId ? 'Edit Folder' : 'Create New Folder'}
-            </h2>
+    <Modal
+      isOpen={isOpen}
+      onClose={closeFolderModal}
+      title={editingFolderId ? 'Edit Folder' : 'Create New Folder'}
+      icon={<FolderIconRenderer iconName={selectedIcon} className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />}
+      maxWidth="max-w-md"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Folder Name */}
+        <div>
+          <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
+            Folder Name
+          </label>
+          <div className="flex items-center gap-2 bg-[var(--bg-app)] border border-[var(--border-color)] focus-within:border-[#485442] dark:focus-within:border-[#55604e] rounded-xl px-3 py-2 transition-colors">
+            <Folder className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Trading Bots, Research, UI Designs..."
+              className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+              autoFocus
+            />
           </div>
-          <button
-            onClick={closeFolderModal}
-            className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          {/* Folder Name */}
-          <div>
-            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
-              Folder Name
-            </label>
-            <div className="flex items-center gap-2 bg-[var(--bg-app)] border border-[var(--border-color)] focus-within:border-[var(--primary)] rounded-xl px-3 py-2 transition-colors">
-              <Folder className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Trading Bots, Research, UI Designs..."
-                className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
-                autoFocus
+        {/* Choose SVG Icon */}
+        <div>
+          <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
+            Icon
+          </label>
+          <div className="grid grid-cols-6 gap-1.5">
+            {ICON_PRESETS.map((iconItem) => (
+              <button
+                key={iconItem.id}
+                type="button"
+                onClick={() => setSelectedIcon(iconItem.id)}
+                title={iconItem.label}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                  selectedIcon === iconItem.id
+                    ? 'bg-[#485442]/10 border border-[#485442] text-[#485442] dark:text-[#8A9E7F] scale-105 shadow-2xs'
+                    : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+                }`}
+              >
+                <FolderIconRenderer iconName={iconItem.id} className="w-4 h-4" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Color Accent */}
+        <div>
+          <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
+            Accent Color
+          </label>
+          <div className="flex items-center gap-2 flex-wrap">
+            {COLOR_PRESETS.map((color) => (
+              <button
+                key={color.hex}
+                type="button"
+                onClick={() => setSelectedColor(color.hex)}
+                style={{ backgroundColor: color.hex }}
+                className={`w-6 h-6 rounded-full transition-transform cursor-pointer ${
+                  selectedColor === color.hex
+                    ? 'ring-2 ring-offset-2 ring-[#485442] scale-110'
+                    : 'hover:scale-105'
+                }`}
+                title={color.label}
               />
-            </div>
+            ))}
           </div>
+        </div>
 
-          {/* Choose SVG Icon */}
-          <div>
-            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
-              Icon
-            </label>
-            <div className="grid grid-cols-6 gap-1.5">
-              {ICON_PRESETS.map((iconItem) => (
-                <button
-                  key={iconItem.id}
-                  type="button"
-                  onClick={() => setSelectedIcon(iconItem.id)}
-                  title={iconItem.label}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
-                    selectedIcon === iconItem.id
-                      ? 'bg-[var(--primary-light)] border border-[var(--primary)] text-[var(--primary)] scale-105 shadow-xs'
-                      : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-                  }`}
-                >
-                  <FolderIconRenderer iconName={iconItem.id} className="w-4 h-4" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color Accent */}
-          <div>
-            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1.5 uppercase tracking-wider">
-              Accent Color
-            </label>
-            <div className="flex items-center gap-2 flex-wrap">
-              {COLOR_PRESETS.map((color) => (
-                <button
-                  key={color.hex}
-                  type="button"
-                  onClick={() => setSelectedColor(color.hex)}
-                  style={{ backgroundColor: color.hex }}
-                  className={`w-6 h-6 rounded-full transition-transform cursor-pointer ${
-                    selectedColor === color.hex ? 'ring-2 ring-offset-2 ring-[var(--primary)] scale-115' : 'hover:scale-105'
-                  }`}
-                  title={color.label}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Submit Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[var(--border-color)]">
-            <button
-              type="button"
-              onClick={closeFolderModal}
-              className="px-4 py-2 text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!name.trim()}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[var(--primary)] hover:opacity-95 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-button-primary transition-all cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{editingFolderId ? 'Save Changes' : 'Create Folder'}</span>
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </div>
-  );
-};
-
-export const FolderModal: React.FC = () => {
-  const isOpen = useCryptoStore((s) => s.isFolderModalOpen);
-  const editingFolderId = useCryptoStore((s) => s.editingFolderId);
-
-  if (!isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      <FolderModalContent key={editingFolderId || 'new'} />
-    </AnimatePresence>
+        {/* Submit Actions */}
+        <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[var(--border-color)]">
+          <Button type="button" variant="ghost" size="sm" onClick={closeFolderModal}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            size="sm"
+            disabled={!name.trim()}
+            icon={<Sparkles className="w-3.5 h-3.5" />}
+          >
+            {editingFolderId ? 'Save Changes' : 'Create Folder'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { X, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { Modal, Button } from '../ui';
 import { useCryptoStore } from '../../store/useCryptoStore';
 
 export const DeleteModal: React.FC = () => {
@@ -12,60 +12,48 @@ export const DeleteModal: React.FC = () => {
 
   const currentChat = conversations.find((c) => c.id === targetChatId);
 
-  if (!isOpen || !currentChat) return null;
+  if (!currentChat) return null;
 
-  const handleDelete = () => {
-    deleteConversation(currentChat.id);
+  const handleClose = () => {
     setModalState('isDeleteModalOpen', false);
   };
 
-  return (
-    <div
-      onClick={() => setModalState('isDeleteModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.2 }}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-flyout p-6 space-y-4"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-red-500/10 text-red-500 rounded-xl">
-              <Trash2 className="w-4 h-4" />
-            </div>
-            <h4 className="font-bold text-sm text-[var(--text-primary)]">Delete Chat?</h4>
-          </div>
-          <button
-            onClick={() => setModalState('isDeleteModalOpen', false)}
-            className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+  const handleDelete = () => {
+    deleteConversation(currentChat.id);
+    handleClose();
+  };
 
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Delete Chat?"
+      icon={<Trash2 className="w-4 h-4 text-red-500" />}
+      maxWidth="max-w-sm"
+    >
+      <div className="space-y-4">
         <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-          Are you sure you want to delete <strong className="text-[var(--text-primary)]">"{currentChat.title}"</strong>? This will remove all messages from your local history.
+          Are you sure you want to delete{' '}
+          <strong className="text-[var(--text-primary)] font-semibold">
+            "{currentChat.title}"
+          </strong>
+          ? This will remove all messages from your local history.
         </p>
 
         <div className="flex justify-end gap-2 pt-2">
-          <button
-            onClick={() => setModalState('isDeleteModalOpen', false)}
-            className="px-3.5 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] rounded-xl"
-          >
+          <Button type="button" variant="ghost" size="sm" onClick={handleClose}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            size="sm"
             onClick={handleDelete}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-xl transition-colors shadow-2xs"
+            className="bg-red-500 hover:bg-red-600 text-white border-transparent"
           >
             Delete Permanently
-          </button>
+          </Button>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </Modal>
   );
 };

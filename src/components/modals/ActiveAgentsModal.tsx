@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X,
   Bot,
   Shield,
   TrendingUp,
@@ -17,6 +16,7 @@ import {
   Layers,
   CheckCircle2,
 } from 'lucide-react';
+import { Modal, Button } from '../ui';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import type { AIAgent } from '../../types/crypto';
 
@@ -32,7 +32,9 @@ export const ActiveAgentsModal: React.FC = () => {
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const sendMessage = useCryptoStore((s) => s.sendMessage);
 
-  if (!isOpen) return null;
+  const handleClose = () => {
+    setModalState('isActiveAgentsModalOpen', false);
+  };
 
   const filteredAgents = agents.filter((agent) => {
     if (filter === 'running') return agent.status === 'running';
@@ -46,24 +48,26 @@ export const ActiveAgentsModal: React.FC = () => {
   const getAgentIcon = (type: AIAgent['iconType']) => {
     switch (type) {
       case 'shield':
-        return <Shield className="w-5 h-5 text-blue-500" />;
+        return <Shield className="w-4 h-4 text-blue-500" />;
       case 'trending':
-        return <TrendingUp className="w-5 h-5 text-emerald-500" />;
+        return <TrendingUp className="w-4 h-4 text-emerald-500" />;
       case 'globe':
-        return <Globe className="w-5 h-5 text-indigo-500" />;
+        return <Globe className="w-4 h-4 text-indigo-500" />;
       case 'zap':
-        return <Zap className="w-5 h-5 text-amber-500" />;
+        return <Zap className="w-4 h-4 text-amber-500" />;
       case 'cpu':
       default:
-        return <Cpu className="w-5 h-5 text-[var(--primary)]" />;
+        return <Cpu className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />;
     }
   };
 
   const handleChatWithAgent = (agent: AIAgent) => {
-    setModalState('isActiveAgentsModalOpen', false);
+    handleClose();
     createNewChat();
     setTimeout(() => {
-      sendMessage(`[Delegating to ${agent.name}] Analyze current high-priority market triggers and provide an executive intelligence briefing.`);
+      sendMessage(
+        `[Delegating to ${agent.name}] Analyze current high-priority market triggers and provide an executive intelligence briefing.`
+      );
     }, 150);
   };
 
@@ -77,61 +81,31 @@ export const ActiveAgentsModal: React.FC = () => {
   };
 
   return (
-    <div
-      onClick={() => setModalState('isActiveAgentsModalOpen', false)}
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Active AI Agents & Subagents"
+      subtitle="Specialized subagents executing parallel on-chain telemetry and deep research."
+      icon={<Bot className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />}
+      maxWidth="max-w-2xl"
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl bg-[var(--bg-card)] rounded-[28px] border border-[var(--border-color)] shadow-flyout overflow-hidden flex flex-col max-h-[88vh]"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border-color)]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0 shadow-2xs">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-lg text-[var(--text-primary)] tracking-tight">
-                  Active AI Agents & Subagents
-                </h3>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {activeCount} Running
-                </span>
-              </div>
-              <p className="text-xs text-[var(--text-muted)]">
-                Specialized subagents executing parallel on-chain telemetry and deep research.
-              </p>
-            </div>
+      <div className="space-y-3 max-h-[70vh] flex flex-col">
+        {/* Top Quick Actions */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{activeCount} Subagents Running</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleDeployNew}
-              disabled={isDeploying}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--primary)] text-white text-xs font-semibold shadow-button-primary hover:opacity-95 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {isDeploying ? (
-                <span className="animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full" />
-              ) : (
-                <Plus className="w-3.5 h-3.5" />
-              )}
-              <span>Deploy Subagent</span>
-            </button>
-
-            <button
-              onClick={() => setModalState('isActiveAgentsModalOpen', false)}
-              className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <Button
+            size="xs"
+            variant="primary"
+            onClick={handleDeployNew}
+            isLoading={isDeploying}
+            icon={<Plus className="w-3.5 h-3.5" />}
+          >
+            Deploy Subagent
+          </Button>
         </div>
 
         {/* Deploy Toast Notification */}
@@ -141,7 +115,7 @@ export const ActiveAgentsModal: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="px-6 py-2.5 bg-emerald-500/10 border-b border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-medium flex items-center gap-2"
+              className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-700 dark:text-emerald-300 text-xs font-medium flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <span>Custom Subagent instantiated on Base Sepolia execution node!</span>
@@ -150,20 +124,22 @@ export const ActiveAgentsModal: React.FC = () => {
         </AnimatePresence>
 
         {/* Global Telemetry Bar */}
-        <div className="grid grid-cols-3 gap-2 px-6 py-3 bg-[var(--bg-app)] border-b border-[var(--border-color)] text-xs">
+        <div className="grid grid-cols-3 gap-2 p-2.5 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] text-xs">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[var(--primary)]" />
+            <Activity className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />
             <div>
-              <div className="font-bold text-[var(--text-primary)] font-mono">{totalTasks.toLocaleString()}</div>
-              <div className="text-[10.5px] text-[var(--text-muted)]">Tasks Executed</div>
+              <div className="font-bold text-[var(--text-primary)] font-mono">
+                {totalTasks.toLocaleString()}
+              </div>
+              <div className="text-[10px] text-[var(--text-muted)]">Tasks Executed</div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <Server className="w-4 h-4 text-emerald-500" />
             <div>
-              <div className="font-bold text-[var(--text-primary)] font-mono">142ms Avg</div>
-              <div className="text-[10.5px] text-[var(--text-muted)]">Subagent Latency</div>
+              <div className="font-bold text-[var(--text-primary)] font-mono">142ms</div>
+              <div className="text-[10px] text-[var(--text-muted)]">Avg Latency</div>
             </div>
           </div>
 
@@ -171,50 +147,47 @@ export const ActiveAgentsModal: React.FC = () => {
             <Layers className="w-4 h-4 text-indigo-500" />
             <div>
               <div className="font-bold text-[var(--text-primary)] font-mono">99.8%</div>
-              <div className="text-[10.5px] text-[var(--text-muted)]">Node Uptime</div>
+              <div className="text-[10px] text-[var(--text-muted)]">Node Uptime</div>
             </div>
           </div>
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 px-6 pt-3 pb-1 border-b border-[var(--border-color)]">
+        <div className="flex items-center gap-1.5 pt-1">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'all'
-                ? 'bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-2xs font-bold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-[#485442] dark:bg-[#55604e] text-white'
+                : 'bg-[var(--bg-app)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
             }`}
           >
-            All Subagents ({agents.length})
+            All ({agents.length})
           </button>
-
           <button
             onClick={() => setFilter('running')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'running'
-                ? 'bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-2xs font-bold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-[#485442] dark:bg-[#55604e] text-white'
+                : 'bg-[var(--bg-app)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Running ({agents.filter((a) => a.status === 'running').length})</span>
+            Running ({agents.filter((a) => a.status === 'running').length})
           </button>
-
           <button
             onClick={() => setFilter('active')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'active'
-                ? 'bg-[var(--bg-app)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-2xs font-bold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-[#485442] dark:bg-[#55604e] text-white'
+                : 'bg-[var(--bg-app)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
             }`}
           >
-            Active & Ready ({activeCount})
+            Active ({activeCount})
           </button>
         </div>
 
         {/* Agent Cards List */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-3">
+        <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
           {filteredAgents.map((agent) => {
             const isPaused = agent.status === 'paused';
             const isRunning = agent.status === 'running';
@@ -222,102 +195,67 @@ export const ActiveAgentsModal: React.FC = () => {
             return (
               <div
                 key={agent.id}
-                className={`p-4 rounded-2xl border transition-all ${
+                className={`p-3.5 rounded-2xl border transition-all ${
                   isRunning
-                    ? 'bg-[var(--bg-card)] border-[var(--border-color)] hover:border-[var(--primary)]/50 shadow-2xs'
-                    : isPaused
-                    ? 'bg-[var(--bg-app)]/50 border-[var(--border-color)] opacity-70'
-                    : 'bg-[var(--bg-card)] border-[var(--border-color)]'
+                    ? 'bg-[var(--bg-card)] border-[var(--border-color)] shadow-2xs'
+                    : 'bg-[var(--bg-app)]/60 border-[var(--border-color)] opacity-75'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  {/* Left Icon & Info */}
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center flex-shrink-0 shadow-2xs mt-0.5">
+                    <div className="w-8 h-8 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-center flex-shrink-0 mt-0.5">
                       {getAgentIcon(agent.iconType)}
                     </div>
 
-                    <div className="min-w-0 space-y-1">
+                    <div className="min-w-0 space-y-0.5">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-sm text-[var(--text-primary)] tracking-tight">
+                        <h4 className="font-bold text-xs text-[var(--text-primary)] tracking-tight">
                           {agent.name}
                         </h4>
-                        <span className="text-[10px] px-2 py-0.2 rounded-md bg-[var(--bg-app)] border border-[var(--border-color)] font-medium text-[var(--text-secondary)]">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)]">
                           {agent.role}
                         </span>
-
-                        {/* Status Badge */}
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-bold ${
+                          className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[9.5px] font-bold ${
                             isRunning
                               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                              : isPaused
-                              ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                              : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                           }`}
                         >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isRunning
-                                ? 'bg-emerald-500 animate-pulse'
-                                : isPaused
-                                ? 'bg-amber-500'
-                                : 'bg-blue-500'
-                            }`}
-                          />
                           {agent.status.toUpperCase()}
                         </span>
                       </div>
 
-                      <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-[11.5px] text-[var(--text-muted)] leading-relaxed">
                         {agent.description}
                       </p>
                     </div>
                   </div>
 
-                  {/* Right Actions */}
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       onClick={() => toggleAgentStatus(agent.id)}
                       title={isPaused ? 'Resume Agent' : 'Pause Agent'}
-                      className={`p-2 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
-                        isPaused
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20'
-                          : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-                      }`}
+                      className="p-1.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                     >
                       {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
                     </button>
 
-                    <button
+                    <Button
+                      variant="primary"
+                      size="xs"
                       onClick={() => handleChatWithAgent(agent)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--primary)] text-white text-xs font-semibold shadow-button-primary hover:opacity-90 transition-opacity cursor-pointer"
+                      icon={<MessageSquare className="w-3 h-3" />}
                     >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>Chat</span>
-                    </button>
+                      Chat
+                    </Button>
                   </div>
-                </div>
-
-                {/* Subagent Meta Details Footer */}
-                <div className="mt-3 pt-3 border-t border-[var(--border-color)]/60 flex items-center justify-between text-[11px] text-[var(--text-muted)] flex-wrap gap-2">
-                  <div className="flex items-center gap-3">
-                    <span>Model: <strong className="font-mono text-[var(--text-primary)]">{agent.model}</strong></span>
-                    <span>•</span>
-                    <span>Uptime: <strong className="font-mono text-[var(--text-primary)]">{agent.uptime}</strong></span>
-                    <span>•</span>
-                    <span>Latency: <strong className="font-mono text-[var(--text-primary)]">{agent.latencyMs}ms</strong></span>
-                  </div>
-
-                  <span className="font-mono text-[10.5px]">
-                    Tasks: <strong className="text-[var(--text-primary)]">{agent.tasksCompleted.toLocaleString()}</strong>
-                  </span>
                 </div>
               </div>
             );
           })}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </Modal>
   );
 };

@@ -33,7 +33,7 @@ export function useSpeechRecognition({ onTranscript }: UseSpeechRecognitionProps
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -86,12 +86,19 @@ export function useSpeechRecognition({ onTranscript }: UseSpeechRecognitionProps
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
       }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+      }
     };
   }, [onTranscript]);
 
   const startAudioVisualizer = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
       const windowAudio = window as unknown as {
         AudioContext?: typeof AudioContext;
         webkitAudioContext?: typeof AudioContext;
@@ -106,7 +113,6 @@ export function useSpeechRecognition({ onTranscript }: UseSpeechRecognitionProps
       source.connect(analyser);
 
       audioContextRef.current = audioCtx;
-      analyserRef.current = analyser;
 
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       const updateVolume = () => {
@@ -137,8 +143,13 @@ export function useSpeechRecognition({ onTranscript }: UseSpeechRecognitionProps
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
       }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+      }
       if (audioContextRef.current) {
         audioContextRef.current.close().catch(() => {});
+        audioContextRef.current = null;
       }
       setIsListening(false);
       setAudioLevel(0);
