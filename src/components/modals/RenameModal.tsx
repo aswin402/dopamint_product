@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { Modal, Button } from '../ui';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -11,13 +11,13 @@ export const RenameModal: React.FC = () => {
   const renameConversation = useCryptoStore((s) => s.renameConversation);
 
   const currentChat = conversations.find((c) => c.id === targetChatId);
+  const [prevId, setPrevId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
 
-  useEffect(() => {
-    if (currentChat) {
-      setTitle(currentChat.title);
-    }
-  }, [currentChat]);
+  if (currentChat && currentChat.id !== prevId) {
+    setPrevId(currentChat.id);
+    setTitle(currentChat.title);
+  }
 
   if (!currentChat) return null;
 
@@ -38,26 +38,30 @@ export const RenameModal: React.FC = () => {
       isOpen={isOpen}
       onClose={handleClose}
       title="Rename Conversation"
-      icon={<Pencil className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />}
-      maxWidth="max-w-sm"
+      icon={<Pencil className="w-5 h-5 text-[#485442] dark:text-[#8A9E7F]" />}
+      maxWidth="sm"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          autoFocus
-          className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[#485442] dark:focus:border-[#55604e] focus:ring-2 focus:ring-[#485442]/15"
-          placeholder="Enter conversation title..."
-        />
+        <div>
+          <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+            Conversation Title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. BTC ETF Inflows Analysis"
+            autoFocus
+            className="w-full h-10 px-3.5 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#485442] dark:focus:border-[#8A9E7F] transition-colors"
+          />
+        </div>
 
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" size="sm" onClick={handleClose}>
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border-color)]">
+          <Button variant="ghost" size="sm" type="button" onClick={handleClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary" size="sm">
-            Save Changes
+          <Button variant="primary" size="sm" type="submit" disabled={!title.trim()}>
+            Save Title
           </Button>
         </div>
       </form>

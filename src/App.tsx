@@ -25,9 +25,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Hidden Developer & Designer Style Guide Route */}
+        {/* Hidden Developer & Designer Style Guide Routes */}
         <Route path="/style-guide" element={<StyleGuidePage />} />
+        <Route path="/styleguide" element={<Navigate to="/style-guide" replace />} />
         <Route path="/design-system" element={<Navigate to="/style-guide" replace />} />
+
+        {/* Dedicated Light Mode Style Guide */}
+        <Route path="/style-guide-light" element={<StyleGuidePage forcedTheme="light" />} />
+        <Route path="/styleguide-light" element={<Navigate to="/style-guide-light" replace />} />
+
+        {/* Dedicated Dark Mode Style Guide */}
+        <Route path="/style-guide-dark" element={<StyleGuidePage forcedTheme="dark" />} />
+        <Route path="/styleguide-dark" element={<Navigate to="/style-guide-dark" replace />} />
 
         {/* Auth Route: 2-step Login & Wallet Ready flow */}
         <Route

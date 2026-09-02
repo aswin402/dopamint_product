@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   Sun,
@@ -6,30 +6,31 @@ import {
   Copy,
   Check,
   ArrowRight,
-  Bell,
-  PieChart,
-  Star,
-  Settings,
-  Bot,
-  Layers,
   Code2,
-  ShieldCheck,
-  TrendingUp,
-  ArrowUpRight,
-  Folder,
   Search,
+  Award,
+  Flame,
+  Wallet,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { Button, Badge, Card, Input } from '../ui';
 import { TokenIcon } from '../common/TokenIcon';
-import { FearGreedGauge } from '../insights/FearGreedGauge';
 import { ThinkingAccordion } from '../chat/ThinkingAccordion';
 import { KeyPointsCard } from '../chat/KeyPointsCard';
 import { CodeBlock } from '../chat/CodeBlock';
-import { SuggestedPrompts } from '../chat/SuggestedPrompts';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { triggerCelebration, triggerConfetti } from '../../lib/confetti';
 import type { KeyPointItem, ThinkingStep } from '../../types/crypto';
+
+// All 8 Modular iPhone-Grade Widgets
+import { MarketOverviewWidget } from '../widgets/MarketOverviewWidget';
+import { TokenUnlockWidget } from '../widgets/TokenUnlockWidget';
+import { OrderBookDepthWidget } from '../widgets/OrderBookDepthWidget';
+import { WhaleTrackingWidget } from '../widgets/WhaleTrackingWidget';
+import { ExchangeNetflowWidget } from '../widgets/ExchangeNetflowWidget';
+import { ListingFeedWidget } from '../widgets/ListingFeedWidget';
+import { SentimentNewsWidget } from '../widgets/SentimentNewsWidget';
+import { PortfolioSummaryWidget } from '../widgets/PortfolioSummaryWidget';
 
 // Global Modals for trigger preview
 import { CommandPalette } from '../modals/CommandPalette';
@@ -193,17 +194,28 @@ const SAMPLE_KEY_POINTS: KeyPointItem[] = [
   },
 ];
 
-export const StyleGuidePage: React.FC = () => {
+interface StyleGuidePageProps {
+  forcedTheme?: 'light' | 'dark';
+}
+
+export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) => {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
-  const [buttonVariant, setButtonVariant] = useState<'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'>('primary');
-  const [buttonSize, setButtonSize] = useState<'xs' | 'sm' | 'md' | 'lg'>('md');
-  const [buttonLoading, setButtonLoading] = useState(false);
   const [inputVal, setInputVal] = useState('Search Bitcoin, Ethereum, Solana...');
   const [activeSection, setActiveSection] = useState('colors');
 
-  const theme = useCryptoStore((s) => s.theme);
+  const storeTheme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
+  const setTheme = useCryptoStore((s) => s.setTheme);
   const setModalState = useCryptoStore((s) => s.setModalState);
+
+  const currentTheme = forcedTheme || storeTheme;
+
+  useEffect(() => {
+    if (forcedTheme) {
+      document.documentElement.classList.toggle('dark', forcedTheme === 'dark');
+      setTheme(forcedTheme);
+    }
+  }, [forcedTheme, setTheme]);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -212,16 +224,18 @@ export const StyleGuidePage: React.FC = () => {
   };
 
   const navSections = [
-    { id: 'colors', label: 'Color Tokens' },
-    { id: 'typography', label: 'Typography & Tabular' },
-    { id: 'buttons', label: 'Buttons & Controls' },
-    { id: 'badges', label: 'Badges & Key Points' },
-    { id: 'cards', label: 'Cards & Geometry' },
-    { id: 'inputs', label: 'Form Inputs' },
-    { id: 'chat', label: 'Chat Components' },
-    { id: 'telemetry', label: 'Financial Telemetry' },
-    { id: 'modals', label: 'Modals & Dialogs' },
-    { id: 'motion', label: 'Physics Springs' },
+    { id: 'colors', label: '1. Color Tokens (OKLCH)' },
+    { id: 'typography', label: '2. Typography & Numerals' },
+    { id: 'buttons', label: '3. Buttons & Controls' },
+    { id: 'badges', label: '4. Badges & Token Icons' },
+    { id: 'cards', label: '5. Cards & Surface Elevation' },
+    { id: 'inputs', label: '6. Inputs & Prompt Bar' },
+    { id: 'chat', label: '7. AI Chat & Thinking' },
+    { id: 'widgets', label: '8. 8 iPhone-Grade Widgets' },
+    { id: 'points', label: '9. Points, XP & Streaks' },
+    { id: 'refer', label: '10. Refer & Leaderboard' },
+    { id: 'modals', label: '11. Modals & Dialogs (13)' },
+    { id: 'figma', label: '12. Figma Tokens JSON Export' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -233,7 +247,7 @@ export const StyleGuidePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen max-w-[100vw] bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden selection:bg-[#485442]/30 selection:text-inherit transition-colors duration-200">
+    <div className={`min-h-screen w-screen max-w-[100vw] bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden selection:bg-[#485442]/30 selection:text-inherit transition-colors duration-200 ${forcedTheme === 'dark' ? 'dark' : ''}`}>
       {/* Top Header Navigation */}
       <header className="sticky top-0 z-40 bg-[var(--bg-card)]/90 backdrop-blur-md border-b border-[var(--border-color)] px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 transition-colors">
         <div className="flex items-center gap-3">
@@ -241,38 +255,69 @@ export const StyleGuidePage: React.FC = () => {
             <img src={crownLogo} alt="dopamint crown" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-extrabold text-sm sm:text-base tracking-tight text-[var(--text-primary)]">
                 dopamint Design System
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8A9E7F] border border-[#485442]/20 font-mono">
-                OKLCH SPEC v2.4
+              <span className={`px-2.5 py-0.5 rounded-full text-[10.5px] font-bold font-mono border ${
+                currentTheme === 'light'
+                  ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
+                  : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+              }`}>
+                {forcedTheme ? `${forcedTheme.toUpperCase()} MODE SPEC` : `THEME: ${currentTheme.toUpperCase()}`}
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] hidden sm:block">
-              Living component library & interactive token specification
+              Comprehensive Figma & Developer Style Guide — Complete Component Library
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {/* Theme Switcher Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all cursor-pointer shadow-2xs"
-          >
-            {theme === 'light' ? (
-              <>
-                <Moon className="w-3.5 h-3.5 text-indigo-500" />
-                <span className="hidden md:inline">Dark Obsidian</span>
-              </>
-            ) : (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden md:inline">Light Cream</span>
-              </>
-            )}
-          </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Quick links to light & dark dedicated versions */}
+          <div className="hidden md:flex items-center p-0.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)]">
+            <a
+              href="/style-guide-light"
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                currentTheme === 'light' && forcedTheme === 'light'
+                  ? 'bg-[var(--bg-card)] text-[#485442] shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              <Sun className="w-3 h-3 text-amber-500" />
+              <span>Light Spec</span>
+            </a>
+            <a
+              href="/style-guide-dark"
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                currentTheme === 'dark' && forcedTheme === 'dark'
+                  ? 'bg-[var(--bg-card)] text-[#8A9E7F] shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              <Moon className="w-3 h-3 text-indigo-400" />
+              <span>Dark Spec</span>
+            </a>
+          </div>
+
+          {!forcedTheme && (
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all cursor-pointer shadow-2xs"
+            >
+              {currentTheme === 'light' ? (
+                <>
+                  <Moon className="w-3.5 h-3.5 text-indigo-500" />
+                  <span className="hidden sm:inline">Dark</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="hidden sm:inline">Light</span>
+                </>
+              )}
+            </button>
+          )}
 
           <Button
             size="sm"
@@ -280,26 +325,26 @@ export const StyleGuidePage: React.FC = () => {
             onClick={() => triggerCelebration()}
             icon={<Sparkles className="w-3.5 h-3.5" />}
           >
-            Celebration
+            Confetti
           </Button>
 
           <a
             href="/"
             className="px-3 py-1.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all flex items-center gap-1.5"
           >
-            <span>Return to App</span>
+            <span>Dashboard</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </a>
         </div>
       </header>
 
-      {/* Main Layout: Sticky Category Sidebar + Content Canvas */}
+      {/* Main Layout: Sticky Navigation + Content Stream */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8 flex gap-8">
         {/* Left Sticky Navigation Menu */}
-        <aside className="hidden lg:block w-56 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+        <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 no-scrollbar">
           <div className="space-y-1">
             <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-3 mb-2">
-              Sections
+              Style Guide Index
             </p>
             {navSections.map((sec) => (
               <button
@@ -317,34 +362,34 @@ export const StyleGuidePage: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-8 p-3 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] space-y-2">
+          <div className="mt-8 p-3.5 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] space-y-2 shadow-2xs">
             <div className="flex items-center gap-2">
               <Code2 className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />
-              <span className="text-xs font-bold text-[var(--text-primary)]">Route Notice</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]">Figma & Dev Export</span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-              This hidden route (<code className="font-mono text-[10px] bg-[var(--bg-app)] px-1 py-0.5 rounded">/style-guide</code>) allows developers & designers to inspect all tokens and UI states without cluttering public app navigation.
+              Every component, token, and widget is documented with live interactive previews and JSON specifications.
             </p>
           </div>
         </aside>
 
         {/* Right Content Stream */}
-        <main className="flex-1 min-w-0 space-y-14">
+        <main className="flex-1 min-w-0 space-y-16">
           {/* ═══════════════════════════════════════════════════════════
            *  SECTION 1: COLOR SYSTEM & OKLCH DESIGN TOKENS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="colors" className="space-y-4 scroll-mt-24">
-            <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between">
+            <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                  1. OKLCH Theme Architecture & Color Tokens
+                  1. OKLCH Design Tokens & Color Architecture
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Engineered in OKLCH perceptual space for consistent chroma and lightness across Light & Dark palettes.
+                  Engineered in OKLCH perceptual space for consistent chroma and contrast across Light Cream & Dark Obsidian palettes.
                 </p>
               </div>
               <Badge variant="primary" size="sm">
-                Active Theme: {theme.toUpperCase()}
+                Active Theme: {currentTheme.toUpperCase()}
               </Badge>
             </div>
 
@@ -408,12 +453,11 @@ export const StyleGuidePage: React.FC = () => {
                 2. Typography Hierarchy & Tabular Numeric Alignment
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Powered by Inter Variable font with strict tracking, optimal line-heights, and tabular figures for financial prices.
+                Inter Variable font with strict tracking, optimal line-heights, and tabular numbers for high-frequency financial updates.
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Type Scale Card */}
               <Card elevation="card" padding="md" className="space-y-3">
                 <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
                   Typographic Scale
@@ -440,25 +484,24 @@ export const StyleGuidePage: React.FC = () => {
                   <div className="pt-2">
                     <span className="text-[11px] text-[var(--text-muted)] block font-mono">Body Regular · 13.5px / Regular (1.6 Line Height)</span>
                     <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-                      CryptoGPT processes tokenomics, protocol documentation, and mempool transactions with sub-second retrieval accuracy.
+                      Dopamint processes tokenomics, protocol documentation, and mempool transactions with sub-second retrieval accuracy.
                     </p>
                   </div>
                   <div className="pt-2">
                     <span className="text-[11px] text-[var(--text-muted)] block font-mono">Microcopy & Caption · 11px / Medium</span>
                     <p className="text-[11px] text-[var(--text-muted)]">
-                      * Past performance does not guarantee future results. Crypto assets involve volatility.
+                      * Testnet simulated environment. Non-custodial keys secured by Privy.
                     </p>
                   </div>
                 </div>
               </Card>
 
-              {/* Tabular Numerals Comparison Card */}
               <Card elevation="card" padding="md" className="space-y-4">
                 <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
                   Financial Alignment (tabular-nums)
                 </span>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Financial figures are styled with <code className="bg-[var(--bg-app)] px-1.5 py-0.5 rounded font-mono text-[11px]">font-variant-numeric: tabular-nums</code> to ensure that columns of digits remain strictly aligned during live updates.
+                  Financial figures are styled with <code className="bg-[var(--bg-app)] px-1.5 py-0.5 rounded font-mono text-[11px]">tabular-nums</code> to ensure that columns of digits remain strictly aligned during live orderbook changes.
                 </p>
 
                 <div className="space-y-2 bg-[var(--bg-app)] p-3.5 rounded-2xl border border-[var(--border-color)]">
@@ -469,23 +512,23 @@ export const StyleGuidePage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between text-xs font-mono font-bold">
                     <span className="text-[var(--text-primary)]">Bitcoin (BTC)</span>
-                    <span className="tabular-nums text-[var(--text-primary)]">$87,942.50</span>
-                    <span className="text-[var(--green-trend)] tabular-nums">+4.82%</span>
+                    <span className="tabular-nums text-[var(--text-primary)]">$71,240.00</span>
+                    <span className="text-[var(--green-trend)] tabular-nums">+2.10%</span>
                   </div>
                   <div className="flex items-center justify-between text-xs font-mono font-bold">
                     <span className="text-[var(--text-primary)]">Ethereum (ETH)</span>
-                    <span className="tabular-nums text-[var(--text-primary)]">$3,240.15</span>
-                    <span className="text-[var(--green-trend)] tabular-nums">+2.15%</span>
+                    <span className="tabular-nums text-[var(--text-primary)]">$3,420.50</span>
+                    <span className="text-[var(--green-trend)] tabular-nums">+3.40%</span>
                   </div>
                   <div className="flex items-center justify-between text-xs font-mono font-bold">
                     <span className="text-[var(--text-primary)]">Solana (SOL)</span>
-                    <span className="tabular-nums text-[var(--text-primary)]">$194.50</span>
-                    <span className="text-[var(--red-trend)] tabular-nums">-1.30%</span>
+                    <span className="tabular-nums text-[var(--text-primary)]">$142.80</span>
+                    <span className="text-[var(--green-trend)] tabular-nums">+5.80%</span>
                   </div>
                   <div className="flex items-center justify-between text-xs font-mono font-bold">
-                    <span className="text-[var(--text-primary)]">Cardano (ADA)</span>
-                    <span className="tabular-nums text-[var(--text-primary)]">$0.8421</span>
-                    <span className="text-[var(--green-trend)] tabular-nums">+0.45%</span>
+                    <span className="text-[var(--text-primary)]">Aerodrome (AERO)</span>
+                    <span className="tabular-nums text-[var(--text-primary)]">$1.30</span>
+                    <span className="text-[var(--green-trend)] tabular-nums">+8.10%</span>
                   </div>
                 </div>
               </Card>
@@ -498,532 +541,506 @@ export const StyleGuidePage: React.FC = () => {
           <section id="buttons" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                3. Buttons & Interactive Controls Primitive
+                3. Buttons & Interactive Controls
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Standardized variants, sizes, loading states, and spring micro-press physics.
+                Multi-variant interactive buttons with haptic spring feedback, elevation shadows, and loading states.
               </p>
             </div>
 
-            {/* Interactive Button Playground */}
-            <Card elevation="card" padding="lg" className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
-                {/* Variant Selector */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs font-bold text-[var(--text-muted)] mr-1">Variant:</span>
-                  {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => setButtonVariant(v)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
-                        buttonVariant === v
-                          ? 'bg-[#485442] dark:bg-[#55604e] text-white'
-                          : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)]'
-                      }`}
-                    >
-                      {v}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Size Selector */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-[var(--text-muted)] mr-1">Size:</span>
-                  {(['xs', 'sm', 'md', 'lg'] as const).map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setButtonSize(s)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold uppercase transition-all cursor-pointer ${
-                        buttonSize === s
-                          ? 'bg-[#485442] dark:bg-[#55604e] text-white'
-                          : 'bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)]'
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Loading State Toggle */}
-                <button
-                  onClick={() => setButtonLoading(!buttonLoading)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
-                    buttonLoading
-                      ? 'bg-amber-500/10 text-amber-600 border-amber-500/30'
-                      : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-secondary)]'
-                  }`}
-                >
-                  {buttonLoading ? 'Loading: ON' : 'Loading: OFF'}
-                </button>
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <Button variant="primary">Primary Olive CTA</Button>
+                <Button variant="secondary">Secondary Card</Button>
+                <Button variant="outline">Outline Border</Button>
+                <Button variant="ghost">Ghost Action</Button>
+                <Button variant="danger">Destructive Action</Button>
+                <Button variant="primary" isLoading>Loading State</Button>
+                <Button variant="primary" disabled>Disabled State</Button>
               </div>
 
-              {/* Live Preview Area */}
-              <div className="p-8 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button
-                  variant={buttonVariant}
-                  size={buttonSize}
-                  isLoading={buttonLoading}
-                  onClick={() => triggerConfetti()}
-                  icon={<Sparkles className="w-4 h-4" />}
-                >
-                  Interactive Button
-                </Button>
-
-                <Button
-                  variant={buttonVariant}
-                  size={buttonSize}
-                  isLoading={buttonLoading}
-                  disabled
-                >
-                  Disabled State
-                </Button>
+              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-[var(--border-color)]">
+                <Button size="xs" variant="primary">Extra Small (xs)</Button>
+                <Button size="sm" variant="primary">Small (sm)</Button>
+                <Button size="md" variant="primary">Medium (md)</Button>
+                <Button size="lg" variant="primary">Large CTA (lg)</Button>
               </div>
-
-              {/* Code Snippet */}
-              <div className="p-3 bg-[var(--bg-card-subtle)] rounded-xl font-mono text-xs text-[var(--text-secondary)] flex items-center justify-between">
-                <code>
-                  {`<Button variant="${buttonVariant}" size="${buttonSize}"${buttonLoading ? ' isLoading' : ''}>Click Me</Button>`}
-                </code>
-                <button
-                  onClick={() =>
-                    copyToClipboard(
-                      `<Button variant="${buttonVariant}" size="${buttonSize}">Click Me</Button>`,
-                      'button-jsx'
-                    )
-                  }
-                  className="p-1 hover:text-[var(--text-primary)] cursor-pointer"
-                >
-                  {copiedToken === 'button-jsx' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-            </Card>
+            </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 4: BADGES & KEY POINT BULLET CARDS
+           *  SECTION 4: BADGES & TOKEN ICONS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="badges" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                4. Badges, Tags & Key Point Blocks
+                4. Status Badges, Categories & Token Vectors
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Custom colored badge bullets that structure AI synthesis answers in conversation.
+                Official vector cryptocurrency logos and semantic status tags.
               </p>
             </div>
 
-            <div className="space-y-4">
-              {/* Badge Variants Row */}
-              <Card elevation="card" padding="md" className="space-y-3">
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                  Status & Trend Badges
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
+              {/* Token Vector Icons */}
+              <div>
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
+                  Cryptocurrency Vector Logos
                 </span>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="trend-up" size="sm" icon={<TrendingUp className="w-3 h-3" />}>
-                    +8.42% 24h
-                  </Badge>
-                  <Badge variant="trend-down" size="sm">
-                    -3.15% 24h
-                  </Badge>
-                  <Badge variant="neutral" size="sm">
-                    0.00% Static
-                  </Badge>
-                  <Badge variant="primary" size="sm">
-                    Active Agent
-                  </Badge>
-                  <Badge variant="gold" size="sm" icon={<Sparkles className="w-3 h-3" />}>
-                    Pro Trader
-                  </Badge>
-                  <Badge variant="outline" size="sm">
-                    Base Sepolia Testnet
-                  </Badge>
+                <div className="flex items-center gap-4 flex-wrap">
+                  {['BTC', 'ETH', 'SOL', 'AERO', 'DEGEN', 'USDC'].map((sym) => (
+                    <div key={sym} className="flex items-center gap-2 p-2 px-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] shadow-2xs">
+                      <TokenIcon symbol={sym} size={24} />
+                      <span className="text-xs font-bold text-[var(--text-primary)]">{sym}</span>
+                    </div>
+                  ))}
                 </div>
-              </Card>
+              </div>
 
-              {/* Key Point Cards Preview */}
-              <Card elevation="card" padding="md" className="space-y-3">
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                  AI Key Point Blocks (PRD / Design Match)
+              {/* Status Badges */}
+              <div className="pt-4 border-t border-[var(--border-color)]">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
+                  Status & Sentiment Badges
                 </span>
-                <KeyPointsCard items={SAMPLE_KEY_POINTS} />
-              </Card>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <Badge variant="primary">Primary Brand</Badge>
+                  <Badge variant="trend-up">Bullish +2.1%</Badge>
+                  <Badge variant="trend-down">Bearish -3.4%</Badge>
+                  <Badge variant="gold">Unlock in 3d</Badge>
+                  <Badge variant="outline">Base Sepolia</Badge>
+                  <Badge variant="neutral">Neutral 62</Badge>
+                </div>
+              </div>
             </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 5: CARDS, SURFACES & ELEVATIONS
+           *  SECTION 5: CARDS & GEOMETRY
            * ═══════════════════════════════════════════════════════════ */}
           <section id="cards" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                5. Cards, Surfaces & Elevation Depths
+                5. Cards & Surface Elevation Architecture
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Soft optical shadows and rounded geometry (22px) supporting responsive grid hierarchy.
+                Layered surfaces with 4 distinct radii (`16px`, `20px`, `24px`, `28px`) and soft shadows.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Card elevation="none" padding="md" className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Elevation: None</span>
-                <p className="text-xs text-[var(--text-muted)]">Flat bordered surface for secondary containers.</p>
-              </Card>
-
-              <Card elevation="soft" padding="md" className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Elevation: Soft</span>
-                <p className="text-xs text-[var(--text-muted)]">Subtle ambient depth for sidebar items and pills.</p>
-              </Card>
-
-              <Card elevation="card" hoverLift padding="md" className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Elevation: Card (Lift)</span>
-                <p className="text-xs text-[var(--text-muted)]">Standard card surface with hover elevation transition.</p>
-              </Card>
-
-              <Card elevation="flyout" padding="md" className="space-y-2">
-                <span className="text-xs font-bold text-[var(--text-primary)]">Elevation: Flyout</span>
-                <p className="text-xs text-[var(--text-muted)]">High elevation shadow for floating modals & popovers.</p>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">radius: 16px · shadow-2xs</span>
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">Standard Card</h4>
+              </div>
+              <div className="p-4 rounded-[20px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-card space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">radius: 20px · shadow-card</span>
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">Medium Elevation</h4>
+              </div>
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-soft space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">radius: 24px · shadow-soft</span>
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">iPhone Widget Shell</h4>
+              </div>
+              <div className="p-4 rounded-[28px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">radius: 28px · shadow-flyout</span>
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">Modal Dialog Container</h4>
+              </div>
             </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 6: FORM CONTROLS & INPUTS
+           *  SECTION 6: INPUTS & PROMPT SEARCH BAR
            * ═══════════════════════════════════════════════════════════ */}
           <section id="inputs" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                6. Form Controls & Input Fields
+                6. Form Inputs & Hero Search Prompt Box
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Accessible inputs with focus rings, leading icons, error validations, and action slots.
+                Centered prompt input box (`max-w-[680px]`) with dark green border `#364432` and animated cycling placeholders.
               </p>
             </div>
 
-            <Card elevation="card" padding="lg" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
+              {/* Dashboard Hero Prompt Box Preview */}
+              <div className="max-w-[680px] mx-auto p-4 rounded-2xl bg-[var(--bg-app)] border-2 border-[#364432] dark:border-[#52634C] shadow-soft space-y-3">
+                <div className="flex items-center gap-2 text-sm text-[var(--text-primary)] font-medium">
+                  <Sparkles className="w-4 h-4 text-[#485442] dark:text-[#8A9E7F]" />
+                  <span>Ask AI anything about crypto, order books, whale moves...</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-[var(--text-muted)] pt-2 border-t border-[var(--border-color)]/60">
+                  <span>dopamint-4o Reasoning Engine</span>
+                  <span className="px-2 py-0.5 bg-[#485442] text-white rounded-lg font-semibold">Search (↵)</span>
+                </div>
+              </div>
+
+              {/* Standard inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Search Query"
-                  leftIcon={<Search className="w-4 h-4" />}
+                  label="Search Coins"
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
-                  hint="Type any token or protocol name"
+                  leftIcon={<Search className="w-4 h-4" />}
                 />
-
                 <Input
-                  label="Price Alert Target ($)"
-                  leftIcon={<Bell className="w-4 h-4" />}
-                  defaultValue="92000"
-                  hint="Trigger browser alert when BTC crosses threshold"
-                />
-
-                <Input
-                  label="Error State Example"
-                  defaultValue="invalid_wallet_address"
-                  error="Please enter a valid 42-character 0x EVM hex address."
-                />
-
-                <Input
-                  label="Read-Only Share Key"
-                  defaultValue="https://dopamint.ai/c/chat-btc-alpha"
+                  label="Wallet Address"
+                  value="0x4F2a91C8392F865eE824A1054E5F36423c9E3c76"
                   readOnly
-                  rightIcon={<Copy className="w-4 h-4 cursor-pointer" />}
+                  leftIcon={<Wallet className="w-4 h-4" />}
                 />
               </div>
-            </Card>
+            </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 7: CHAT COMPONENTS & STREAMING ANATOMY
+           *  SECTION 7: CHAT & AI REASONING COMPONENTS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="chat" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                7. Chat Message Stream Anatomy & Deep Research
+                7. AI Reasoning, Thinking Accordions & Code Blocks
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Thinking state accordions, code blocks, copy controls, and contextual follow-up chips.
+                Deep research thought processes, synthesized key points, and syntax-highlighted code blocks.
               </p>
             </div>
 
-            <div className="space-y-4 max-w-[820px]">
-              {/* User Message Bubble */}
-              <div className="flex justify-end">
-                <div className="max-w-[80%] bg-[var(--bg-chat-user)] border border-[var(--border-color)] p-4 rounded-[20px] shadow-2xs space-y-1">
-                  <p className="text-sm font-medium text-[var(--text-primary)] leading-relaxed">
-                    Explain Bitcoin's monetary hard cap and current on-chain liquidity depth across major L2 rollups.
-                  </p>
-                  <div className="flex items-center justify-end gap-1 text-[10px] text-[var(--text-muted)]">
-                    <span>1:45 PM</span>
-                    <Check className="w-3 h-3 text-blue-500" />
-                  </div>
+            <div className="space-y-4">
+              <ThinkingAccordion steps={SAMPLE_THINKING_STEPS} />
+              <KeyPointsCard items={SAMPLE_KEY_POINTS} />
+              <CodeBlock
+                language="typescript"
+                code={`// Dopamint Liquidity Retrieval Hook
+export const useOrderBookDepth = (tokenPair: string) => {
+  const { data } = useSWR(\`/api/v1/depth?pair=\${tokenPair}\`, fetcher, {
+    refreshInterval: 1000, // 1s sub-second stream
+  });
+  return { midPrice: data?.midPrice ?? 71240, bids: data?.bids ?? [] };
+};`}
+              />
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 8: 8 IPHONE-GRADE MODULAR WIDGETS
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="widgets" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                  8. 8 iPhone-Grade Modular Widgets (Live Showcase)
+                </h2>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  Complete suite of crypto trading widgets with Apple Squircle geometry, SVG sparklines, and live mockups.
+                </p>
+              </div>
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-[#485442]/10 text-[#485442] dark:text-[#8A9E7F] border border-[#485442]/20">
+                8 OF 8 WIDGETS
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 1. Market Overview */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">1 · Market Overview</span>
                 </div>
+                <MarketOverviewWidget />
               </div>
 
-              {/* Assistant Message Bubble */}
-              <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[24px] p-5 sm:p-6 shadow-card space-y-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] p-1 flex items-center justify-center">
-                    <img src={crownLogo} alt="crown" className="w-full h-full object-contain" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-xs text-[var(--text-primary)] block">dopamint-4o</span>
-                    <span className="text-[10.5px] text-[var(--text-muted)]">AI Cryptocurrency Intelligence</span>
-                  </div>
+              {/* 2. Token Unlock */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">2 · Token Unlock Calendar</span>
                 </div>
+                <TokenUnlockWidget />
+              </div>
 
-                {/* Deep Research Thinking Accordion */}
-                <ThinkingAccordion steps={SAMPLE_THINKING_STEPS} />
-
-                {/* Response Text */}
-                <p className="text-sm text-[var(--text-primary)] leading-relaxed">
-                  Bitcoin operates under an absolute hard cap of <strong>21,000,000 BTC</strong>, programmatic scarcity enforced through cryptographic Proof-of-Work consensus. On-chain liquidity across Base and Arbitrum has expanded by +34% following institutional ETF settlement flows.
-                </p>
-
-                {/* Key Points */}
-                <KeyPointsCard items={SAMPLE_KEY_POINTS} />
-
-                {/* Code Block */}
-                <CodeBlock
-                  language="solidity"
-                  code={`// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\ncontract SatoshiVault {\n    uint256 public constant MAX_SUPPLY = 21_000_000 * 1e18;\n    mapping(address => uint256) public balances;\n}`}
-                />
-
-                {/* Suggested Prompts */}
-                <div className="pt-2">
-                  <SuggestedPrompts
-                    prompts={[
-                      'Explain the Halving supply shock mechanics',
-                      'How do Lightning Network state channels route BTC?',
-                      'Compare Bitcoin vs Gold market capitalization',
-                    ]}
-                  />
+              {/* 3. Order Book Depth */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">3 · Order Book Depth</span>
                 </div>
+                <OrderBookDepthWidget />
+              </div>
+
+              {/* 4. Whale Tracking */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">4 · Whale / Smart Money</span>
+                </div>
+                <WhaleTrackingWidget />
+              </div>
+
+              {/* 5. Exchange Netflow */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">5 · Exchange Netflow</span>
+                </div>
+                <ExchangeNetflowWidget />
+              </div>
+
+              {/* 6. Listing Feed */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">6 · Listing / Delisting Feed</span>
+                </div>
+                <ListingFeedWidget />
+              </div>
+
+              {/* 7. Sentiment & News */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">7 · Sentiment & News</span>
+                </div>
+                <SentimentNewsWidget />
+              </div>
+
+              {/* 8. Portfolio */}
+              <div className="p-4 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 pb-2 border-b border-[var(--border-color)]/60">
+                  <span className="text-xs font-extrabold text-[#485442] dark:text-[#8A9E7F]">8 · Portfolio & Exposure</span>
+                </div>
+                <PortfolioSummaryWidget />
               </div>
             </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 8: TELEMETRY & FINANCIAL WIDGETS
+           *  SECTION 9: POINTS, XP & STREAKS
            * ═══════════════════════════════════════════════════════════ */}
-          <section id="telemetry" className="space-y-4 scroll-mt-24">
+          <section id="points" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                8. Telemetry, Gauges & Crypto Tokens
+                9. Points, Level Progression & Daily Streaks
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Fear & Greed SVG semi-circular gauge, interactive charts, and crypto token vector icons.
+                Gamified on-chain engagement with level progress rings, streak roadmaps, and claimable quest bonuses.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Fear & Greed Gauge Card */}
-              <Card elevation="card" padding="md" className="space-y-3 flex flex-col items-center justify-center">
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block self-start">
-                  Market Sentiment (Fear & Greed Index)
-                </span>
-                <FearGreedGauge
-                  value={78}
-                  classification="Extreme Greed"
-                />
-              </Card>
-
-              {/* Token Icons Array */}
-              <Card elevation="card" padding="md" className="space-y-3">
-                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                  Token Icon Vector Assets
-                </span>
-                <div className="grid grid-cols-5 gap-3 pt-2">
-                  {['BTC', 'ETH', 'SOL', 'USDT', 'BNB', 'BASE', 'DOGE', 'AVAX', 'XRP', 'ADA'].map(
-                    (sym) => (
-                      <div
-                        key={sym}
-                        className="flex flex-col items-center gap-1.5 p-2 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)]"
-                      >
-                        <TokenIcon symbol={sym} size={32} />
-                        <span className="text-[11px] font-bold font-mono text-[var(--text-primary)]">
-                          {sym}
-                        </span>
-                      </div>
-                    )
-                  )}
+              {/* Level 7 Pioneer Preview Card */}
+              <div className="p-5 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-[#485442]/15 text-[#485442] dark:text-[#8A9E7F] flex items-center justify-center font-bold">
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-extrabold text-[var(--text-primary)]">Level 7 Pioneer</h4>
+                      <p className="text-xs text-[var(--text-muted)]">245,000 / 300,000 XP</p>
+                    </div>
+                  </div>
+                  <Badge variant="primary">Top 1%</Badge>
                 </div>
-              </Card>
+                <div className="w-full h-2 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
+                  <div className="h-full bg-[#485442] dark:bg-[#8A9E7F] rounded-full w-[82%]" />
+                </div>
+              </div>
+
+              {/* 5-Day Streak Card */}
+              <div className="p-5 rounded-[24px] bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-orange-500/20 shadow-2xs flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-500/20 text-orange-500 flex items-center justify-center">
+                    <Flame className="w-6 h-6 fill-orange-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-extrabold text-[var(--text-primary)]">5-Day Active Streak</h4>
+                    <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold">+1,500 Daily XP Multiplier</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="primary" onClick={() => triggerConfetti()}>
+                  Claimed ✓
+                </Button>
+              </div>
             </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 9: MODAL DIALOGS LAUNCHPAD
+           *  SECTION 10: REFERRAL & LEADERBOARD
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="refer" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                10. Referral & Leaderboard Podium Components
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Viral growth loops with tier progression, referral links, and rank podiums.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                  Your Referral Code
+                </span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-app)] border border-dashed border-[var(--border-color)]">
+                  <span className="font-mono text-sm font-bold text-[var(--text-primary)]">DOPAMINT-ALPHA-2026</span>
+                  <Button size="xs" variant="primary" onClick={() => copyToClipboard('DOPAMINT-ALPHA-2026', 'ref')}>
+                    Copy
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-[24px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-3">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                  Leaderboard Podium Rank #1
+                </span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-extrabold text-amber-500">🥇 #1</span>
+                    <span className="font-mono text-xs font-bold text-[var(--text-primary)]">0x9d7…3c2</span>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">420,000 XP</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 11: MODALS & DIALOGS CATALOG
            * ═══════════════════════════════════════════════════════════ */}
           <section id="modals" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                9. Modal Dialogs Launchpad & Triggers
+                11. Modal & Flyout Dialog Triggers (13 Modals)
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Test and trigger any of the 13 built-in application dialogs in isolation.
+                Click any modal button below to test its flyout animation, layout, and dismiss behavior.
               </p>
             </div>
 
-            <Card elevation="card" padding="lg" className="space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isCommandPaletteOpen', true)}
-                  icon={<Search className="w-3.5 h-3.5" />}
-                >
-                  Command (⌘K)
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <Button variant="outline" size="sm" onClick={() => setModalState('isCommandPaletteOpen', true)}>
+                  ⌘K Palette
                 </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isPortfolioModalOpen', true)}
-                  icon={<PieChart className="w-3.5 h-3.5" />}
-                >
-                  Portfolio Tracker
+                <Button variant="outline" size="sm" onClick={() => setModalState('isPortfolioModalOpen', true)}>
+                  Portfolio
                 </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isWatchlistModalOpen', true)}
-                  icon={<Star className="w-3.5 h-3.5" />}
-                >
-                  Favourites / Watchlist
+                <Button variant="outline" size="sm" onClick={() => setModalState('isWatchlistModalOpen', true)}>
+                  Watchlist
                 </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isAlertsModalOpen', true)}
-                  icon={<Bell className="w-3.5 h-3.5" />}
-                >
+                <Button variant="outline" size="sm" onClick={() => setModalState('isAlertsModalOpen', true)}>
                   Price Alerts
                 </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isSettingsModalOpen', true)}
-                  icon={<Settings className="w-3.5 h-3.5" />}
-                >
-                  Preferences
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isUpgradeProModalOpen', true)}
-                  icon={<Sparkles className="w-3.5 h-3.5" />}
-                >
-                  Buy Pro Credits
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isAuthModalOpen', true)}
-                  icon={<ShieldCheck className="w-3.5 h-3.5" />}
-                >
-                  Wallet Ready
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isLeaderboardModalOpen', true)}
-                  icon={<TrendingUp className="w-3.5 h-3.5" />}
-                >
-                  Testnet Leaderboard
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isActiveAgentsModalOpen', true)}
-                  icon={<Bot className="w-3.5 h-3.5" />}
-                >
-                  Active AI Agents
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isAddWidgetModalOpen', true)}
-                  icon={<Layers className="w-3.5 h-3.5" />}
-                >
-                  Add Widget Catalog
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isFolderModalOpen', true)}
-                  icon={<Folder className="w-3.5 h-3.5" />}
-                >
-                  Folder Creator
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setModalState('isShareModalOpen', true)}
-                  icon={<ArrowUpRight className="w-3.5 h-3.5" />}
-                >
+                <Button variant="outline" size="sm" onClick={() => setModalState('isShareModalOpen', true)}>
                   Share Chat
                 </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isSettingsModalOpen', true)}>
+                  Settings
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isUpgradeProModalOpen', true)}>
+                  Upgrade Pro
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isAuthModalOpen', true)}>
+                  Auth / Wallet
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isLeaderboardModalOpen', true)}>
+                  Leaderboard
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isActiveAgentsModalOpen', true)}>
+                  Active Agents
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isFolderModalOpen', true)}>
+                  Create Folder
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setModalState('isAddWidgetModalOpen', true)}>
+                  Widget Gallery
+                </Button>
               </div>
-            </Card>
+            </div>
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 10: SPRING PHYSICS & CELEBRATION
+           *  SECTION 12: FIGMA TOKENS JSON EXPORT
            * ═══════════════════════════════════════════════════════════ */}
-          <section id="motion" className="space-y-4 scroll-mt-24 pb-16">
-            <div className="border-b border-[var(--border-color)] pb-3">
-              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                10. Motion Curves & Spring Physics
-              </h2>
-              <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Snappy 180ms, 220ms, and 250ms spring transitions configured for 60fps GPU acceleration.
-              </p>
+          <section id="figma" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                  12. Figma Variables & Design Token JSON Spec
+                </h2>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  Directly exportable JSON payload ready for Figma Tokens Studio / Variables plugin.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() =>
+                  copyToClipboard(
+                    JSON.stringify(
+                      {
+                        name: 'dopamint-design-tokens',
+                        version: '2.4.0',
+                        light: {
+                          bgApp: '#fcfbf7',
+                          bgCard: '#f7f6ec',
+                          primary: '#485442',
+                          borderColor: '#eae7da',
+                          textPrimary: '#1a1a1a',
+                        },
+                        dark: {
+                          bgApp: '#0D0D0D',
+                          bgCard: '#161616',
+                          primary: '#55604e',
+                          borderColor: '#262626',
+                          textPrimary: '#ECECEC',
+                        },
+                        radii: { sm: '12px', md: '16px', lg: '20px', widget: '24px', modal: '28px' },
+                      },
+                      null,
+                      2
+                    ),
+                    'json'
+                  )
+                }
+              >
+                Copy Figma JSON
+              </Button>
             </div>
 
-            <Card elevation="card" padding="lg" className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div className="p-4 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] space-y-1">
-                  <span className="font-bold text-[var(--text-primary)]">Button Micro-press</span>
-                  <p className="text-[11px] text-[var(--text-muted)]">Scale down to 0.98 on tap with instant spring recoil.</p>
-                </div>
-
-                <div className="p-4 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] space-y-1">
-                  <span className="font-bold text-[var(--text-primary)]">Card Elevation Lift</span>
-                  <p className="text-[11px] text-[var(--text-muted)]">translateY(-2px) combined with soft drop shadow shift.</p>
-                </div>
-
-                <div className="p-4 bg-[var(--bg-app)] rounded-2xl border border-[var(--border-color)] space-y-1">
-                  <span className="font-bold text-[var(--text-primary)]">Modal Springs</span>
-                  <p className="text-[11px] text-[var(--text-muted)]">stiffness: 420, damping: 32, mass: 0.8 for snappy pop-in.</p>
-                </div>
-              </div>
-
-              <div className="flex justify-center pt-2">
-                <Button
-                  size="md"
-                  variant="primary"
-                  onClick={() => triggerCelebration()}
-                  icon={<Sparkles className="w-4 h-4" />}
-                >
-                  Fire Canvas Confetti Stream
-                </Button>
-              </div>
-            </Card>
+            <CodeBlock
+              language="json"
+              code={JSON.stringify(
+                {
+                  $schema: 'https://trpc.io/tokens-spec/v1',
+                  name: 'dopamint-tokens',
+                  version: '2.4.0',
+                  color: {
+                    light: {
+                      bgApp: { value: 'oklch(0.988 0.0054 95.1)', hex: '#fcfbf7' },
+                      bgCard: { value: 'oklch(0.971 0.0132 102.0)', hex: '#f7f6ec' },
+                      bgCardSubtle: { value: 'oklch(0.952 0.015 102.0)', hex: '#f0eee1' },
+                      primary: { value: 'oklch(0.415 0.032 135.0)', hex: '#485442' },
+                      borderColor: { value: 'oklch(0.925 0.012 100.0)', hex: '#eae7da' },
+                      textPrimary: { value: 'oklch(0.200 0.005 95.0)', hex: '#1a1a1a' },
+                    },
+                    dark: {
+                      bgApp: { value: '#0D0D0D' },
+                      bgCard: { value: '#161616' },
+                      primary: { value: '#55604e' },
+                      borderColor: { value: '#262626' },
+                      textPrimary: { value: '#ECECEC' },
+                    },
+                  },
+                  borderRadius: {
+                    card: '16px',
+                    medium: '20px',
+                    widget: '24px',
+                    modal: '28px',
+                  },
+                },
+                null,
+                2
+              )}
+            />
           </section>
         </main>
       </div>
 
-      {/* Render All Global Modals for Launchpad Previews */}
+      {/* Global Modals for interactive trigger preview */}
       <CommandPalette />
       <PortfolioModal />
       <WatchlistModal />
