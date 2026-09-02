@@ -68,6 +68,7 @@ import {
   Bell,
   Eye,
   Terminal,
+  MoreVertical,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { Button, Badge, Card, Input } from '../ui';
@@ -262,6 +263,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
   const [switchDemo, setSwitchDemo] = useState(true);
   const [activeTabDemo, setActiveTabDemo] = useState('Widgets');
   const [activeCategoryDemo, setActiveCategoryDemo] = useState('Trading');
+  const [dialogTabDemo, setDialogTabDemo] = useState<'chats' | 'tokens'>('tokens');
 
   const storeTheme = useCryptoStore((s) => s.theme);
   const toggleTheme = useCryptoStore((s) => s.toggleTheme);
@@ -298,8 +300,10 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
     { id: 'refer', label: '12. Refer & Leaderboard' },
     { id: 'sidebar-nav', label: '13. Sidebar & Nav Elements' },
     { id: 'feedback', label: '14. Toasts & Alerts Banners' },
-    { id: 'modals', label: '15. Modals Catalog (13)' },
-    { id: 'figma', label: '16. Figma Tokens JSON Export' },
+    { id: 'dialogs-showcase', label: '15. Dialogs (Settings, Favourites)' },
+    { id: 'menus-showcase', label: '16. Context Menus & Popovers' },
+    { id: 'modals', label: '17. Global Modals Catalog (13)' },
+    { id: 'figma', label: '18. Figma Tokens JSON Export' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -375,6 +379,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
     { name: 'ChevronUp', icon: <ChevronUp className="w-5 h-5" />, category: 'Arrows' },
     { name: 'ChevronRight', icon: <ChevronRight className="w-5 h-5" />, category: 'Arrows' },
     { name: 'ExternalLink', icon: <ExternalLink className="w-5 h-5" />, category: 'Arrows' },
+    { name: 'MoreVertical', icon: <MoreVertical className="w-5 h-5" />, category: 'Utility' },
     { name: 'LogOut', icon: <LogOut className="w-5 h-5" />, category: 'Account' },
   ];
 
@@ -500,7 +505,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
               <span className="text-xs font-bold text-[var(--text-primary)]">Figma & Dev Export</span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-              Every component, token, and widget is documented with live interactive previews and JSON specifications.
+              Every component, dialog, menu, token, and widget is documented with live interactive previews and JSON specifications.
             </p>
           </div>
         </aside>
@@ -715,7 +720,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
               {/* System Lucide Icons Grid */}
               <div className="pt-4 border-t border-[var(--border-color)]">
                 <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-3">
-                  UI Action & Telemetry Icons (36 Icons)
+                  UI Action & Telemetry Icons (60+ Icons)
                 </span>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                   {iconCatalog.map((ic) => (
@@ -772,7 +777,7 @@ export const StyleGuidePage: React.FC<StyleGuidePageProps> = ({ forcedTheme }) =
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 5: BADGES & TOKEN ICONS
+           *  SECTION 5: BADGES & STATUS PILLS
            * ═══════════════════════════════════════════════════════════ */}
           <section id="badges" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
@@ -1255,12 +1260,257 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 15: MODALS & DIALOGS CATALOG
+           *  SECTION 15: DIALOG BOXES SHOWCASE (SETTINGS, FAVOURITES)
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="dialogs-showcase" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                15. Dialog Box & Modal Component Architecture
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Visual mockups of our core Preferences, Favourites, Share, and Folder dialog boxes.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 1. Preferences & Settings Dialog Box Preview */}
+              <div className="p-5 rounded-[28px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout space-y-4">
+                {/* Dialog Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#485442]/10 dark:bg-[#8A9E7F]/20 text-[#485442] dark:text-[#8A9E7F] flex items-center justify-center font-bold">
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-extrabold text-[var(--text-primary)]">Preferences Dialog</h4>
+                      <p className="text-[11px] text-[var(--text-muted)]">Configure appearance, models & API keys</p>
+                    </div>
+                  </div>
+                  <span className="p-1 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)] cursor-pointer">
+                    <X className="w-4 h-4" />
+                  </span>
+                </div>
+
+                {/* Dialog Body */}
+                <div className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="font-bold text-[11.5px] text-[var(--text-primary)] block mb-1.5">
+                      Appearance Theme (OKLCH)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2.5 rounded-xl bg-[#485442]/10 border border-[#485442] text-[#485442] dark:text-[#8A9E7F] font-bold flex items-center justify-center gap-2">
+                        <Sun className="w-3.5 h-3.5" />
+                        <span>Light Cream</span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] font-semibold flex items-center justify-center gap-2">
+                        <Moon className="w-3.5 h-3.5" />
+                        <span>Dark Obsidian</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-[11.5px] text-[var(--text-primary)] block mb-1.5">
+                      Reasoning Engine
+                    </label>
+                    <div className="grid grid-cols-3 gap-1.5 font-semibold">
+                      <div className="p-2 rounded-xl bg-[#485442] text-white text-center font-bold">dopamint-4o</div>
+                      <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] text-center">DeepSeek-R1</div>
+                      <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-secondary)] text-center">Claude-3.5</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dialog Footer */}
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--border-color)]">
+                  <Button variant="ghost" size="sm">Cancel</Button>
+                  <Button variant="primary" size="sm">Save Preferences</Button>
+                </div>
+              </div>
+
+              {/* 2. Favourites & Watchlist Dialog Box Preview */}
+              <div className="p-5 rounded-[28px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout space-y-4">
+                {/* Dialog Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
+                      <Star className="w-4 h-4 fill-amber-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-extrabold text-[var(--text-primary)]">Favourites & Watchlist</h4>
+                      <p className="text-[11px] text-[var(--text-muted)]">3 saved chats · 4 tracked coins</p>
+                    </div>
+                  </div>
+                  <span className="p-1 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-hover)] cursor-pointer">
+                    <X className="w-4 h-4" />
+                  </span>
+                </div>
+
+                {/* Dialog Tab Switcher */}
+                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-xs font-semibold">
+                  <button
+                    onClick={() => setDialogTabDemo('tokens')}
+                    className={`flex-1 py-1 rounded-lg transition-all ${
+                      dialogTabDemo === 'tokens' ? 'bg-[var(--bg-card)] font-bold text-[var(--text-primary)] shadow-2xs' : 'text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    Tracked Coins (4)
+                  </button>
+                  <button
+                    onClick={() => setDialogTabDemo('chats')}
+                    className={`flex-1 py-1 rounded-lg transition-all ${
+                      dialogTabDemo === 'chats' ? 'bg-[var(--bg-card)] font-bold text-[var(--text-primary)] shadow-2xs' : 'text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    Starred Chats (3)
+                  </button>
+                </div>
+
+                {/* Dialog Body Items */}
+                <div className="space-y-2">
+                  <div className="p-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TokenIcon symbol="BTC" size={20} />
+                      <div>
+                        <div className="text-xs font-bold text-[var(--text-primary)]">Bitcoin</div>
+                        <div className="text-[10px] text-[var(--text-muted)]">BTC</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-mono font-bold text-[var(--text-primary)]">$71,240.00</div>
+                      <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">+2.1%</div>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TokenIcon symbol="ETH" size={20} />
+                      <div>
+                        <div className="text-xs font-bold text-[var(--text-primary)]">Ethereum</div>
+                        <div className="text-[10px] text-[var(--text-muted)]">ETH</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-mono font-bold text-[var(--text-primary)]">$3,420.50</div>
+                      <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">+3.4%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dialog Footer */}
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--border-color)]">
+                  <Button variant="primary" size="sm">Done</Button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 16: CONTEXT MENUS & POPOVERS SHOWCASE
+           * ═══════════════════════════════════════════════════════════ */}
+          <section id="menus-showcase" className="space-y-4 scroll-mt-24">
+            <div className="border-b border-[var(--border-color)] pb-3">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                16. Menus, Popovers & Context Action Bars
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                Floating context menus for chat actions, user profile menus, and message toolbars.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* 1. Chat Item Context Menu */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                  Chat Context Menu
+                </span>
+                <div className="w-56 p-2 rounded-[20px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout space-y-1">
+                  <button className="w-full px-2.5 py-1.5 rounded-xl text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] flex items-center gap-2 cursor-pointer transition-colors">
+                    <Star className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Pin to Top</span>
+                  </button>
+                  <button className="w-full px-2.5 py-1.5 rounded-xl text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] flex items-center gap-2 cursor-pointer transition-colors">
+                    <Pencil className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                    <span>Rename Chat</span>
+                  </button>
+                  <button className="w-full px-2.5 py-1.5 rounded-xl text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] flex items-center gap-2 cursor-pointer transition-colors">
+                    <Folder className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                    <span>Move to Folder</span>
+                  </button>
+                  <div className="my-1 border-t border-[var(--border-color)]" />
+                  <button className="w-full px-2.5 py-1.5 rounded-xl text-xs font-medium text-rose-500 hover:bg-rose-500/10 flex items-center gap-2 cursor-pointer transition-colors">
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Chat</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. User Account Menu Popover */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                  User Account Popover Menu
+                </span>
+                <div className="w-64 p-3 rounded-[22px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-flyout space-y-2">
+                  <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-color)]">
+                    <div className="w-8 h-8 rounded-full bg-[#485442] text-white flex items-center justify-center font-bold text-xs">
+                      0x
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-mono font-bold text-[var(--text-primary)] truncate">0x4F2a…3c76</div>
+                      <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Pro Active</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-0.5 text-xs">
+                    <button className="w-full px-2 py-1.5 rounded-lg text-left text-[var(--text-primary)] hover:bg-[var(--bg-hover)] flex items-center gap-2">
+                      <Settings className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                      <span>Preferences</span>
+                    </button>
+                    <button className="w-full px-2 py-1.5 rounded-lg text-left text-[var(--text-primary)] hover:bg-[var(--bg-hover)] flex items-center gap-2">
+                      <Terminal className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                      <span>Shortcuts (⌘K)</span>
+                    </button>
+                    <button className="w-full px-2 py-1.5 rounded-lg text-left text-rose-500 hover:bg-rose-500/10 flex items-center gap-2">
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Disconnect Wallet</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. AI Message Action Toolbar */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                  AI Response Action Toolbar
+                </span>
+                <div className="inline-flex items-center gap-0.5 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs">
+                  <button className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer" title="Copy">
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                  <button className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer" title="Share">
+                    <Share2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer" title="Regenerate">
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                  <button className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-emerald-500 hover:bg-emerald-500/10 cursor-pointer" title="Thumbs Up">
+                    <ThumbsUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Thumbs Down">
+                    <ThumbsDown className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ═══════════════════════════════════════════════════════════
+           *  SECTION 17: MODALS & DIALOGS CATALOG
            * ═══════════════════════════════════════════════════════════ */}
           <section id="modals" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3">
               <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                15. Modal & Flyout Dialog Triggers (13 Modals)
+                17. Global Modal Triggers (13 Active Flyout Modals)
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 Click any modal button below to test its flyout animation, layout, and dismiss behavior.
@@ -1310,13 +1560,13 @@ export const useOrderBookDepth = (tokenPair: string) => {
           </section>
 
           {/* ═══════════════════════════════════════════════════════════
-           *  SECTION 16: FIGMA TOKENS JSON EXPORT
+           *  SECTION 18: FIGMA TOKENS JSON EXPORT
            * ═══════════════════════════════════════════════════════════ */}
           <section id="figma" className="space-y-4 scroll-mt-24">
             <div className="border-b border-[var(--border-color)] pb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-                  16. Figma Variables & Design Token JSON Spec
+                  18. Figma Variables & Design Token JSON Spec
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Directly exportable JSON payload ready for Figma Tokens Studio / Variables plugin.
