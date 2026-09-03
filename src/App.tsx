@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-
 import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './components/auth/LoginPage';
 import { StyleGuidePage } from './components/styleguide/StyleGuidePage';
+import { LoginBehaviorPage } from './components/auth/LoginBehaviorPage';
 import { useCryptoStore } from './store/useCryptoStore';
 
 const ChatRouteWrapper: React.FC = () => {
@@ -37,6 +38,21 @@ function App() {
         {/* Dedicated Dark Mode Style Guide */}
         <Route path="/style-guide-dark" element={<StyleGuidePage forcedTheme="dark" />} />
         <Route path="/styleguide-dark" element={<Navigate to="/style-guide-dark" replace />} />
+
+        {/* Login Screen Behavior & Figma Variants Routes */}
+        <Route path="/loginscreen-behavior" element={<LoginBehaviorPage />} />
+        <Route path="/loginscreen-behaviour" element={<Navigate to="/loginscreen-behavior" replace />} />
+        <Route path="/login-behavior" element={<Navigate to="/loginscreen-behavior" replace />} />
+
+        {/* Dedicated Light Mode Login Behavior */}
+        <Route path="/loginscreen-behavior-light" element={<LoginBehaviorPage forcedTheme="light" />} />
+        <Route path="/loginscreen-behaviour-light" element={<Navigate to="/loginscreen-behavior-light" replace />} />
+        <Route path="/login-behavior-light" element={<Navigate to="/loginscreen-behavior-light" replace />} />
+
+        {/* Dedicated Dark Mode Login Behavior */}
+        <Route path="/loginscreen-behavior-dark" element={<LoginBehaviorPage forcedTheme="dark" />} />
+        <Route path="/loginscreen-behaviour-dark" element={<Navigate to="/loginscreen-behavior-dark" replace />} />
+        <Route path="/login-behavior-dark" element={<Navigate to="/loginscreen-behavior-dark" replace />} />
 
         {/* Auth Route: 2-step Login & Wallet Ready flow */}
         <Route
