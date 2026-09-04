@@ -16,8 +16,6 @@ import {
   Folder,
   FolderPlus,
   Clock,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import logoDope from '../../assets/logo_dope.png';
@@ -34,9 +32,6 @@ export const Sidebar: React.FC = () => {
 
   const searchQuery = useCryptoStore((s) => s.searchQuery);
   const setSearchQuery = useCryptoStore((s) => s.setSearchQuery);
-
-  const theme = useCryptoStore((s) => s.theme);
-  const toggleTheme = useCryptoStore((s) => s.toggleTheme);
 
   const isSidebarOpen = useCryptoStore((s) => s.isSidebarOpen);
   const toggleSidebar = useCryptoStore((s) => s.toggleSidebar);
@@ -199,32 +194,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 5. Theme Toggle (Direct Sun/Moon Switcher) */}
-            <button
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
-                isRailHovered ? 'justify-between' : 'justify-center'
-              }`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                {theme === 'dark' ? (
-                  <Sun className="w-5 h-5 flex-shrink-0" />
-                ) : (
-                  <Moon className="w-5 h-5 flex-shrink-0" />
-                )}
-                {isRailHovered && (
-                  <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                )}
-              </div>
-              {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md uppercase border border-[var(--border-color)]">
-                  {theme}
-                </span>
-              )}
-            </button>
-
-            {/* 8. Settings */}
+            {/* Settings */}
             <button
               onClick={() => setModalState('isSettingsModalOpen', true)}
               title="Settings"
