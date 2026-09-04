@@ -13,6 +13,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
+import { truncateAddress } from '../../lib/formatters';
 
 interface UserProfileCardProps {
   isRailHovered?: boolean;
@@ -53,7 +54,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered 
     <div className="relative pt-2 border-t border-[var(--border-color)]" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        title={userProfile.name}
+        title={userProfile.walletAddress}
         className={`w-full flex items-center p-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-colors group text-left cursor-pointer ${
           isRailHovered ? 'justify-between' : 'justify-center'
         }`}
@@ -71,7 +72,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-mono font-bold text-[var(--text-primary)] truncate tracking-tight">
-                  {userProfile.name}
+                  {truncateAddress(userProfile.walletAddress)}
                 </span>
                 <span className="px-1.5 py-0.2 bg-[var(--primary-light)] text-[var(--primary)] text-[9.5px] font-bold rounded-md uppercase">
                   PRO

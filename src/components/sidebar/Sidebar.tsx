@@ -5,8 +5,6 @@ import {
   Trophy,
   Gift,
   Zap,
-  Star,
-  Bot,
   Settings,
   Coins,
   Plus,
@@ -46,7 +44,6 @@ export const Sidebar: React.FC = () => {
   const activeConversationId = useCryptoStore((s) => s.activeConversationId);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
   const setModalState = useCryptoStore((s) => s.setModalState);
-  const agents = useCryptoStore((s) => s.agents);
 
   const folders = useCryptoStore((s) => s.folders);
   const activeSidebarTab = useCryptoStore((s) => s.activeSidebarTab);
@@ -64,8 +61,6 @@ export const Sidebar: React.FC = () => {
   const last7DaysList = filtered.filter((c) => !c.isPinned && c.group === 'last7days');
   const olderList = filtered.filter((c) => !c.isPinned && c.group === 'older');
 
-  const activeAgentsCount = agents.filter((a) => a.status === 'running' || a.status === 'active').length;
-  const favouriteCount = conversations.filter((c) => c.isFavourite).length;
   const activeChat = conversations.find((c) => c.id === activeConversationId);
 
   // Uncategorized conversations
@@ -204,51 +199,7 @@ export const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* 5. Favourites */}
-            <button
-              onClick={() => setModalState('isWatchlistModalOpen', true)}
-              title={`Favourites (${favouriteCount})`}
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
-                isRailHovered ? 'justify-between' : 'justify-center'
-              }`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <Star className="w-5 h-5 flex-shrink-0" />
-                {isRailHovered && <span className="truncate">Favourites</span>}
-              </div>
-              {isRailHovered && (
-                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] flex-shrink-0">
-                  {favouriteCount}
-                </span>
-              )}
-            </button>
-
-            {/* 6. Active Agents */}
-            <button
-              onClick={() => setModalState('isActiveAgentsModalOpen', true)}
-              title={`Active Agents (${activeAgentsCount})`}
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
-                isRailHovered ? 'justify-between' : 'justify-center'
-              }`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="relative flex-shrink-0">
-                  <Bot className="w-5 h-5" />
-                  {activeAgentsCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500" />
-                  )}
-                </div>
-                {isRailHovered && <span className="truncate">Active Agents</span>}
-              </div>
-              {isRailHovered && (
-                <span className="text-[11px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] flex items-center gap-1.5 flex-shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  {activeAgentsCount} Active
-                </span>
-              )}
-            </button>
-
-            {/* 7. Theme Toggle (Direct Sun/Moon Switcher) */}
+            {/* 5. Theme Toggle (Direct Sun/Moon Switcher) */}
             <button
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}

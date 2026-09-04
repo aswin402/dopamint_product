@@ -23,7 +23,6 @@ export const ChatHeader: React.FC = () => {
   const activeId = useCryptoStore((s) => s.activeConversationId);
   const conversations = useCryptoStore((s) => s.conversations);
   const currentChat = conversations.find((c) => c.id === activeId);
-  const userProfile = useCryptoStore((s) => s.userProfile);
 
   const toggleFavourite = useCryptoStore((s) => s.toggleFavouriteConversation);
   const toggleInsights = useCryptoStore((s) => s.toggleInsights);
@@ -145,15 +144,6 @@ export const ChatHeader: React.FC = () => {
 
       {/* Right side: Theme Switcher, Star/Bookmark, Share, More Options, Toggle Insights */}
       <div className="flex items-center gap-1 sm:gap-2">
-        {/* Connect / Active Wallet Button */}
-        <button
-          onClick={() => setModalState('isAuthModalOpen', true)}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)] text-xs font-mono text-[var(--text-primary)] transition-all shadow-2xs cursor-pointer"
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span>{userProfile.name}</span>
-        </button>
-
         {/* Theme Switcher Button */}
         <button
           onClick={toggleTheme}
