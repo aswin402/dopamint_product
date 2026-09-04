@@ -1,947 +1,783 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
-  Check,
+  Coins,
   Zap,
   Shield,
-  Bot,
-  Coins,
-  ArrowRight,
-  HelpCircle,
-  Clock,
   Sparkles,
   ChevronDown,
-  Layers,
   Cpu,
-  TrendingUp,
   CreditCard,
   Wallet,
   Activity,
   Sliders,
+  RefreshCw,
+  Lock,
+  History,
+  CheckCircle2,
+  Check,
+  Flame,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { triggerCelebration } from '../../lib/confetti';
 import { truncateAddress } from '../../lib/formatters';
 
-type BillingCycle = 'monthly' | 'annual';
-type ActiveTab = 'plans' | 'credits';
-
-interface Plan {
-  id: 'free' | 'pro' | 'institutional';
-  name: string;
-  badge?: string;
-  description: string;
-  priceMonthly: number;
-  priceAnnual: number;
-  popular?: boolean;
-  features: string[];
-  ctaText: string;
-  ctaVariant: 'secondary' | 'primary' | 'outline';
-  limits: {
-    queries: string;
-    agents: string;
-    models: string;
-    speed: string;
-  };
-}
-
-interface CreditPack {
+interface TopUpPackage {
   id: string;
   name: string;
+  amountUsd: number;
   credits: number;
-  bonusCredits: number;
-  priceUsd: number;
-  costPerCredit: string;
+  bonusCredits?: number;
   popular?: boolean;
   bestValue?: boolean;
+  badge?: string;
   description: string;
+  estimatedQueries: string;
 }
 
-export const BuyCreditsPage: React.FC = () => {
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('annual');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('plans');
+const TOPUP_PACKAGES: TopUpPackage[] = [
+  {
+    id: 'pack-10',
+    name: 'Starter Top-Up',
+    amountUsd: 10,
+    credits: 1000,
+    description: 'Ideal for everyday queries, spot price checks, and quick sentiment lookups.',
+    estimatedQueries: '~1,000 standard queries or 330 deep analyses',
+  },
+  {
+    id: 'pack-20',
+    name: 'Trader Top-Up',
+    amountUsd: 20,
+    credits: 2000,
+    popular: true,
+    badge: 'Most Popular',
+    description: 'The standard reload for active traders. High-speed reasoning & mempool scans.',
+    estimatedQueries: '~2,000 standard queries or 660 deep reasoning runs',
+  },
+  {
+    id: 'pack-50',
+    name: 'Power Top-Up',
+    amountUsd: 50,
+    credits: 5000,
+    bonusCredits: 250,
+    badge: '+5% Bonus',
+    description: 'Enhanced volume for continuous token tracking and automated alerts.',
+    estimatedQueries: '~5,250 total credits (~1,750 deep reasoning analyses)',
+  },
+  {
+    id: 'pack-100',
+    name: 'Pro Top-Up',
+    amountUsd: 100,
+    credits: 10000,
+    bonusCredits: 1000,
+    bestValue: true,
+    badge: '+10% Bonus',
+    description: 'High-speed compute for smart contract security audits & DEX subagents.',
+    estimatedQueries: '~11,000 total credits (~1,100 security audits)',
+  },
+  {
+    id: 'pack-250',
+    name: 'Whale Top-Up',
+    amountUsd: 250,
+    credits: 25000,
+    bonusCredits: 3500,
+    badge: '+14% Bonus',
+    description: 'Maximum throughput with priority GPU queuing for algorithmic traders.',
+    estimatedQueries: '~28,500 total credits with dedicated RPC priority',
+  },
+];
 
-  // Interactive Calculator State
-  const [queriesPerDay, setQueriesPerDay] = useState(60);
-  const [activeAgents, setActiveAgents] = useState(3);
-  const [contractAudits, setContractAudits] = useState(4);
+const CREDIT_COST_GUIDE = [
+  {
+    action: 'Fast Market & Price Query',
+    model: 'GPT-4o Mini / Claude 3.5 Haiku',
+    cost: 1,
+    costFormatted: '1 Credit',
+    usdEquiv: '$0.01',
+    description: 'Instant token prices, technical indicators, 24h volume, and sentiment summary.',
+  },
+  {
+    action: 'Live On-Chain DEX Screener',
+    model: 'Base & Solana RPC Feeds',
+    cost: 1,
+    costFormatted: '1 Credit',
+    usdEquiv: '$0.01',
+    description: 'Real-time pair discovery, liquidity pool depth, and volume surge detection.',
+  },
+  {
+    action: 'Deep Reasoning & Alpha Search',
+    model: 'Claude 3.7 Sonnet / o3-mini',
+    cost: 3,
+    costFormatted: '3 Credits',
+    usdEquiv: '$0.03',
+    description: 'Multi-step web search, whitepaper breakdown, and macro tokenomics thesis.',
+  },
+  {
+    action: 'Mempool & Arbitrage Agent Run',
+    model: 'Autonomous Subagent Swarm',
+    cost: 5,
+    costFormatted: '5 Credits',
+    usdEquiv: '$0.05',
+    description: 'Continuous pending transaction monitoring and cross-DEX spread detection.',
+  },
+  {
+    action: 'Smart Contract Security Audit',
+    model: 'Static & Bytecode Decompilation',
+    cost: 10,
+    costFormatted: '10 Credits',
+    usdEquiv: '$0.10',
+    description: 'Honeypot detection, mint authority checks, and vulnerability reports.',
+  },
+  {
+    action: 'Autonomous Portfolio Rebalancing',
+    model: 'Multi-Agent Execution Engine',
+    cost: 15,
+    costFormatted: '15 Credits',
+    usdEquiv: '$0.15',
+    description: 'Automated target weight calculation and multi-DEX routing simulation.',
+  },
+];
+
+interface TopUpHistoryItem {
+  id: string;
+  date: string;
+  amountUsd: number;
+  credits: number;
+  method: string;
+  txHash: string;
+  status: 'Confirmed' | 'Completed';
+}
+
+const INITIAL_TOPUP_HISTORY: TopUpHistoryItem[] = [
+  {
+    id: 'tx-9942',
+    date: 'Sep 3, 2026 • 18:24',
+    amountUsd: 20,
+    credits: 2000,
+    method: 'Base USDC',
+    txHash: '0x8f3c...91b2',
+    status: 'Confirmed',
+  },
+  {
+    id: 'tx-9810',
+    date: 'Aug 29, 2026 • 11:15',
+    amountUsd: 50,
+    credits: 5250,
+    method: 'Card (••4242)',
+    txHash: 'ch_3Pf8k...89a',
+    status: 'Completed',
+  },
+  {
+    id: 'tx-9654',
+    date: 'Aug 20, 2026 • 14:02',
+    amountUsd: 20,
+    credits: 2000,
+    method: 'Base USDC',
+    txHash: '0x3a19...d041',
+    status: 'Confirmed',
+  },
+];
+
+export const BuyCreditsPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  // Global store
+  const userProfile = useCryptoStore((s) => s.userProfile);
+  const addCredits = useCryptoStore((s) => s.addCredits);
+
+  // Custom Amount Slider / Input State
+  const [customAmount, setCustomAmount] = useState<number>(20);
+  const [autoReloadEnabled, setAutoReloadEnabled] = useState<boolean>(false);
+  const [autoReloadThreshold, setAutoReloadThreshold] = useState<number>(500);
 
   // Checkout Modal State
-  const [checkoutItem, setCheckoutItem] = useState<{
-    type: 'plan' | 'credit';
-    id: string;
-    name: string;
-    price: number;
-    credits?: number;
-    billing?: string;
-  } | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutData, setCheckoutData] = useState<{
+    amountUsd: number;
+    credits: number;
+    title: string;
+  }>({
+    amountUsd: 20,
+    credits: 2000,
+    title: 'Trader Top-Up',
+  });
 
   const [paymentMethod, setPaymentMethod] = useState<'base_usdc' | 'card' | 'solana'>('base_usdc');
   const [isProcessing, setIsProcessing] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
-  // Expanded FAQ items
+  // Top-Up History state
+  const [history, setHistory] = useState<TopUpHistoryItem[]>(INITIAL_TOPUP_HISTORY);
+
+  // FAQ Accordion
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
 
-  // Global store
-  const userProfile = useCryptoStore((s) => s.userProfile);
-  const addCredits = useCryptoStore((s) => s.addCredits);
-  const upgradeTier = useCryptoStore((s) => s.upgradeTier);
-
-  // Plans data
-  const plans: Plan[] = [
-    {
-      id: 'free',
-      name: 'Explorer',
-      badge: 'Free Forever',
-      description: 'Essential crypto intelligence for everyday traders and casual research.',
-      priceMonthly: 0,
-      priceAnnual: 0,
-      ctaText: userProfile.tier === 'Free' ? 'Current Plan' : 'Downgrade to Free',
-      ctaVariant: 'secondary',
-      limits: {
-        queries: '5,000 / mo',
-        agents: '1 agent',
-        models: 'QuantAlpha-1 Standard',
-        speed: 'Standard queue (~2.5s)',
-      },
-      features: [
-        '5,000 standard AI queries per month',
-        '1 autonomous agent (sentiment or price alert)',
-        'Track up to 3 Web3 wallets',
-        'Standard token unlock & listing alerts',
-        'Live market order book & sentiment snapshot',
-        'Community Discord support',
-      ],
-    },
-    {
-      id: 'pro',
-      name: 'Pro Trader',
-      badge: 'Most Popular',
-      popular: true,
-      description: 'Deep quantitative reasoning, autonomous subagents, and sub-second mempool tracking.',
-      priceMonthly: 29,
-      priceAnnual: 24,
-      ctaText: userProfile.tier === 'Pro' ? 'Current Plan' : 'Upgrade to Pro',
-      ctaVariant: 'primary',
-      limits: {
-        queries: 'Unlimited fast + 15,000 deep reasoning',
-        agents: '10 concurrent agents',
-        models: 'QuantAlpha-3, DeepSeek-R1, Claude 3.5',
-        speed: 'Priority RPC (<600ms)',
-      },
-      features: [
-        'Unlimited fast queries + 15,000 deep reasoning tokens',
-        'Full access to QuantAlpha-3, DeepSeek-R1 & Claude Sonnet',
-        '10 autonomous background agents with Webhook alerts',
-        'Real-time mempool frontrun & whale tracking signals',
-        'Solidity & Vyper bytecode security decompiler',
-        'Unlimited tracked wallets & exportable PnL journals',
-        'Zero gas fees on Base Sepolia transactions',
-        'Priority 24/7 alpha research desk',
-      ],
-    },
-    {
-      id: 'institutional',
-      name: 'Institutional',
-      badge: 'Funds & DAOs',
-      description: 'Dedicated compute cluster, private RPCs, and multi-chain algorithmic execution.',
-      priceMonthly: 199,
-      priceAnnual: 160,
-      ctaText: userProfile.tier === 'Enterprise' ? 'Current Plan' : 'Get Institutional',
-      ctaVariant: 'outline',
-      limits: {
-        queries: 'Unmetered priority reasoning',
-        agents: '50 concurrent agents',
-        models: 'Custom fine-tuned quant models',
-        speed: 'Dedicated private cluster (<200ms)',
-      },
-      features: [
-        'Unmetered priority reasoning & Monte Carlo simulations',
-        'Dedicated GPU nodes with zero data retention guarantee',
-        '50 high-frequency autonomous execution agents',
-        'Direct WebSocket API with custom RPC node endpoint',
-        'Multi-seat workspace (up to 5 team members)',
-        'Custom algorithmic strategy backtesting engine',
-        '99.9% uptime SLA with custom enterprise agreement',
-        'Dedicated quant engineer & Telegram war-room',
-      ],
-    },
-  ];
-
-  // Pay-As-You-Go Credit Packs
-  const creditPacks: CreditPack[] = [
-    {
-      id: 'pack-5k',
-      name: 'Starter Pack',
-      credits: 5000,
-      bonusCredits: 0,
-      priceUsd: 10,
-      costPerCredit: '$0.0020 / credit',
-      description: 'Perfect for testing autonomous agents and running deep smart contract audits.',
-    },
-    {
-      id: 'pack-25k',
-      name: 'Trader Pack',
-      credits: 25000,
-      bonusCredits: 2500,
-      priceUsd: 45,
-      costPerCredit: '$0.0016 / credit',
-      popular: true,
-      bestValue: true,
-      description: 'Our most popular pack. Ideal for active daily quant analysis and whale tracking.',
-    },
-    {
-      id: 'pack-100k',
-      name: 'Whale Pack',
-      credits: 100000,
-      bonusCredits: 20000,
-      priceUsd: 150,
-      costPerCredit: '$0.00125 / credit',
-      description: 'High-volume algorithmic traders running multi-chain agents 24 hours a day.',
-    },
-  ];
-
-  // Calculate estimated monthly compute from sliders
-  const estimatedMonthlyCredits = queriesPerDay * 30 + activeAgents * 24 * 30 * 0.5 + contractAudits * 10;
-  const estimatedPayAsYouGoCost = Math.round(estimatedMonthlyCredits * 0.0018);
-
-  const handleCheckoutOpen = (item: {
-    type: 'plan' | 'credit';
-    id: string;
-    name: string;
-    price: number;
-    credits?: number;
-    billing?: string;
-  }) => {
-    setCheckoutItem(item);
+  // Calculate credits for custom amount ($1 = 100 credits + volume bonuses)
+  const calculateCustomCredits = (usd: number): { base: number; bonus: number; total: number } => {
+    const base = Math.round(usd * 100);
+    let bonus = 0;
+    if (usd >= 250) {
+      bonus = Math.round(base * 0.14);
+    } else if (usd >= 100) {
+      bonus = Math.round(base * 0.1);
+    } else if (usd >= 50) {
+      bonus = Math.round(base * 0.05);
+    }
+    return { base, bonus, total: base + bonus };
   };
 
-  const handleExecutePayment = () => {
-    if (!checkoutItem) return;
-    setIsProcessing(true);
+  const customCredits = calculateCustomCredits(customAmount);
 
+  // Trigger checkout for a preset package
+  const handleSelectPackage = (pkg: TopUpPackage) => {
+    const totalCredits = pkg.credits + (pkg.bonusCredits || 0);
+    setCheckoutData({
+      amountUsd: pkg.amountUsd,
+      credits: totalCredits,
+      title: pkg.name,
+    });
+    setIsCheckoutOpen(true);
+  };
+
+  // Trigger checkout for custom amount
+  const handleCustomCheckout = () => {
+    setCheckoutData({
+      amountUsd: customAmount,
+      credits: customCredits.total,
+      title: `Custom Top-Up ($${customAmount})`,
+    });
+    setIsCheckoutOpen(true);
+  };
+
+  // Execute payment
+  const handleConfirmPayment = () => {
+    setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
+      setIsCheckoutOpen(false);
+
+      // Add credits to store
+      addCredits(checkoutData.credits);
       triggerCelebration();
 
-      if (checkoutItem.type === 'credit' && checkoutItem.credits) {
-        addCredits(checkoutItem.credits);
-        setSuccessToast(`Successfully added ${checkoutItem.credits.toLocaleString()} AI Credits to your wallet!`);
-      } else if (checkoutItem.type === 'plan') {
-        const tier = checkoutItem.id === 'institutional' ? 'Enterprise' : 'Pro';
-        upgradeTier(tier);
-        setSuccessToast(`Congratulations! You are now upgraded to the ${checkoutItem.name} plan.`);
-      }
+      // Add to history
+      const newHistoryItem: TopUpHistoryItem = {
+        id: `tx-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: 'Just now',
+        amountUsd: checkoutData.amountUsd,
+        credits: checkoutData.credits,
+        method: paymentMethod === 'base_usdc' ? 'Base USDC' : paymentMethod === 'solana' ? 'Solana USDC' : 'Card (••4242)',
+        txHash: paymentMethod === 'base_usdc' ? '0x' + Math.random().toString(16).substring(2, 10) + '...' + Math.random().toString(16).substring(2, 6) : 'ch_' + Math.random().toString(16).substring(2, 8),
+        status: paymentMethod === 'base_usdc' ? 'Confirmed' : 'Completed',
+      };
+      setHistory((prev) => [newHistoryItem, ...prev]);
 
-      setCheckoutItem(null);
+      // Show toast
+      setSuccessToast(`🎉 Successfully topped up ${checkoutData.credits.toLocaleString()} credits! ($${checkoutData.amountUsd}.00)`);
       setTimeout(() => setSuccessToast(null), 5000);
     }, 1200);
   };
 
-  const faqs = [
-    {
-      q: 'Do on-demand compute credits ever expire?',
-      a: 'No. All pay-as-you-go credits remain in your Web3 account indefinitely until consumed. They roll over month-to-month with zero expiration date.',
-    },
-    {
-      q: 'Can I pay directly in crypto from my connected Web3 wallet?',
-      a: 'Yes. We natively support 1-click payments with USDC, USDT, and ETH on Base Sepolia, Ethereum Mainnet, and Solana. You can also pay with standard credit/debit cards via Stripe.',
-    },
-    {
-      q: 'How do autonomous agents consume credits?',
-      a: 'A background agent running continuous market surveillance costs approximately 0.5 credits per active hour. Deep smart contract decompilations consume 10 credits, while regular chat queries consume 1 credit.',
-    },
-    {
-      q: 'Can I cancel or change my plan at any time?',
-      a: 'Yes. You can switch between Monthly and Annual, upgrade, or cancel your subscription anytime with 1-click. Unused subscription periods are prorated automatically.',
-    },
-    {
-      q: 'What is the difference between QuantAlpha-1 and QuantAlpha-3?',
-      a: 'QuantAlpha-1 is optimized for speed and high-level summaries. QuantAlpha-3 is our flagship institutional model capable of multi-step chain-of-thought mathematical reasoning, DEX arbitrage validation, and EVM bytecode security checks.',
-    },
-    {
-      q: 'Are gas fees covered when paying with Web3?',
-      a: 'Yes! On Base Sepolia, all payment and smart contract verification gas fees are 100% sponsored by DopaMint. You pay exactly the listed dollar amount.',
-    },
-  ];
-
   return (
-    <div className="flex-1 overflow-y-auto overflow-x-hidden h-full px-4 sm:px-6 md:px-10 py-8 scroll-smooth">
-      <div className="w-full max-w-[1080px] mx-auto space-y-12 pb-24">
-        {/* ═══════════════════════════════════════════════════════════
-         *  TOAST NOTIFICATION
-         * ═══════════════════════════════════════════════════════════ */}
-        <AnimatePresence>
-          {successToast && (
-            <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-[#485442] text-white px-5 py-3 rounded-2xl shadow-xl border border-[#8A9E7F]/30 flex items-center gap-3 text-sm font-medium"
-            >
-              <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <span>{successToast}</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors duration-200">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {successToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-[#485442] dark:bg-[#55604e] text-white rounded-2xl shadow-xl border border-white/10 text-sm font-semibold"
+          >
+            <CheckCircle2 className="w-5 h-5 text-green-300" />
+            <span>{successToast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  1. HERO HEADER — Clean, minimal, non-AI aesthetic
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="text-center space-y-4 pt-2 sm:pt-6 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-light)] border border-[var(--primary)]/20 text-[var(--primary)] text-xs font-mono font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Compute & Subscriptions</span>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-12">
+        {/* Top Breadcrumb & Live Balance Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--border-color)]">
+          <div>
+            <button
+              onClick={() => navigate('/c/new')}
+              className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors mb-2 cursor-pointer"
+            >
+              <span>← Back to Terminal</span>
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
+              <span>Top Up Credits</span>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#485442]/10 text-[#485442] dark:bg-[#55604e]/20 dark:text-[#8ba082] border border-[#485442]/20">
+                Pay As You Go
+              </span>
+            </h1>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              Top up compute whenever you need. No monthly commitments, no recurring bills. Credits never expire.
+            </p>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] leading-[1.15]">
-            Transparent pricing for serious crypto intelligence.
-          </h1>
-
-          <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed">
-            Upgrade your plan for unlimited deep reasoning and autonomous agents, or top up on-demand compute credits anytime.
-          </p>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════
-         *  2. LIVE USER ACCOUNT STRIP — Real-time wallet & compute status
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#3b4635] to-[#485442] flex items-center justify-center text-white shadow-xs flex-shrink-0">
-              <Wallet className="w-5 h-5" />
+          {/* Current Balance Card */}
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs">
+            <div className="w-12 h-12 rounded-xl bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] flex items-center justify-center flex-shrink-0">
+              <Coins className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
-                  {truncateAddress(userProfile.walletAddress)}
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                  Available Balance
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-[#485442]/10 text-[#485442] dark:text-[#8A9E7F] border border-[#485442]/20 uppercase">
-                  {userProfile.tier} TIER
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-extrabold text-[var(--text-primary)]">
+                  {userProfile.apiCallsRemaining.toLocaleString()}
+                </span>
+                <span className="text-xs text-[var(--text-muted)] font-medium">Credits</span>
+                <span className="text-xs text-[var(--text-secondary)] font-mono">
+                  (≈ ${(userProfile.apiCallsRemaining / 100).toFixed(2)})
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)] mt-0.5 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                <span>Base Sepolia Testnet · Gas Sponsored</span>
-              </p>
+              <div className="text-[11px] text-[var(--text-muted)] font-mono mt-0.5">
+                Wallet: {truncateAddress(userProfile.walletAddress)}
+              </div>
             </div>
-          </div>
-
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-[var(--border-color)]">
-            <div className="text-left sm:text-right">
-              <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider block">
-                Remaining Queries
-              </span>
-              <span className="text-lg font-mono font-bold text-[var(--text-primary)]">
-                {userProfile.apiCallsRemaining.toLocaleString()}{' '}
-                <span className="text-xs font-normal text-[var(--text-muted)]">/ 5,000</span>
-              </span>
-            </div>
-
-            <button
-              onClick={() => setActiveTab('credits')}
-              className="px-3.5 py-2 rounded-xl bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs"
-            >
-              Top Up
-            </button>
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  3. TAB SWITCHER (Plans vs On-Demand Credits)
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[var(--border-color)] pb-4">
-          <div className="flex items-center p-1 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-2xs">
-            <button
-              onClick={() => setActiveTab('plans')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'plans'
-                  ? 'bg-[var(--primary)] text-white shadow-xs'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>Subscription Plans</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('credits')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeTab === 'credits'
-                  ? 'bg-[var(--primary)] text-white shadow-xs'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              <Coins className="w-4 h-4" />
-              <span>Pay-As-You-Go Credits</span>
-              <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold rounded-md uppercase">
-                Never Expire
-              </span>
-            </button>
+        {/* Section 1: Quick Top-Up Cards (The Primary 20$ 2000 credits system) */}
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#485442] dark:text-[#8ba082] uppercase tracking-wider">
+                <Flame className="w-4 h-4 text-[#485442] dark:text-[#8ba082]" />
+                Select a Credit Top-Up Package
+              </div>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">
+                Instant Compute Reload
+              </h2>
+            </div>
+            <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5 font-medium">
+              <Shield className="w-3.5 h-3.5 text-[#485442] dark:text-[#8ba082]" />
+              <span>Standard Rate: $1.00 = 100 Credits (e.g. $20 = 2,000 Credits)</span>
+            </div>
           </div>
 
-          {/* Billing Switcher (Monthly vs Annual) — Only shown on Plans tab */}
-          {activeTab === 'plans' && (
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
-              <span className={billingCycle === 'monthly' ? 'text-[var(--text-primary)] font-bold' : ''}>
-                Monthly
-              </span>
-
-              <button
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-                className="w-12 h-6.5 rounded-full bg-[var(--bg-card)] border border-[var(--border-color)] p-0.5 transition-colors relative cursor-pointer"
-                title="Toggle Billing Cycle"
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-[var(--primary)] shadow-xs transition-transform duration-200 ${
-                    billingCycle === 'annual' ? 'translate-x-5.5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-
-              <span className="flex items-center gap-1.5">
-                <span className={billingCycle === 'annual' ? 'text-[var(--text-primary)] font-bold' : ''}>
-                  Yearly
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
-                  Save 20%
-                </span>
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════
-         *  4. SECTION A: SUBSCRIPTION PLANS (3 Cards)
-         * ═══════════════════════════════════════════════════════════ */}
-        {activeTab === 'plans' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-            {plans.map((plan) => {
-              const price = billingCycle === 'annual' ? plan.priceAnnual : plan.priceMonthly;
-              const isCurrent = (plan.id === 'free' && userProfile.tier === 'Free') ||
-                                (plan.id === 'pro' && userProfile.tier === 'Pro') ||
-                                (plan.id === 'institutional' && userProfile.tier === 'Enterprise');
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {TOPUP_PACKAGES.map((pkg) => {
+              const totalCredits = pkg.credits + (pkg.bonusCredits || 0);
               return (
                 <div
-                  key={plan.id}
-                  className={`relative flex flex-col justify-between p-6 sm:p-7 rounded-[26px] bg-[var(--bg-card)] border transition-all duration-200 ${
-                    plan.popular
-                      ? 'border-[#485442] dark:border-[#55604e] shadow-xl ring-2 ring-[#485442]/20'
-                      : 'border-[var(--border-color)] shadow-card hover:border-[var(--text-muted)]/30'
+                  key={pkg.id}
+                  className={`relative flex flex-col justify-between p-5 rounded-2xl border transition-all duration-200 ${
+                    pkg.popular
+                      ? 'bg-[var(--bg-card)] border-[#485442] dark:border-[#55604e] shadow-md ring-2 ring-[#485442]/20 dark:ring-[#55604e]/30'
+                      : 'bg-[var(--bg-card)] border-[var(--border-color)] hover:border-[#485442]/40 hover:shadow-2xs'
                   }`}
                 >
-                  {/* Top Popular Ribbon */}
-                  {plan.popular && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#485442] text-white text-[11px] font-bold tracking-wide shadow-xs uppercase">
-                      {plan.badge}
+                  {/* Badge */}
+                  {pkg.badge && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[#485442] dark:bg-[#55604e] text-white shadow-xs">
+                      {pkg.badge}
                     </div>
                   )}
 
-                  <div>
-                    {/* Header */}
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="text-xl font-bold text-[var(--text-primary)]">{plan.name}</h3>
-                      {!plan.popular && plan.badge && (
-                        <span className="text-[11px] font-semibold text-[var(--text-muted)] bg-[var(--bg-app)] px-2 py-0.5 rounded-md border border-[var(--border-color)]">
-                          {plan.badge}
-                        </span>
-                      )}
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">{pkg.name}</h3>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-2 min-h-[32px]">
+                        {pkg.description}
+                      </p>
                     </div>
 
-                    <p className="text-xs text-[var(--text-muted)] mt-2 min-h-[34px] leading-relaxed">
-                      {plan.description}
-                    </p>
-
-                    {/* Price Block */}
-                    <div className="mt-5 pb-5 border-b border-[var(--border-color)]">
+                    {/* Price & Credits Callout */}
+                    <div className="pt-2 border-t border-[var(--border-color)]">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-extrabold text-[var(--text-primary)] tracking-tight font-mono">
-                          ${price}
+                        <span className="text-3xl font-extrabold text-[var(--text-primary)]">
+                          ${pkg.amountUsd}
                         </span>
-                        <span className="text-xs text-[var(--text-muted)] font-medium">/ month</span>
+                        <span className="text-xs text-[var(--text-muted)]">one-time</span>
                       </div>
-                      {billingCycle === 'annual' && price > 0 && (
-                        <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                          Billed annually (${price * 12}/year)
-                        </p>
-                      )}
-                      {price === 0 && (
-                        <p className="text-[11px] text-[var(--text-muted)] font-medium mt-1">
-                          No credit card required
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Quick Specs Highlight Box */}
-                    <div className="my-5 p-3.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] space-y-2 text-xs">
-                      <div className="flex items-center justify-between text-[11.5px]">
-                        <span className="text-[var(--text-muted)] flex items-center gap-1.5">
-                          <Cpu className="w-3.5 h-3.5 text-[var(--primary)]" />
-                          Compute
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className="text-base font-bold text-[#485442] dark:text-[#8ba082]">
+                          {totalCredits.toLocaleString()}
                         </span>
-                        <span className="font-semibold text-[var(--text-primary)] font-mono text-[11px]">
-                          {plan.limits.queries}
-                        </span>
+                        <span className="text-xs font-semibold text-[var(--text-muted)]">Credits</span>
                       </div>
-                      <div className="flex items-center justify-between text-[11.5px]">
-                        <span className="text-[var(--text-muted)] flex items-center gap-1.5">
-                          <Bot className="w-3.5 h-3.5 text-[var(--primary)]" />
-                          Agents
-                        </span>
-                        <span className="font-semibold text-[var(--text-primary)] font-mono text-[11px]">
-                          {plan.limits.agents}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11.5px]">
-                        <span className="text-[var(--text-muted)] flex items-center gap-1.5">
-                          <Zap className="w-3.5 h-3.5 text-[var(--primary)]" />
-                          Latency
-                        </span>
-                        <span className="font-semibold text-[var(--text-primary)] font-mono text-[11px]">
-                          {plan.limits.speed}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Feature List */}
-                    <div className="space-y-2.5">
-                      <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                        Included Features
-                      </span>
-                      {plan.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-xs text-[var(--text-secondary)]">
-                          <div className="w-4 h-4 rounded-full bg-[#485442]/10 text-[#485442] dark:text-[#8A9E7F] flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
-                          </div>
-                          <span className="leading-snug">{feature}</span>
+                      {pkg.bonusCredits && (
+                        <div className="text-[10.5px] font-bold text-green-600 dark:text-green-400 mt-0.5">
+                          Includes {pkg.bonusCredits.toLocaleString()} free bonus credits
                         </div>
-                      ))}
+                      )}
+                    </div>
+
+                    <div className="text-[11px] text-[var(--text-muted)] bg-[var(--bg-app)] p-2.5 rounded-xl border border-[var(--border-color)]">
+                      {pkg.estimatedQueries}
                     </div>
                   </div>
 
-                  {/* CTA Button */}
-                  <div className="mt-8 pt-4 border-t border-[var(--border-color)]">
+                  {/* Top Up CTA */}
+                  <div className="mt-5 pt-3">
                     <button
-                      disabled={isCurrent}
-                      onClick={() =>
-                        handleCheckoutOpen({
-                          type: 'plan',
-                          id: plan.id,
-                          name: plan.name,
-                          price: price,
-                          billing: billingCycle,
-                        })
-                      }
-                      className={`w-full py-3 rounded-xl font-bold text-xs tracking-wide transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 ${
-                        isCurrent
-                          ? 'bg-[var(--bg-app)] text-[var(--text-muted)] border border-[var(--border-color)] cursor-not-allowed opacity-60'
-                          : plan.popular
-                          ? 'bg-[#485442] hover:bg-[#3b4635] text-white shadow-button-primary'
-                          : 'bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] border border-[var(--border-color)]'
+                      onClick={() => handleSelectPackage(pkg)}
+                      className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        pkg.popular
+                          ? 'bg-[#485442] hover:bg-[#3d4738] text-white shadow-xs'
+                          : 'bg-[var(--bg-app)] hover:bg-[#485442] hover:text-white text-[var(--text-primary)] border border-[var(--border-color)]'
                       }`}
                     >
-                      <span>{plan.ctaText}</span>
-                      {!isCurrent && <ArrowRight className="w-3.5 h-3.5" />}
+                      <Coins className="w-3.5 h-3.5" />
+                      <span>Top Up ${pkg.amountUsd}</span>
                     </button>
                   </div>
                 </div>
               );
             })}
           </div>
-        )}
+        </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  4. SECTION B: ON-DEMAND COMPUTE PACKS (Pay As You Go)
-         * ═══════════════════════════════════════════════════════════ */}
-        {activeTab === 'credits' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {creditPacks.map((pack) => (
-                <div
-                  key={pack.id}
-                  className={`relative p-6 sm:p-7 rounded-[26px] bg-[var(--bg-card)] border flex flex-col justify-between transition-all ${
-                    pack.popular
-                      ? 'border-[#485442] dark:border-[#55604e] shadow-xl ring-2 ring-[#485442]/20'
-                      : 'border-[var(--border-color)] shadow-card hover:border-[var(--text-muted)]/30'
+        {/* Section 2: Custom Top-Up Amount (Calculator / Custom Recharge) */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-2xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--border-color)]">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#485442] dark:text-[#8ba082] uppercase tracking-wider">
+                <Sliders className="w-4 h-4" />
+                Custom Amount
+              </div>
+              <h2 className="text-lg font-bold text-[var(--text-primary)] mt-1">
+                Need a Specific Amount?
+              </h2>
+              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                Top up any custom dollar amount starting from $5. Volume bonuses apply automatically at $50+.
+              </p>
+            </div>
+
+            {/* Quick preset buttons */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {[15, 20, 35, 50, 75, 150].map((amt) => (
+                <button
+                  key={amt}
+                  onClick={() => setCustomAmount(amt)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    customAmount === amt
+                      ? 'bg-[#485442] dark:bg-[#55604e] text-white border-transparent'
+                      : 'bg-[var(--bg-app)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
-                  {pack.bestValue && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#485442] text-white text-[10px] font-bold tracking-wide shadow-xs uppercase">
-                      Best Value (+10% Bonus)
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-[var(--text-primary)]">{pack.name}</h3>
-                      <Coins className="w-4 h-4 text-[var(--primary)]" />
-                    </div>
-
-                    <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed min-h-[32px]">
-                      {pack.description}
-                    </p>
-
-                    {/* Credits Amount Highlight */}
-                    <div className="my-5 p-4 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] text-center">
-                      <div className="text-3xl font-extrabold text-[var(--text-primary)] font-mono tracking-tight">
-                        {(pack.credits + pack.bonusCredits).toLocaleString()}
-                      </div>
-                      <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                        Total Compute Credits
-                      </span>
-
-                      {pack.bonusCredits > 0 && (
-                        <div className="mt-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                          Includes {pack.bonusCredits.toLocaleString()} bonus credits!
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Pricing */}
-                    <div className="space-y-1 text-center pb-4 border-b border-[var(--border-color)]">
-                      <div className="text-3xl font-extrabold text-[var(--text-primary)] font-mono">
-                        ${pack.priceUsd}
-                      </div>
-                      <div className="text-xs text-[var(--text-muted)] font-mono">
-                        {pack.costPerCredit}
-                      </div>
-                    </div>
-
-                    {/* Breakdown */}
-                    <div className="mt-4 space-y-2 text-xs text-[var(--text-secondary)]">
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-[#485442]" />
-                        <span>Credits never expire</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-[#485442]" />
-                        <span>Usable on all AI models & subagents</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-[#485442]" />
-                        <span>Instant delivery to connected wallet</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      handleCheckoutOpen({
-                        type: 'credit',
-                        id: pack.id,
-                        name: pack.name,
-                        price: pack.priceUsd,
-                        credits: pack.credits + pack.bonusCredits,
-                      })
-                    }
-                    className={`mt-6 w-full py-3 rounded-xl font-bold text-xs tracking-wide transition-all cursor-pointer flex items-center justify-center gap-2 ${
-                      pack.popular
-                        ? 'bg-[#485442] hover:bg-[#3b4635] text-white shadow-button-primary'
-                        : 'bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] border border-[var(--border-color)]'
-                    }`}
-                  >
-                    <span>Buy {pack.name}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                  ${amt}
+                </button>
               ))}
             </div>
+          </div>
 
-            {/* Credit Usage Rates Box */}
-            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-card space-y-3">
-              <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[var(--primary)]" />
-                <span>How compute credits are spent:</span>
-              </h4>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Slider & Input */}
+            <div className="lg:col-span-7 space-y-5">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-[var(--text-secondary)]">
+                    Amount to Top Up (USD)
+                  </label>
+                  <div className="flex items-center gap-1.5 bg-[var(--bg-app)] border border-[var(--border-color)] px-3 py-1 rounded-xl">
+                    <span className="text-sm font-bold text-[var(--text-muted)]">$</span>
+                    <input
+                      type="number"
+                      min={5}
+                      max={1000}
+                      step={5}
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(Math.max(5, Number(e.target.value) || 5))}
+                      className="w-20 text-base font-extrabold text-[var(--text-primary)] bg-transparent focus:outline-hidden font-mono"
+                    />
+                    <span className="text-xs text-[var(--text-muted)] font-bold">USD</span>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-3 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)]">
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block">Standard AI Query</span>
-                  <span className="font-mono font-bold text-sm text-[var(--text-primary)]">1 credit</span>
-                </div>
-                <div className="p-3 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)]">
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block">Deep Reasoning (R1)</span>
-                  <span className="font-mono font-bold text-sm text-[var(--text-primary)]">3 credits</span>
-                </div>
-                <div className="p-3 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)]">
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block">Agent / Active Hour</span>
-                  <span className="font-mono font-bold text-sm text-[var(--text-primary)]">0.5 credits</span>
-                </div>
-                <div className="p-3 bg-[var(--bg-app)] rounded-xl border border-[var(--border-color)]">
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase block">Contract Audit Scan</span>
-                  <span className="font-mono font-bold text-sm text-[var(--text-primary)]">10 credits</span>
+                {/* Range Slider */}
+                <input
+                  type="range"
+                  min={5}
+                  max={300}
+                  step={5}
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(Number(e.target.value))}
+                  className="w-full h-2 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-[#485442] dark:accent-[#7f8f77]"
+                />
+                <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-mono">
+                  <span>$5 (500 cr)</span>
+                  <span>$100 (11,000 cr)</span>
+                  <span>$200 (22,000 cr)</span>
+                  <span>$300 (34,200 cr)</span>
                 </div>
               </div>
+
+              {/* Bonus notification banner */}
+              {customCredits.bonus > 0 ? (
+                <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-2.5 text-xs text-green-700 dark:text-green-300">
+                  <Sparkles className="w-4 h-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                  <span>
+                    <strong>Volume Bonus Unlocked:</strong> You receive an additional{' '}
+                    <strong>+{customCredits.bonus.toLocaleString()} bonus credits</strong> for free!
+                  </span>
+                </div>
+              ) : (
+                <div className="p-3 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                  <span>Top up $50 or more to unlock free bonus credits (+5% to +14%).</span>
+                  <button
+                    onClick={() => setCustomAmount(50)}
+                    className="text-[#485442] dark:text-[#8ba082] font-bold hover:underline cursor-pointer"
+                  >
+                    Select $50
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Custom Output Card */}
+            <div className="lg:col-span-5 p-5 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] flex flex-col justify-between space-y-4">
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
+                  Top-Up Summary
+                </span>
+                <div className="flex items-baseline justify-between border-b border-[var(--border-color)] pb-3">
+                  <span className="text-xs text-[var(--text-secondary)]">Amount Charged</span>
+                  <span className="text-lg font-bold text-[var(--text-primary)]">
+                    ${customAmount}.00 USD
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between pt-1">
+                  <span className="text-xs text-[var(--text-secondary)]">Total Credits Added</span>
+                  <span className="text-xl font-extrabold text-[#485442] dark:text-[#8ba082]">
+                    +{customCredits.total.toLocaleString()} Credits
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between text-xs text-[var(--text-muted)]">
+                  <span>Balance After Top-Up</span>
+                  <span className="font-mono font-semibold">
+                    {(userProfile.apiCallsRemaining + customCredits.total).toLocaleString()} Credits
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={handleCustomCheckout}
+                className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-[#485442] hover:bg-[#3d4738] text-white shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Coins className="w-4 h-4" />
+                <span>Top Up ${customAmount}.00 ({customCredits.total.toLocaleString()} Credits)</span>
+              </button>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  5. INTERACTIVE COMPUTE USAGE ESTIMATOR
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="p-6 sm:p-8 rounded-[28px] bg-[var(--bg-card)] border border-[var(--border-color)] shadow-card space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
+        {/* Section 3: Cost Transparency Guide (How Credits Are Spent) */}
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold text-[#485442] dark:text-[#8ba082] uppercase tracking-wider">
+              <Activity className="w-4 h-4" />
+              Transparent Pricing
+            </div>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">
+              How Credits Are Deducted
+            </h2>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+              Every compute task has a deterministic cost. You only pay for what you actually use.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {CREDIT_COST_GUIDE.map((item, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] space-y-2 hover:border-[#485442]/30 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[var(--text-primary)]">
+                    {item.action}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-lg bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] text-xs font-extrabold">
+                    {item.costFormatted}
+                  </span>
+                </div>
+                <div className="text-[11px] font-mono text-[var(--text-muted)] flex items-center gap-1.5">
+                  <Cpu className="w-3 h-3" />
+                  <span>{item.model}</span>
+                  <span>•</span>
+                  <span>{item.usdEquiv}</span>
+                </div>
+                <p className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 4: Auto-Reload / Settings Box */}
+        <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+              <RefreshCw className="w-5 h-5" />
+            </div>
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--primary)] uppercase tracking-wider">
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Interactive Cost Estimator</span>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                  Optional Auto-Reload
+                </h3>
+                <span className="text-[10px] uppercase font-extrabold px-2 py-0.2 bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] rounded-md">
+                  Safety Guard
+                </span>
               </div>
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
-                Estimate your monthly compute consumption
-              </h3>
-            </div>
-            <div className="text-left md:text-right">
-              <span className="text-xs text-[var(--text-muted)]">Estimated Monthly Volume</span>
-              <div className="text-2xl font-mono font-extrabold text-[var(--text-primary)]">
-                {Math.round(estimatedMonthlyCredits).toLocaleString()}{' '}
-                <span className="text-xs font-normal text-[var(--text-muted)]">credits/mo</span>
-              </div>
+              <p className="text-xs text-[var(--text-secondary)] mt-1 max-w-xl">
+                Never get cut off mid-trade. When your balance drops below {autoReloadThreshold} credits,
+                automatically top up $20 (2,000 credits) using your pre-authorized connected wallet or saved card.
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            {/* Slider 1: Queries */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="font-medium text-[var(--text-secondary)]">Daily Market Queries</span>
-                <span className="font-mono font-bold text-[var(--text-primary)]">{queriesPerDay}/day</span>
-              </div>
-              <input
-                type="range"
-                min={5}
-                max={200}
-                step={5}
-                value={queriesPerDay}
-                onChange={(e) => setQueriesPerDay(Number(e.target.value))}
-                className="w-full accent-[#485442] cursor-pointer"
-              />
-              <span className="text-[11px] text-[var(--text-muted)] block">
-                {(queriesPerDay * 30).toLocaleString()} queries per month
-              </span>
-            </div>
-
-            {/* Slider 2: Agents */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="font-medium text-[var(--text-secondary)]">Running Autonomous Agents</span>
-                <span className="font-mono font-bold text-[var(--text-primary)]">{activeAgents} agents</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={10}
-                step={1}
-                value={activeAgents}
-                onChange={(e) => setActiveAgents(Number(e.target.value))}
-                className="w-full accent-[#485442] cursor-pointer"
-              />
-              <span className="text-[11px] text-[var(--text-muted)] block">
-                Whale watchers & arbitrage scanners running 24/7
-              </span>
-            </div>
-
-            {/* Slider 3: Audits */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="font-medium text-[var(--text-secondary)]">Smart Contract Audits</span>
-                <span className="font-mono font-bold text-[var(--text-primary)]">{contractAudits}/mo</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={20}
-                step={1}
-                value={contractAudits}
-                onChange={(e) => setContractAudits(Number(e.target.value))}
-                className="w-full accent-[#485442] cursor-pointer"
-              />
-              <span className="text-[11px] text-[var(--text-muted)] block">
-                Bytecode decompilation & vulnerability reports
-              </span>
-            </div>
-          </div>
-
-          {/* Recommendation Banner */}
-          <div className="p-4 rounded-2xl bg-[var(--primary-light)] border border-[var(--primary)]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5">
-              <TrendingUp className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-              <span>
-                Based on your usage: <strong>Pro Plan ($29/mo)</strong> provides the best value compared to Pay-As-You-Go (~${estimatedPayAsYouGoCost}/mo).
-              </span>
-            </div>
-            <button
-              onClick={() => setActiveTab('plans')}
-              className="px-3.5 py-1.5 rounded-lg bg-[var(--primary)] text-white font-bold hover:opacity-95 transition-opacity flex-shrink-0 cursor-pointer text-center"
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <select
+              value={autoReloadThreshold}
+              onChange={(e) => setAutoReloadThreshold(Number(e.target.value))}
+              className="px-2.5 py-2 rounded-xl text-xs font-semibold bg-[var(--bg-app)] text-[var(--text-secondary)] border border-[var(--border-color)] focus:outline-hidden cursor-pointer"
             >
-              View Pro Plan
+              <option value={200}>Threshold: 200 cr</option>
+              <option value={500}>Threshold: 500 cr</option>
+              <option value={1000}>Threshold: 1,000 cr</option>
+            </select>
+
+            <button
+              onClick={() => setAutoReloadEnabled(!autoReloadEnabled)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                autoReloadEnabled
+                  ? 'bg-green-600 text-white shadow-xs'
+                  : 'bg-[var(--bg-app)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {autoReloadEnabled ? 'Auto-Reload: On' : 'Enable'}
             </button>
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  6. COMPREHENSIVE FEATURE MATRIX COMPARISON
-         * ═══════════════════════════════════════════════════════════ */}
+        {/* Section 5: Recent Top-Up History Ledger */}
         <div className="space-y-4">
-          <div className="text-center space-y-1">
-            <h3 className="text-2xl font-bold text-[var(--text-primary)]">
-              Detailed Feature Comparison
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Full breakdown of capabilities across all tiers.
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#485442] dark:text-[#8ba082] uppercase tracking-wider">
+                <History className="w-4 h-4" />
+                Ledger
+              </div>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">
+                Recent Top-Up History
+              </h2>
+            </div>
+            <span className="text-xs text-[var(--text-muted)] font-mono">
+              Wallet: {truncateAddress(userProfile.walletAddress)}
+            </span>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] shadow-card">
-            <table className="w-full text-left text-xs border-collapse min-w-[620px]">
-              <thead>
-                <tr className="border-b border-[var(--border-color)] bg-[var(--bg-app)]">
-                  <th className="p-4 font-bold text-[var(--text-primary)] w-1/3">Feature</th>
-                  <th className="p-4 font-bold text-[var(--text-primary)] text-center w-1/5">Explorer (Free)</th>
-                  <th className="p-4 font-bold text-[#485442] dark:text-[#8A9E7F] text-center w-1/5 bg-[#485442]/5">
-                    Pro Trader ($29)
-                  </th>
-                  <th className="p-4 font-bold text-[var(--text-primary)] text-center w-1/5">Institutional ($199)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border-color)]">
-                {/* Section: Models */}
-                <tr className="bg-[var(--bg-app)]/50">
-                  <td colSpan={4} className="p-2.5 px-4 font-bold text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-                    AI Models & Reasoning Engines
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">QuantAlpha-1 Speed Engine</td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600 bg-[#485442]/5"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">QuantAlpha-3 & DeepSeek-R1 Deep Reasoning</td>
-                  <td className="p-3.5 text-center text-[var(--text-muted)]">—</td>
-                  <td className="p-3.5 text-center text-emerald-600 bg-[#485442]/5"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Claude 3.5 Sonnet Integration</td>
-                  <td className="p-3.5 text-center text-[var(--text-muted)]">—</td>
-                  <td className="p-3.5 text-center text-emerald-600 bg-[#485442]/5"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                </tr>
-
-                {/* Section: On-Chain Intelligence */}
-                <tr className="bg-[var(--bg-app)]/50">
-                  <td colSpan={4} className="p-2.5 px-4 font-bold text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-                    On-Chain & Whale Intelligence
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Tracked Wallets Limit</td>
-                  <td className="p-3.5 text-center font-mono">3 wallets</td>
-                  <td className="p-3.5 text-center font-mono font-bold text-[#485442] dark:text-[#8A9E7F] bg-[#485442]/5">Unlimited</td>
-                  <td className="p-3.5 text-center font-mono font-bold">Unlimited</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Real-Time Mempool Frontrun Alerts</td>
-                  <td className="p-3.5 text-center text-[var(--text-muted)]">—</td>
-                  <td className="p-3.5 text-center text-emerald-600 bg-[#485442]/5"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Smart Contract Decompilation & Audit</td>
-                  <td className="p-3.5 text-center font-mono">1/month</td>
-                  <td className="p-3.5 text-center font-mono font-bold text-[#485442] dark:text-[#8A9E7F] bg-[#485442]/5">50/month</td>
-                  <td className="p-3.5 text-center font-mono font-bold">Unlimited</td>
-                </tr>
-
-                {/* Section: Autonomous Agents */}
-                <tr className="bg-[var(--bg-app)]/50">
-                  <td colSpan={4} className="p-2.5 px-4 font-bold text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-                    Autonomous Trading Subagents
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Concurrent Running Subagents</td>
-                  <td className="p-3.5 text-center font-mono">1 agent</td>
-                  <td className="p-3.5 text-center font-mono font-bold text-[#485442] dark:text-[#8A9E7F] bg-[#485442]/5">10 agents</td>
-                  <td className="p-3.5 text-center font-mono font-bold">50 agents</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Custom Webhook & Telegram Dispatch</td>
-                  <td className="p-3.5 text-center text-[var(--text-muted)]">—</td>
-                  <td className="p-3.5 text-center text-emerald-600 bg-[#485442]/5"><Check className="w-4 h-4 mx-auto" /></td>
-                  <td className="p-3.5 text-center text-emerald-600"><Check className="w-4 h-4 mx-auto" /></td>
-                </tr>
-
-                {/* Section: Infrastructure & Security */}
-                <tr className="bg-[var(--bg-app)]/50">
-                  <td colSpan={4} className="p-2.5 px-4 font-bold text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-                    Infrastructure & Support
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Execution Speed / RPC Queue</td>
-                  <td className="p-3.5 text-center font-mono">Standard (~2.5s)</td>
-                  <td className="p-3.5 text-center font-mono font-bold text-[#485442] dark:text-[#8A9E7F] bg-[#485442]/5">Priority (&lt;600ms)</td>
-                  <td className="p-3.5 text-center font-mono font-bold">Dedicated (&lt;200ms)</td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 px-4 font-medium text-[var(--text-primary)]">Dedicated Quant War-Room Support</td>
-                  <td className="p-3.5 text-center text-[var(--text-muted)]">—</td>
-                  <td className="p-3.5 text-center font-medium bg-[#485442]/5">Priority Ticket</td>
-                  <td className="p-3.5 text-center font-bold text-emerald-600">24/7 Slack & TG</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-app)]/50 text-[var(--text-muted)] uppercase tracking-wider font-semibold">
+                    <th className="py-3 px-4">Transaction ID</th>
+                    <th className="py-3 px-4">Date</th>
+                    <th className="py-3 px-4">Amount</th>
+                    <th className="py-3 px-4">Credits Added</th>
+                    <th className="py-3 px-4">Method</th>
+                    <th className="py-3 px-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border-color)]">
+                  {history.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-[var(--bg-hover)] transition-colors">
+                      <td className="py-3.5 px-4 font-mono font-medium text-[var(--text-secondary)]">
+                        {tx.id}
+                      </td>
+                      <td className="py-3.5 px-4 text-[var(--text-muted)]">{tx.date}</td>
+                      <td className="py-3.5 px-4 font-bold text-[var(--text-primary)]">
+                        ${tx.amountUsd}.00
+                      </td>
+                      <td className="py-3.5 px-4 font-extrabold text-[#485442] dark:text-[#8ba082]">
+                        +{tx.credits.toLocaleString()} Credits
+                      </td>
+                      <td className="py-3.5 px-4 text-[var(--text-secondary)] font-medium">
+                        {tx.method}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                          <Check className="w-3 h-3" />
+                          {tx.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  7. FAQ ACCORDION — Real questions, clear answers
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="space-y-4 max-w-3xl mx-auto pt-4">
-          <div className="text-center space-y-1">
-            <h3 className="text-2xl font-bold text-[var(--text-primary)] flex items-center justify-center gap-2">
-              <HelpCircle className="w-5 h-5 text-[var(--primary)]" />
-              <span>Frequently Asked Questions</span>
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Everything you need to know about plans, compute credits, and payment rails.
+        {/* Section 6: Top-Up FAQ */}
+        <div className="space-y-4 pt-4 border-t border-[var(--border-color)]">
+          <div className="text-center max-w-xl mx-auto space-y-1">
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Everything you need to know about Dopamint credits and compute billing.
             </p>
           </div>
 
-          <div className="space-y-2 pt-2">
-            {faqs.map((faq, index) => {
-              const isOpen = expandedFaq === index;
+          <div className="max-w-3xl mx-auto space-y-2">
+            {[
+              {
+                q: 'Do credits ever expire?',
+                a: 'Never. Credits you purchase remain in your account indefinitely until used. There is no expiration date or inactivity fee.',
+              },
+              {
+                q: 'Are there any recurring monthly or weekly subscription fees?',
+                a: 'No. Dopamint uses a pure pay-as-you-go credit system. You only pay when you choose to top up your balance. No recurring charges ever occur unless you explicitly enable optional auto-reload.',
+              },
+              {
+                q: 'How does the $20 for 2,000 credits rate work?',
+                a: 'The baseline rate is 100 credits per $1.00 USD. For example, topping up $20 grants 2,000 compute credits. Larger packages ($50, $100, $250) include free bonus credits up to +14%.',
+              },
+              {
+                q: 'What cryptocurrencies are accepted for top-ups?',
+                a: 'You can top up instantly using Base USDC (recommended for near-zero gas fees) or Solana USDC directly from your connected wallet. We also accept standard Visa, Mastercard, and American Express via Stripe.',
+              },
+              {
+                q: 'What happens if my credits reach zero?',
+                a: 'If your balance reaches zero, advanced deep reasoning and autonomous subagents will pause until you top up. You can always reload your balance instantly in under 5 seconds.',
+              },
+            ].map((faq, index) => {
+              const isExpanded = expandedFaq === index;
               return (
                 <div
                   key={index}
-                  className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden transition-all shadow-2xs"
+                  className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] overflow-hidden transition-colors"
                 >
                   <button
-                    onClick={() => setExpandedFaq(isOpen ? null : index)}
-                    className="w-full flex items-center justify-between p-4 sm:p-5 text-left text-xs sm:text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                    onClick={() => setExpandedFaq(isExpanded ? null : index)}
+                    className="w-full flex items-center justify-between p-4 text-left font-bold text-xs text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-200 flex-shrink-0 ${
-                        isOpen ? 'rotate-180 text-[var(--text-primary)]' : ''
+                      className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180 text-[#485442] dark:text-[#8ba082]' : ''
                       }`}
                     />
                   </button>
-
                   <AnimatePresence>
-                    {isOpen && (
+                    {isExpanded && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="overflow-hidden px-4 sm:px-5 pb-4 sm:pb-5 text-xs text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-color)]/50 pt-3"
+                        className="px-4 pb-4 text-xs text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-color)]/40 pt-3"
                       >
                         {faq.a}
                       </motion.div>
@@ -952,182 +788,141 @@ export const BuyCreditsPage: React.FC = () => {
             })}
           </div>
         </div>
-
-        {/* ═══════════════════════════════════════════════════════════
-         *  8. TRUST & SPONSOR FOOTER
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] text-center space-y-2 text-xs text-[var(--text-muted)]">
-          <div className="flex items-center justify-center gap-4 text-xs font-semibold text-[var(--text-secondary)]">
-            <span className="flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-emerald-500" />
-              Smart Contract Audited
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-blue-500" />
-              Instant Settlement
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              Zero Gas on Base
-            </span>
-          </div>
-          <p className="text-[11px] text-[var(--text-muted)] pt-1">
-            DopaMint Intelligence Infrastructure · Powered by Base Sepolia & Privy Embedded MPC Wallet.
-          </p>
-        </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-       *  9. INTERACTIVE CHECKOUT MODAL
-       * ═══════════════════════════════════════════════════════════ */}
+      {/* Checkout Modal */}
       <AnimatePresence>
-        {checkoutItem && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => !isProcessing && setCheckoutItem(null)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
-            />
-
-            {/* Modal Card */}
+        {isCheckoutOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[28px] shadow-2xl p-6 sm:p-7 z-10 space-y-5"
+              className="w-full max-w-md bg-[var(--bg-card)] rounded-3xl border border-[var(--border-color)] shadow-2xl overflow-hidden"
             >
-              {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-                <div>
-                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Checkout Summary</h3>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {checkoutItem.type === 'plan' ? 'Subscription Upgrade' : 'Compute Credits Top Up'}
-                  </p>
-                </div>
-                <div className="px-2.5 py-1 rounded-full bg-[#485442]/10 text-[#485442] dark:text-[#8A9E7F] text-xs font-bold uppercase">
-                  {checkoutItem.name}
-                </div>
-              </div>
-
-              {/* Order Breakdown */}
-              <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] space-y-2.5 text-xs">
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Item:</span>
-                  <span className="font-semibold text-[var(--text-primary)]">{checkoutItem.name}</span>
-                </div>
-                {checkoutItem.credits && (
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>Credits Delivered:</span>
-                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      +{checkoutItem.credits.toLocaleString()} Credits
-                    </span>
-                  </div>
-                )}
-                {checkoutItem.billing && (
-                  <div className="flex justify-between text-[var(--text-secondary)]">
-                    <span>Billing Interval:</span>
-                    <span className="capitalize font-semibold text-[var(--text-primary)]">
-                      {checkoutItem.billing}
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Network Fee:</span>
-                  <span className="text-emerald-600 font-bold uppercase text-[11px]">Free (Sponsored)</span>
-                </div>
-                <div className="pt-2 border-t border-[var(--border-color)] flex justify-between text-sm font-bold text-[var(--text-primary)]">
-                  <span>Total Due:</span>
-                  <span className="font-mono text-base font-extrabold text-[var(--primary)]">
-                    ${checkoutItem.price}.00 USD
-                  </span>
-                </div>
-              </div>
-
-              {/* Payment Method Selector */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                  Select Payment Rail
-                </label>
-                <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={() => setPaymentMethod('base_usdc')}
-                    className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      paymentMethod === 'base_usdc'
-                        ? 'bg-[#485442]/10 border-[#485442] ring-1 ring-[#485442]'
-                        : 'bg-[var(--bg-app)] border-[var(--border-color)] hover:border-[var(--primary)]/40'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs">
-                        ⚡
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[var(--text-primary)]">
-                          Base USDC (Connected Wallet)
-                        </div>
-                        <div className="text-[10px] text-[var(--text-muted)] font-mono">
-                          {truncateAddress(userProfile.walletAddress)} · 1-Click
-                        </div>
-                      </div>
+              {/* Modal Header */}
+              <div className="p-6 border-b border-[var(--border-color)] bg-[var(--bg-app)]/40">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] flex items-center justify-center">
+                      <Coins className="w-5 h-5" />
                     </div>
-                    {paymentMethod === 'base_usdc' && <Check className="w-4 h-4 text-[#485442]" />}
-                  </button>
-
-                  <button
-                    onClick={() => setPaymentMethod('card')}
-                    className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                      paymentMethod === 'card'
-                        ? 'bg-[#485442]/10 border-[#485442] ring-1 ring-[#485442]'
-                        : 'bg-[var(--bg-app)] border-[var(--border-color)] hover:border-[var(--primary)]/40'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center">
-                        <CreditCard className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[var(--text-primary)]">
-                          Credit / Debit Card (Stripe)
-                        </div>
-                        <div className="text-[10px] text-[var(--text-muted)]">
-                          Apple Pay, Google Pay, Visa, Mastercard
-                        </div>
-                      </div>
+                    <div>
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">
+                        Confirm Credit Top-Up
+                      </h3>
+                      <p className="text-xs text-[var(--text-muted)]">
+                        {checkoutData.title}
+                      </p>
                     </div>
-                    {paymentMethod === 'card' && <Check className="w-4 h-4 text-[#485442]" />}
+                  </div>
+                  <button
+                    onClick={() => setIsCheckoutOpen(false)}
+                    className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 cursor-pointer"
+                  >
+                    ✕
                   </button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  disabled={isProcessing}
-                  onClick={() => setCheckoutItem(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-[var(--border-color)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
+              {/* Modal Body */}
+              <div className="p-6 space-y-5">
+                {/* Order Summary Box */}
+                <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-color)] space-y-2">
+                  <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+                    <span>Credit Pack</span>
+                    <span className="font-bold text-[var(--text-primary)]">
+                      +{checkoutData.credits.toLocaleString()} Credits
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+                    <span>Wallet Recipient</span>
+                    <span className="font-mono">{truncateAddress(userProfile.walletAddress)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-[var(--text-secondary)]">
+                    <span>Credit Expiry</span>
+                    <span className="text-green-600 dark:text-green-400 font-bold">Never expires</span>
+                  </div>
+                  <div className="border-t border-[var(--border-color)] pt-2.5 flex justify-between items-baseline">
+                    <span className="text-xs font-bold text-[var(--text-primary)]">Total Due</span>
+                    <span className="text-2xl font-extrabold text-[#485442] dark:text-[#8ba082]">
+                      ${checkoutData.amountUsd}.00
+                    </span>
+                  </div>
+                </div>
 
+                {/* Payment Method Selector */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block">
+                    Select Payment Method
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('base_usdc')}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                        paymentMethod === 'base_usdc'
+                          ? 'border-[#485442] dark:border-[#55604e] bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] font-bold'
+                          : 'border-[var(--border-color)] bg-[var(--bg-app)] text-[var(--text-secondary)]'
+                      }`}
+                    >
+                      <Wallet className="w-4 h-4 mx-auto mb-1" />
+                      <span className="text-[11px] block font-bold">Base USDC</span>
+                      <span className="text-[9px] text-[var(--text-muted)]">Zero Gas</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('card')}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                        paymentMethod === 'card'
+                          ? 'border-[#485442] dark:border-[#55604e] bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] font-bold'
+                          : 'border-[var(--border-color)] bg-[var(--bg-app)] text-[var(--text-secondary)]'
+                      }`}
+                    >
+                      <CreditCard className="w-4 h-4 mx-auto mb-1" />
+                      <span className="text-[11px] block font-bold">Card</span>
+                      <span className="text-[9px] text-[var(--text-muted)]">Stripe</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('solana')}
+                      className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                        paymentMethod === 'solana'
+                          ? 'border-[#485442] dark:border-[#55604e] bg-[#485442]/10 dark:bg-[#55604e]/20 text-[#485442] dark:text-[#8ba082] font-bold'
+                          : 'border-[var(--border-color)] bg-[var(--bg-app)] text-[var(--text-secondary)]'
+                      }`}
+                    >
+                      <Zap className="w-4 h-4 mx-auto mb-1" />
+                      <span className="text-[11px] block font-bold">Solana</span>
+                      <span className="text-[9px] text-[var(--text-muted)]">USDC</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Guarantee Note */}
+                <div className="flex items-center gap-2 text-[11px] text-[var(--text-muted)] justify-center">
+                  <Lock className="w-3.5 h-3.5 text-green-600" />
+                  <span>Encrypted Web3 payment • Instant credit replenishment</span>
+                </div>
+
+                {/* Confirm Action Button */}
                 <button
+                  type="button"
+                  onClick={handleConfirmPayment}
                   disabled={isProcessing}
-                  onClick={handleExecutePayment}
-                  className="flex-1 py-2.5 rounded-xl bg-[#485442] hover:bg-[#3b4635] text-white text-xs font-bold shadow-button-primary transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-xl text-xs font-bold bg-[#485442] hover:bg-[#3d4738] text-white shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <>
-                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Confirming...</span>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Processing Payment...</span>
                     </>
                   ) : (
                     <>
-                      <span>Pay ${checkoutItem.price}.00</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <Coins className="w-4 h-4" />
+                      <span>Pay ${checkoutData.amountUsd}.00 & Receive {checkoutData.credits.toLocaleString()} Credits</span>
                     </>
                   )}
                 </button>

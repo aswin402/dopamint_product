@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
-  Sparkles,
   Settings,
   LogOut,
   Sun,
@@ -11,6 +10,7 @@ import {
   Copy,
   Check,
   Wallet,
+  Coins,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { truncateAddress } from '../../lib/formatters';
@@ -190,12 +190,12 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ isRailHovered 
             <button
               onClick={() => {
                 setIsOpen(false);
-                setModalState('isUpgradeProModalOpen', true);
+                navigate('/buy-credits');
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl transition-colors text-left cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-[var(--primary)]" />
-              Manage Pro Subscription
+              <Coins className="w-4 h-4 text-[#485442] dark:text-[#8ba082]" />
+              Top Up Credits
             </button>
 
             <div className="border-t border-[var(--border-color)] my-1" />

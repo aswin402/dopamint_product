@@ -214,7 +214,7 @@ export const Sidebar: React.FC = () => {
             {/* 9. Buy Credits */}
             <button
               onClick={() => navigate('/buy-credits')}
-              title="Buy Credits & Plans"
+              title="Top Up Credits"
               className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
                 isBuyCredits
                   ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'

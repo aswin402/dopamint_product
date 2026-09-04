@@ -15,12 +15,12 @@ import {
   Gift,
   Check,
   Bell,
-  Crown,
   Repeat,
   ChevronRight,
   Paperclip,
   X,
   Zap,
+  Coins,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -219,11 +219,12 @@ export const DashboardPage: React.FC = () => {
           {/* Right Quick Controls */}
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => setModalState('isUpgradeProModalOpen', true)}
-              className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              onClick={() => navigate('/buy-credits')}
+              className="flex items-center gap-1.5 px-3 py-1 bg-[#485442]/10 hover:bg-[#485442]/20 text-[#485442] dark:text-[#8ba082] border border-[#485442]/30 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              title="Top Up Credits"
             >
-              <Crown className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-              <span>PRO</span>
+              <Coins className="w-3.5 h-3.5" />
+              <span>{userProfile.apiCallsRemaining.toLocaleString()} Credits</span>
             </button>
 
             <button
