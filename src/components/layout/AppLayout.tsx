@@ -6,6 +6,7 @@ import { ChatContainer } from '../chat/ChatContainer';
 import { LeaderboardPage } from '../leaderboard/LeaderboardPage';
 import { ReferEarnPage } from '../refer/ReferEarnPage';
 import { PointsXpPage } from '../points/PointsXpPage';
+import { BuyCreditsPage } from '../credits/BuyCreditsPage';
 import { InsightsPanel } from '../insights/InsightsPanel';
 import { CommandPalette } from '../modals/CommandPalette';
 import { PortfolioModal } from '../modals/PortfolioModal';
@@ -39,14 +40,17 @@ export const AppLayout: React.FC = () => {
   const isLeaderboard = pathname === '/leaderboard';
   const isRefer = pathname === '/refer';
   const isPoints = pathname === '/points' || pathname === '/xp';
+  const isBuyCredits =
+    pathname === '/buy-credits' ||
+    pathname === '/credits' ||
+    pathname === '/pro' ||
+    pathname === '/pricing';
 
   useEffect(() => {
     if (pathname === '/settings') {
       setModalState('isSettingsModalOpen', true);
     } else if (pathname === '/agents' || pathname === '/active-agents') {
       setModalState('isActiveAgentsModalOpen', true);
-    } else if (pathname === '/buy-credits' || pathname === '/pro') {
-      setModalState('isUpgradeProModalOpen', true);
     } else if (pathname === '/favourites' || pathname === '/watchlist') {
       setModalState('isWatchlistModalOpen', true);
     }
@@ -57,7 +61,7 @@ export const AppLayout: React.FC = () => {
       {/* 1. Left Sidebar (Dual panel) */}
       <Sidebar />
 
-      {/* 2. Center Canvas based on URL (Dashboard, Chat, Leaderboard, Refer, Points) */}
+      {/* 2. Center Canvas based on URL (Dashboard, Chat, Leaderboard, Refer, Points, Buy Credits) */}
       <main className="flex-1 flex flex-col h-full min-w-0 bg-[var(--bg-app)] relative overflow-x-hidden overflow-y-hidden transition-colors duration-200">
         {isLeaderboard ? (
           <LeaderboardPage />
@@ -65,6 +69,8 @@ export const AppLayout: React.FC = () => {
           <ReferEarnPage />
         ) : isPoints ? (
           <PointsXpPage />
+        ) : isBuyCredits ? (
+          <BuyCreditsPage />
         ) : pathname.startsWith('/c/') ? (
           <ChatContainer />
         ) : (

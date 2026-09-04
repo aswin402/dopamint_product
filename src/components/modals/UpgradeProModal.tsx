@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Sparkles, Check, Coins, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles, Check, Coins, Zap, ExternalLink } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { Modal, Button } from '../ui';
 import { useCryptoStore } from '../../store/useCryptoStore';
 import { triggerCelebration } from '../../lib/confetti';
+import { truncateAddress } from '../../lib/formatters';
 
 export const UpgradeProModal: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'tier-starter' | 'tier-pro' | 'tier-unlimited'>('tier-pro');
+  const navigate = useNavigate();
 
   const isOpen = useCryptoStore((s) => s.isUpgradeProModalOpen);
   const setModalState = useCryptoStore((s) => s.setModalState);
@@ -62,7 +65,7 @@ export const UpgradeProModal: React.FC = () => {
       isOpen={isOpen}
       onClose={handleClose}
       title="Buy AI Credits & Pro"
-      subtitle={`Wallet: ${userProfile.name}`}
+      subtitle={`Wallet: ${truncateAddress(userProfile.walletAddress)}`}
       icon={<img src={crownLogo} alt="dopamint crown" className="w-5 h-5 object-contain" />}
       maxWidth="max-w-lg"
     >
@@ -155,6 +158,18 @@ export const UpgradeProModal: React.FC = () => {
         >
           Buy Credits & Top Up Balance
         </Button>
+
+        <button
+          type="button"
+          onClick={() => {
+            handleClose();
+            navigate('/buy-credits');
+          }}
+          className="w-full text-center text-xs font-semibold text-[#485442] dark:text-[#8ba082] hover:underline flex items-center justify-center gap-1.5 pt-1 cursor-pointer"
+        >
+          <span>Open full pricing & usage calculator</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </button>
       </div>
     </Modal>
   );

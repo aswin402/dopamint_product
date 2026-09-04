@@ -9,6 +9,8 @@ export interface AuthSlice {
   setActiveCurrency: (cur: string) => void;
   login: (walletAddress: string, email?: string) => void;
   logout: () => void;
+  addCredits: (amount: number) => void;
+  upgradeTier: (tier: 'Free' | 'Pro' | 'Enterprise') => void;
 }
 
 const getInitialAuth = (): boolean => {
@@ -19,13 +21,13 @@ const getInitialAuth = (): boolean => {
 };
 
 const INITIAL_PROFILE: UserProfile = {
-  name: 'Alex Rivera',
-  email: 'alex.rivera@solana.org',
+  name: '0x4F2a...3c76',
+  email: 'trader@dopamint.io',
   walletAddress: '0x4F2a91C8392F865eE824A1054E5F36423c9E3c76',
   avatarUrl:
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   tier: 'Pro',
-  apiCallsRemaining: 840,
+  apiCallsRemaining: 4850,
 };
 
 export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
@@ -58,4 +60,20 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
       isAuthenticated: false,
     });
   },
+
+  addCredits: (amount) =>
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        apiCallsRemaining: state.userProfile.apiCallsRemaining + amount,
+      },
+    })),
+
+  upgradeTier: (tier) =>
+    set((state) => ({
+      userProfile: {
+        ...state.userProfile,
+        tier,
+      },
+    })),
 });

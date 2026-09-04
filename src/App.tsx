@@ -106,6 +106,14 @@ function App() {
           element={<Navigate to="/buy-credits" replace />}
         />
         <Route
+          path="/credits"
+          element={<Navigate to="/buy-credits" replace />}
+        />
+        <Route
+          path="/pricing"
+          element={<Navigate to="/buy-credits" replace />}
+        />
+        <Route
           path="/favourites"
           element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
         />

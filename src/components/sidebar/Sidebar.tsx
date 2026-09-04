@@ -67,6 +67,11 @@ export const Sidebar: React.FC = () => {
   const isLeaderboard = pathname === '/leaderboard';
   const isRefer = pathname === '/refer';
   const isPoints = pathname === '/points' || pathname === '/xp';
+  const isBuyCredits =
+    pathname === '/buy-credits' ||
+    pathname === '/credits' ||
+    pathname === '/pro' ||
+    pathname === '/pricing';
 
   const handleNewChat = () => {
     const newId = createNewChat();
@@ -208,18 +213,26 @@ export const Sidebar: React.FC = () => {
 
             {/* 9. Buy Credits */}
             <button
-              onClick={() => setModalState('isUpgradeProModalOpen', true)}
-              title="Buy Credits"
-              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer ${
-                isRailHovered ? 'justify-between' : 'justify-center'
-              }`}
+              onClick={() => navigate('/buy-credits')}
+              title="Buy Credits & Plans"
+              className={`w-full flex items-center p-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                isBuyCredits
+                  ? 'bg-[var(--primary-light)] text-[var(--primary)] font-bold shadow-2xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+              } ${isRailHovered ? 'justify-between' : 'justify-center'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Coins className="w-5 h-5 flex-shrink-0" />
                 {isRailHovered && <span className="truncate">Buy Credits</span>}
               </div>
               {isRailHovered && (
-                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--bg-app)] text-[var(--text-muted)] font-semibold rounded-md border border-[var(--border-color)] uppercase flex-shrink-0">
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-md uppercase flex-shrink-0 font-semibold ${
+                    isBuyCredits
+                      ? 'bg-[var(--primary)] text-white'
+                      : 'bg-[var(--bg-app)] text-[var(--text-muted)] border border-[var(--border-color)]'
+                  }`}
+                >
                   TOP UP
                 </span>
               )}
