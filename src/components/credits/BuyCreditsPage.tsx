@@ -280,7 +280,7 @@ export const BuyCreditsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors duration-200">
+    <div className="flex-1 h-full overflow-y-auto overflow-x-hidden bg-[var(--bg-app)] text-[var(--text-primary)] scroll-smooth transition-colors duration-200">
       {/* Toast Notification */}
       <AnimatePresence>
         {successToast && (
@@ -296,7 +296,7 @@ export const BuyCreditsPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-12 pb-28">
         {/* Top Breadcrumb & Live Balance Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--border-color)]">
           <div>
