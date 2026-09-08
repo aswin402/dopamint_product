@@ -22,6 +22,7 @@ import {
   Trophy,
   Share2,
   ArrowLeftRight,
+  Crown,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -214,18 +215,15 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Right Credits Display (Words & Crown Only, No Badge) */}
+          {/* Right Credits Display (Crown icon then numbers, No Badge, No "Credits" word) */}
           <button
             onClick={() => navigate('/buy-credits')}
-            className="flex items-center gap-1.5 hover:opacity-85 transition-opacity cursor-pointer group py-1"
+            className="flex items-center gap-2 sm:gap-2.5 hover:opacity-80 transition-opacity cursor-pointer group py-1"
             title="Buy / Manage Credits"
           >
-            <span className="font-mono font-bold text-sm sm:text-base text-[var(--text-primary)] tracking-tight group-hover:text-[var(--primary)] transition-colors">
+            <Crown className="w-6 h-6 sm:w-7 sm:h-7 text-[var(--primary)] group-hover:scale-105 transition-transform stroke-[2.2]" />
+            <span className="font-mono font-bold text-lg sm:text-xl text-[var(--text-primary)] tracking-tight group-hover:text-[var(--primary)] transition-colors">
               {userProfile.apiCallsRemaining.toLocaleString()}
-            </span>
-            <img src={crownLogo} alt="crown" className="w-4 h-4 object-contain inline-block" />
-            <span className="font-semibold text-xs sm:text-sm text-[var(--text-secondary)] group-hover:text-[var(--primary)] transition-colors">
-              Credits
             </span>
           </button>
         </div>
