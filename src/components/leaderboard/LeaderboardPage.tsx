@@ -2,17 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Crown,
-  Bell,
   Search,
   Copy,
   Check,
-  Zap,
-  Flame,
-  Trophy,
-  Target,
-  Gift,
-  Diamond,
-  Rocket,
   TrendingUp,
 } from 'lucide-react';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -148,7 +140,6 @@ export const LeaderboardPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
-  const setModalState = useCryptoStore((s) => s.setModalState);
   const userProfile = useCryptoStore((s) => s.userProfile);
 
   const truncateAddress = (addr: string) => {
@@ -185,18 +176,6 @@ export const LeaderboardPage: React.FC = () => {
     delta: '+12',
   };
 
-  // 8 Minimalist Achievements
-  const achievements = [
-    { id: 'first-swap', name: 'First swap', desc: 'Executed 1st DEX trade', icon: Target },
-    { id: '10-swaps', name: '10 Swaps', desc: 'Active testnet trader', icon: Zap },
-    { id: '50-swaps', name: '50 Swaps', desc: 'Power DeFi explorer', icon: Trophy },
-    { id: '7-streak', name: '7-day streak', desc: 'Consistent check-ins', icon: Flame },
-    { id: '30-streak', name: '30-day streak', desc: 'Daily alpha researcher', icon: Flame },
-    { id: '5-ref', name: '5 Referrals', desc: 'Ecosystem growth builder', icon: Gift },
-    { id: '20-ref', name: '20 Referrals', desc: 'Alpha syndicator tier', icon: Diamond },
-    { id: 'top-100', name: 'Top 100', desc: 'Elite Leaderboard rank', icon: Rocket },
-  ];
-
   return (
     <div className="flex-1 h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-4 sm:px-8 md:px-12 py-6 scroll-smooth transition-colors duration-200">
       <div className="max-w-[860px] mx-auto space-y-6 pb-20">
@@ -211,17 +190,6 @@ export const LeaderboardPage: React.FC = () => {
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
               Track top community testers and earn XP rewards on Base testnet
             </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setModalState('isAlertsModalOpen', true)}
-              title="Notifications"
-              className="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all shadow-2xs cursor-pointer relative"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--primary)]" />
-            </button>
           </div>
         </div>
 
@@ -399,44 +367,6 @@ export const LeaderboardPage: React.FC = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* ═══════════════════════════════════════════════════════════
-         *  TOP ACHIEVEMENTS THIS WEEK (CLEAN MINIMAL SVG ICONS)
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
-              Weekly Achievements
-            </h3>
-            <span className="text-xs text-[var(--text-muted)]">
-              Unlock milestones to boost multiplier
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {achievements.map((item) => {
-              const IconComponent = item.icon;
-              return (
-                <div
-                  key={item.id}
-                  className="p-3.5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/50 rounded-2xl transition-all shadow-2xs group flex items-start gap-3 cursor-pointer"
-                >
-                  <div className="p-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-primary)] group-hover:text-[var(--primary)] group-hover:scale-105 transition-all flex-shrink-0">
-                    <IconComponent className="w-4 h-4 stroke-[2]" />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-bold text-[var(--text-primary)] truncate group-hover:text-[var(--primary)] transition-colors">
-                      {item.name}
-                    </h4>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5 truncate">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );
