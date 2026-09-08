@@ -41,32 +41,32 @@ interface CategoryItem {
 const CATEGORIES: CategoryItem[] = [
   {
     name: 'Trending',
-    icon: <Flame className="w-3.5 h-3.5 text-[#A06C3E] dark:text-[#D4A373]" />,
+    icon: <Flame className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'What are the top trending tokens across Base and Layer-2 blockchains today?',
   },
   {
     name: 'Stock',
-    icon: <TrendingUp className="w-3.5 h-3.5 text-[#486B52] dark:text-[#74A883]" />,
+    icon: <TrendingUp className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'Compare semiconductor stocks and AI infrastructure data center demand.',
   },
   {
     name: 'Pre-IPO',
-    icon: <TreePine className="w-3.5 h-3.5 text-[#3C784C] dark:text-[#67B57B]" />,
+    icon: <TreePine className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'What is the estimated secondary market valuation for leading AI startups?',
   },
   {
     name: 'Crypto',
-    icon: <CircleDot className="w-3.5 h-3.5 text-[#94782A] dark:text-[#D4B257]" />,
+    icon: <CircleDot className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'Explain institutional ETF inflows and Base on-chain DEX liquidity.',
   },
   {
     name: 'Sentiment',
-    icon: <Heart className="w-3.5 h-3.5 text-[#8A4A4A] dark:text-[#BF7373]" />,
+    icon: <Heart className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'Analyze current market sentiment, Fear & Greed index, and derivatives funding rates.',
   },
   {
     name: 'Learn',
-    icon: <BookOpen className="w-3.5 h-3.5 text-[#635587] dark:text-[#9A87C7]" />,
+    icon: <BookOpen className="w-3.5 h-3.5 text-[var(--primary)]" />,
     samplePrompt: 'Explain Automated Market Makers (AMM) and impermanent loss for beginners.',
   },
 ];
@@ -166,32 +166,32 @@ export const DashboardPage: React.FC = () => {
       type: 'swap',
       title: 'Swapped 0.10 ETH → 341 USDC',
       time: '2h ago',
-      icon: <ArrowLeftRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.2]" />,
-      iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+      icon: <ArrowLeftRight className="w-4 h-4 text-[var(--primary)] stroke-[2.2]" />,
+      iconBg: 'bg-[var(--primary-light)] text-[var(--primary)]',
     },
     {
       id: 'act-2',
       type: 'chat',
       title: 'Asked Dopamint about Base ecosystem risk',
       time: '5h ago',
-      icon: <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
-      iconBg: 'bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
+      icon: <Sparkles className="w-4 h-4 text-[var(--primary)]" />,
+      iconBg: 'bg-[var(--primary-light)] text-[var(--primary)]',
     },
     {
       id: 'act-3',
       type: 'streak',
       title: 'Daily check-in — +15 XP, 6-day streak',
       time: '1d ago',
-      icon: <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />,
-      iconBg: 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-500',
+      icon: <Flame className="w-4 h-4 text-[var(--primary)] fill-[var(--primary)]/20" />,
+      iconBg: 'bg-[var(--primary-light)] text-[var(--primary)]',
     },
     {
       id: 'act-4',
       type: 'referral',
       title: '0x8B3f...2Ac1 joined via your invite — +100 pts',
       time: '2d ago',
-      icon: <Gift className="w-4 h-4 text-pink-500" />,
-      iconBg: 'bg-pink-500/10 dark:bg-pink-500/20 text-pink-500',
+      icon: <Gift className="w-4 h-4 text-[var(--primary)]" />,
+      iconBg: 'bg-[var(--primary-light)] text-[var(--primary)]',
     },
   ];
 
@@ -210,8 +210,8 @@ export const DashboardPage: React.FC = () => {
                   {truncateAddress(userProfile.walletAddress)}
                 </span>
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 uppercase tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--primary)]/25 uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
                 TESTNET
               </span>
             </div>
@@ -245,11 +245,11 @@ export const DashboardPage: React.FC = () => {
 
             <div
               onClick={() => navigate('/points')}
-              className="w-8.5 h-8.5 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 p-0.5 flex items-center justify-center text-white font-bold text-xs shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
+              className="w-8.5 h-8.5 rounded-xl bg-[var(--primary)] p-0.5 flex items-center justify-center text-white font-bold text-xs shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
               title="View Profile & XP"
             >
               <div className="w-full h-full bg-[#18181b] dark:bg-[#121214] rounded-[10px] flex items-center justify-center">
-                <span className="text-[11px] font-mono text-purple-400 font-bold">0x</span>
+                <span className="text-[11px] font-mono text-[var(--primary)] dark:text-[#8ba082] font-bold">0x</span>
               </div>
             </div>
           </div>
@@ -421,19 +421,19 @@ export const DashboardPage: React.FC = () => {
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/points')}
-            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0">
-                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500/20" />
+                  <div className="w-6 h-6 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+                    <Star className="w-3.5 h-3.5 text-[var(--primary)] fill-[var(--primary)]/20" />
                   </div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     XP Points
                   </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-extrabold rounded-full border border-amber-500/20">
+                <span className="text-[10px] px-2 py-0.5 bg-[var(--primary-light)] text-[var(--primary)] font-extrabold rounded-full border border-[var(--primary)]/20">
                   LVL 4
                 </span>
               </div>
@@ -442,7 +442,7 @@ export const DashboardPage: React.FC = () => {
 
             <div className="mt-3.5 space-y-1.5">
               <div className="w-full h-1.5 bg-[var(--bg-app)] rounded-full overflow-hidden border border-[var(--border-color)]">
-                <div className="h-full bg-amber-400 dark:bg-amber-500 rounded-full w-[65%]" />
+                <div className="h-full bg-[var(--primary)] rounded-full w-[65%]" />
               </div>
               <div className="text-[11px] text-[var(--text-muted)] font-medium">360 pts to Level 5</div>
             </div>
@@ -455,12 +455,12 @@ export const DashboardPage: React.FC = () => {
               setClaimedStreak(true);
               setTimeout(() => setClaimedStreak(false), 2000);
             }}
-            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-orange-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2 mb-2.5">
-                <div className="w-6 h-6 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center flex-shrink-0">
-                  <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                <div className="w-6 h-6 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+                  <Flame className="w-3.5 h-3.5 text-[var(--primary)] fill-[var(--primary)]/20" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Daily Streak
@@ -471,7 +471,7 @@ export const DashboardPage: React.FC = () => {
                   6 <span className="text-xs font-normal text-[var(--text-muted)] ml-1">days</span>
                 </div>
                 {claimedStreak && (
-                  <span className="text-[10px] text-amber-500 font-bold px-1.5 py-0.5 bg-amber-500/10 rounded-md border border-amber-500/20 animate-pulse">
+                  <span className="text-[10px] text-[var(--primary)] font-bold px-1.5 py-0.5 bg-[var(--primary-light)] rounded-md border border-[var(--primary)]/20 animate-pulse">
                     +15 XP Claimed!
                   </span>
                 )}
@@ -483,7 +483,7 @@ export const DashboardPage: React.FC = () => {
               {[1, 2, 3, 4, 5, 6].map((day) => (
                 <div
                   key={day}
-                  className="w-5 h-5 rounded-full bg-amber-400 dark:bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold shadow-2xs"
+                  className="w-5 h-5 rounded-full bg-[var(--primary)] text-white flex items-center justify-center text-[10px] font-bold shadow-2xs"
                 >
                   <Check className="w-3 h-3 stroke-[3]" />
                 </div>
@@ -499,12 +499,12 @@ export const DashboardPage: React.FC = () => {
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/refer')}
-            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-emerald-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2 mb-2.5">
-                <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-3.5 h-3.5" />
+                <div className="w-6 h-6 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+                  <Users className="w-3.5 h-3.5 text-[var(--primary)]" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Referral Earnings
@@ -515,7 +515,7 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-3.5 flex items-center gap-1">
+            <div className="text-xs font-semibold text-[var(--primary)] hover:underline mt-3.5 flex items-center gap-1">
               <span>3 friends joined</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
@@ -525,12 +525,12 @@ export const DashboardPage: React.FC = () => {
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/leaderboard')}
-            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-purple-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--primary)]/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2 mb-2.5">
-                <div className="w-6 h-6 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
-                  <Trophy className="w-3.5 h-3.5" />
+                <div className="w-6 h-6 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+                  <Trophy className="w-3.5 h-3.5 text-[var(--primary)]" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Leaderboard Rank
@@ -539,7 +539,7 @@ export const DashboardPage: React.FC = () => {
               <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">#128</div>
             </div>
 
-            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-3.5 flex items-center gap-1">
+            <div className="text-xs font-semibold text-[var(--primary)] mt-3.5 flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Up 12 this week</span>
             </div>
@@ -552,7 +552,7 @@ export const DashboardPage: React.FC = () => {
         <motion.div
           whileHover={{ scale: 1.005 }}
           onClick={() => navigate('/refer')}
-          className="relative overflow-hidden w-full p-5 sm:p-6 bg-gradient-to-r from-[#eef4ed] via-[#f5f8f4] to-[#edf3ec] dark:from-[#151d14] dark:via-[#182117] dark:to-[#1a2419] rounded-[22px] border border-[#485442]/20 dark:border-[#55604e]/30 shadow-card flex items-center justify-between cursor-pointer group transition-all"
+          className="relative overflow-hidden w-full p-5 sm:p-6 bg-gradient-to-r from-[#eef4ed] via-[#f5f8f4] to-[#edf3ec] dark:from-[#151d14] dark:via-[#182117] dark:to-[#1a2419] rounded-[22px] border border-[#485442]/20 dark:border-[#55604e]/30 hover:border-[var(--primary)] shadow-card flex items-center justify-between cursor-pointer group transition-all"
         >
           {/* Subtle Decorative Overlapping Rings in Background (matching Image 2) */}
           <div className="absolute right-0 top-0 bottom-0 w-80 pointer-events-none overflow-hidden select-none">
@@ -562,12 +562,12 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 relative z-10 min-w-0 pr-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-[#20271e] border border-[#485442]/20 dark:border-[#55604e]/30 text-[#485442] dark:text-[#8ba082] flex items-center justify-center flex-shrink-0 shadow-2xs">
+            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-[#20271e] border border-[var(--primary)]/20 text-[var(--primary)] flex items-center justify-center flex-shrink-0 shadow-2xs">
               <Share2 className="w-5 h-5 stroke-[2.2]" />
             </div>
 
             <div className="space-y-0.5 min-w-0">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#485442] dark:text-[#8ba082] block">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--primary)] block">
                 Refer & Earn
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">
@@ -579,7 +579,7 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#243321] hover:bg-[#1b2719] dark:bg-[#344030] dark:hover:bg-[#41503c] text-white text-xs font-bold transition-all shadow-sm flex-shrink-0 z-10 cursor-pointer">
+          <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--primary)] hover:opacity-90 text-white text-xs font-bold transition-all shadow-sm flex-shrink-0 z-10 cursor-pointer">
             <span>Invite Now</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
@@ -593,7 +593,7 @@ export const DashboardPage: React.FC = () => {
             <h3 className="font-bold text-base text-[var(--text-primary)]">Recent activity</h3>
             <button
               onClick={() => navigate('/points')}
-              className="text-xs font-semibold text-[#485442] dark:text-[#8ba082] hover:underline cursor-pointer flex items-center gap-1.5"
+              className="text-xs font-semibold text-[var(--primary)] hover:underline cursor-pointer flex items-center gap-1.5"
             >
               <span>View all</span>
               <ArrowRight className="w-3.5 h-3.5" />
