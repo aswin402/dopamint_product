@@ -15,12 +15,16 @@ import {
   Gift,
   Check,
   Bell,
-  Repeat,
   ChevronRight,
   Paperclip,
   X,
   Zap,
   Coins,
+  Star,
+  Users,
+  Trophy,
+  Share2,
+  ArrowLeftRight,
 } from 'lucide-react';
 import crownLogo from '../../assets/crown.png';
 import { useCryptoStore } from '../../store/useCryptoStore';
@@ -162,24 +166,24 @@ export const DashboardPage: React.FC = () => {
       type: 'swap',
       title: 'Swapped 0.10 ETH → 341 USDC',
       time: '2h ago',
-      icon: <Repeat className="w-4 h-4 text-emerald-500" />,
-      iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+      icon: <ArrowLeftRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.2]" />,
+      iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
     },
     {
       id: 'act-2',
       type: 'chat',
       title: 'Asked Dopamint about Base ecosystem risk',
       time: '5h ago',
-      icon: <Sparkles className="w-4 h-4 text-[var(--primary)]" />,
-      iconBg: 'bg-[var(--primary-light)]',
+      icon: <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
+      iconBg: 'bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
     },
     {
       id: 'act-3',
       type: 'streak',
       title: 'Daily check-in — +15 XP, 6-day streak',
       time: '1d ago',
-      icon: <Flame className="w-4 h-4 text-amber-500" />,
-      iconBg: 'bg-amber-500/10 dark:bg-amber-500/20',
+      icon: <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />,
+      iconBg: 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-500',
     },
     {
       id: 'act-4',
@@ -187,7 +191,7 @@ export const DashboardPage: React.FC = () => {
       title: '0x8B3f...2Ac1 joined via your invite — +100 pts',
       time: '2d ago',
       icon: <Gift className="w-4 h-4 text-pink-500" />,
-      iconBg: 'bg-pink-500/10 dark:bg-pink-500/20',
+      iconBg: 'bg-pink-500/10 dark:bg-pink-500/20 text-pink-500',
     },
   ];
 
@@ -410,30 +414,35 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  3. 4-METRIC STATS GRID
+         *  3. 4-METRIC STATS GRID (Redesigned per Image 2)
          * ═══════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Card 1: XP POINTS */}
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/points')}
-            className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  XP Points
-                </span>
-                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-extrabold rounded-md border border-amber-500/20">
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500/20" />
+                  </div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    XP Points
+                  </span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-extrabold rounded-full border border-amber-500/20">
                   LVL 4
                 </span>
               </div>
-              <div className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">2,140</div>
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">2,140</div>
             </div>
 
             <div className="mt-3.5 space-y-1.5">
               <div className="w-full h-1.5 bg-[var(--bg-app)] rounded-full overflow-hidden border border-[var(--border-color)]">
-                <div className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full w-[65%]" />
+                <div className="h-full bg-amber-400 dark:bg-amber-500 rounded-full w-[65%]" />
               </div>
               <div className="text-[11px] text-[var(--text-muted)] font-medium">360 pts to Level 5</div>
             </div>
@@ -446,19 +455,21 @@ export const DashboardPage: React.FC = () => {
               setClaimedStreak(true);
               setTimeout(() => setClaimedStreak(false), 2000);
             }}
-            className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-orange-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-6 h-6 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center flex-shrink-0">
+                  <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Daily Streak
                 </span>
               </div>
-              <div className="text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-baseline justify-between">
-                <span>
-                  6 <span className="text-xs font-normal text-[var(--text-muted)]">days</span>
-                </span>
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight flex items-baseline justify-between">
+                <div>
+                  6 <span className="text-xs font-normal text-[var(--text-muted)] ml-1">days</span>
+                </div>
                 {claimedStreak && (
                   <span className="text-[10px] text-amber-500 font-bold px-1.5 py-0.5 bg-amber-500/10 rounded-md border border-amber-500/20 animate-pulse">
                     +15 XP Claimed!
@@ -467,17 +478,18 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* 7-Day Pill Badges */}
-            <div className="flex items-center gap-1 mt-3">
+            {/* 7-Day Circular Badges with Divider (Image 2 style) */}
+            <div className="flex items-center gap-1.5 mt-3.5">
               {[1, 2, 3, 4, 5, 6].map((day) => (
                 <div
                   key={day}
-                  className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-[10px] font-bold"
+                  className="w-5 h-5 rounded-full bg-amber-400 dark:bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold shadow-2xs"
                 >
                   <Check className="w-3 h-3 stroke-[3]" />
                 </div>
               ))}
-              <div className="w-5 h-5 rounded-md bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] flex items-center justify-center text-[10px] font-bold">
+              <div className="h-3.5 w-px bg-[var(--border-color)] mx-1" />
+              <div className="w-5 h-5 rounded-full bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-muted)] flex items-center justify-center text-[10px] font-bold">
                 7
               </div>
             </div>
@@ -487,18 +499,23 @@ export const DashboardPage: React.FC = () => {
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/refer')}
-            className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-pink-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-emerald-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                Referral Earnings
-              </span>
-              <div className="text-2xl font-bold text-[var(--text-primary)] tracking-tight mt-2">
-                450 <span className="text-xs font-normal text-[var(--text-muted)]">pts</span>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Referral Earnings
+                </span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">
+                450 <span className="text-xs font-normal text-[var(--text-muted)] ml-1">pts</span>
               </div>
             </div>
 
-            <div className="text-xs font-semibold text-pink-600 dark:text-pink-400 mt-3 flex items-center gap-1">
+            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-3.5 flex items-center gap-1">
               <span>3 friends joined</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </div>
@@ -508,16 +525,21 @@ export const DashboardPage: React.FC = () => {
           <motion.div
             whileHover={{ y: -2 }}
             onClick={() => navigate('/leaderboard')}
-            className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-emerald-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
+            className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-purple-500/40 rounded-2xl transition-all shadow-card cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                Leaderboard Rank
-              </span>
-              <div className="text-2xl font-bold text-[var(--text-primary)] tracking-tight mt-2">#128</div>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-6 h-6 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
+                  <Trophy className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Leaderboard Rank
+                </span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">#128</div>
             </div>
 
-            <div className="text-xs font-semibold text-emerald-500 mt-3 flex items-center gap-1">
+            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-3.5 flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Up 12 this week</span>
             </div>
@@ -525,60 +547,72 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  5. REFERRAL CALLOUT BANNER
+         *  5. REFERRAL CALLOUT BANNER (Redesigned per Image 2)
          * ═══════════════════════════════════════════════════════════ */}
         <motion.div
           whileHover={{ scale: 1.005 }}
           onClick={() => navigate('/refer')}
-          className="w-full p-5 sm:p-6 bg-[var(--bg-card)] rounded-[22px] border border-[#485442]/30 dark:border-[#55604e]/40 hover:border-[#485442] dark:hover:border-[#7A8F70] shadow-card flex items-center justify-between cursor-pointer group transition-all"
+          className="relative overflow-hidden w-full p-5 sm:p-6 bg-gradient-to-r from-[#eef4ed] via-[#f5f8f4] to-[#edf3ec] dark:from-[#151d14] dark:via-[#182117] dark:to-[#1a2419] rounded-[22px] border border-[#485442]/20 dark:border-[#55604e]/30 shadow-card flex items-center justify-between cursor-pointer group transition-all"
         >
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#485442]/10 dark:bg-[#55604e]/20 border border-[#485442]/25 text-[#485442] dark:text-[#8A9E7F] text-[11px] font-bold uppercase">
-              <Gift className="w-3 h-3 text-[#485442] dark:text-[#8A9E7F]" />
-              <span>Refer & earn</span>
-            </div>
-            <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">
-              Invite friends, earn 100 pts each
-            </h3>
-            <p className="text-xs sm:text-[13px] text-[var(--text-secondary)] font-medium">
-              3 friends joined · 450 points earned so far — view your full referral page →
-            </p>
+          {/* Subtle Decorative Overlapping Rings in Background (matching Image 2) */}
+          <div className="absolute right-0 top-0 bottom-0 w-80 pointer-events-none overflow-hidden select-none">
+            <div className="absolute -right-8 -top-16 w-60 h-60 rounded-full border-[20px] border-[#485442]/10 dark:border-[#55604e]/15" />
+            <div className="absolute right-12 -bottom-16 w-52 h-52 rounded-full border-[16px] border-[#485442]/8 dark:border-[#55604e]/10" />
+            <div className="absolute right-28 top-3 w-28 h-28 rounded-full bg-[#485442]/5 dark:bg-[#55604e]/10 blur-lg" />
           </div>
 
-          <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#485442] hover:bg-[#3c4637] dark:bg-[#55604e] dark:hover:bg-[#626f5a] text-white font-bold text-xs rounded-xl shadow-button-primary transition-all flex-shrink-0 cursor-pointer">
+          <div className="flex items-center gap-4 relative z-10 min-w-0 pr-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-[#20271e] border border-[#485442]/20 dark:border-[#55604e]/30 text-[#485442] dark:text-[#8ba082] flex items-center justify-center flex-shrink-0 shadow-2xs">
+              <Share2 className="w-5 h-5 stroke-[2.2]" />
+            </div>
+
+            <div className="space-y-0.5 min-w-0">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#485442] dark:text-[#8ba082] block">
+                Refer & Earn
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">
+                Invite friends, earn 100 pts each
+              </h3>
+              <p className="text-xs sm:text-[13px] text-[var(--text-secondary)] font-medium truncate sm:whitespace-normal">
+                3 friends joined · 450 points earned so far — view your full referral page →
+              </p>
+            </div>
+          </div>
+
+          <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#243321] hover:bg-[#1b2719] dark:bg-[#344030] dark:hover:bg-[#41503c] text-white text-xs font-bold transition-all shadow-sm flex-shrink-0 z-10 cursor-pointer">
             <span>Invite Now</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </motion.div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  6. RECENT ACTIVITY LIST
+         *  6. RECENT ACTIVITY LIST (Redesigned per Image 2)
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-5 sm:p-6 shadow-card space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-5 sm:p-6 shadow-card space-y-3">
+          <div className="flex items-center justify-between pb-1">
             <h3 className="font-bold text-base text-[var(--text-primary)]">Recent activity</h3>
             <button
               onClick={() => navigate('/points')}
-              className="text-xs font-bold text-[var(--primary)] hover:underline cursor-pointer flex items-center gap-1"
+              className="text-xs font-semibold text-[#485442] dark:text-[#8ba082] hover:underline cursor-pointer flex items-center gap-1.5"
             >
               <span>View all</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="divide-y divide-[var(--border-color)]">
+          <div className="divide-y divide-[var(--border-color)]/60">
             {recentActivities.map((act) => (
               <div
                 key={act.id}
-                className="py-3 flex items-center justify-between first:pt-1 last:pb-1 hover:bg-[var(--bg-hover)] px-2 rounded-xl transition-colors cursor-pointer"
+                className="py-3.5 flex items-center justify-between hover:bg-[var(--bg-hover)] px-2 rounded-xl transition-colors cursor-pointer"
                 onClick={() => {
                   if (act.type === 'chat') handleSend('Tell me more about Base ecosystem risk');
                   else if (act.type === 'referral') navigate('/refer');
                   else navigate('/points');
                 }}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-8 h-8 rounded-xl ${act.iconBg} flex items-center justify-center flex-shrink-0`}>
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-9 h-9 rounded-full ${act.iconBg} flex items-center justify-center flex-shrink-0`}>
                     {act.icon}
                   </div>
                   <span className="text-xs sm:text-[13.5px] font-semibold text-[var(--text-primary)] truncate">
