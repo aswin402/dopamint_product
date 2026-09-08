@@ -14,12 +14,9 @@ import {
   BookOpen,
   Gift,
   Check,
-  Bell,
   ChevronRight,
   Paperclip,
   X,
-  Zap,
-  Coins,
   Star,
   Users,
   Trophy,
@@ -84,7 +81,6 @@ export const DashboardPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('Trending');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [claimedStreak, setClaimedStreak] = useState(false);
-  const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
 
   useEffect(() => {
@@ -101,7 +97,6 @@ export const DashboardPage: React.FC = () => {
   const sendMessage = useCryptoStore((s) => s.sendMessage);
   const isStreaming = useCryptoStore((s) => s.isStreaming);
   const userProfile = useCryptoStore((s) => s.userProfile);
-  const setModalState = useCryptoStore((s) => s.setModalState);
   const createNewChat = useCryptoStore((s) => s.createNewChat);
 
   // Time-aware greeting
@@ -210,8 +205,7 @@ export const DashboardPage: React.FC = () => {
                   {truncateAddress(userProfile.walletAddress)}
                 </span>
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--primary)]/25 uppercase tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] select-none">
                 TESTNET
               </span>
             </div>
@@ -220,63 +214,21 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Right Quick Controls */}
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => navigate('/buy-credits')}
-              className="flex items-center gap-1.5 px-3 py-1 bg-[#485442]/10 hover:bg-[#485442]/20 text-[#485442] dark:text-[#8ba082] border border-[#485442]/30 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
-              title="Top Up Credits"
-            >
-              <Coins className="w-3.5 h-3.5" />
-              <span>{userProfile.apiCallsRemaining.toLocaleString()} Credits</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setShowNotificationToast(true);
-                setTimeout(() => setShowNotificationToast(false), 2500);
-              }}
-              title="Notifications"
-              className="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all shadow-2xs cursor-pointer relative"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--primary)]" />
-            </button>
-
-            <div
-              onClick={() => navigate('/points')}
-              className="w-8.5 h-8.5 rounded-xl bg-[var(--primary)] p-0.5 flex items-center justify-center text-white font-bold text-xs shadow-2xs cursor-pointer hover:opacity-90 transition-opacity"
-              title="View Profile & XP"
-            >
-              <div className="w-full h-full bg-[#18181b] dark:bg-[#121214] rounded-[10px] flex items-center justify-center">
-                <span className="text-[11px] font-mono text-[var(--primary)] dark:text-[#8ba082] font-bold">0x</span>
-              </div>
-            </div>
-          </div>
+          {/* Right Credits Display (Words & Crown Only, No Badge) */}
+          <button
+            onClick={() => navigate('/buy-credits')}
+            className="flex items-center gap-1.5 hover:opacity-85 transition-opacity cursor-pointer group py-1"
+            title="Buy / Manage Credits"
+          >
+            <span className="font-mono font-bold text-sm sm:text-base text-[var(--text-primary)] tracking-tight group-hover:text-[var(--primary)] transition-colors">
+              {userProfile.apiCallsRemaining.toLocaleString()}
+            </span>
+            <img src={crownLogo} alt="crown" className="w-4 h-4 object-contain inline-block" />
+            <span className="font-semibold text-xs sm:text-sm text-[var(--text-secondary)] group-hover:text-[var(--primary)] transition-colors">
+              Credits
+            </span>
+          </button>
         </div>
-
-        {/* Notification Toast */}
-        <AnimatePresence>
-          {showNotificationToast && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-flyout flex items-center justify-between text-xs text-[var(--text-primary)]"
-            >
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-500" />
-                <span>You have 2 unread alerts: BTC surpassed $92,000 & Daily streak reward is ready!</span>
-              </div>
-              <button
-                onClick={() => setModalState('isAlertsModalOpen', true)}
-                className="text-[var(--primary)] font-bold hover:underline cursor-pointer"
-              >
-                View
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* ═══════════════════════════════════════════════════════════
          *  2. HERO SECTION — IMAGE 2 STYLE
