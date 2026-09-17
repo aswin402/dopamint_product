@@ -1,106 +1,196 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gift,
   Copy,
   Check,
   Users,
-  Zap,
-  Wallet,
-  CheckCircle2,
-  Sparkles,
-  ShieldCheck,
-  ArrowUpRight,
+  Share2,
   TrendingUp,
+  Search,
+  CheckCircle2,
+  Crown,
+  ChevronDown,
+  ShieldCheck,
+  Zap,
 } from 'lucide-react';
-import { TokenIcon } from '../common/TokenIcon';
+import { useCryptoStore } from '../../store/useCryptoStore';
 import { triggerConfetti } from '../../lib/confetti';
 
 interface ReferralRecord {
   id: number;
   wallet: string;
+  fullAddress: string;
   joined: string;
   status: string;
   tier: string;
-  xpEarned: string;
+  xpEarned: number;
 }
 
 const REFERRALS_DATA: ReferralRecord[] = [
   {
     id: 1,
-    wallet: '0xc3902...9b21',
+    wallet: '0xc390...9b21',
+    fullAddress: '0xc3902f8194a821e9B02154E5F36423c9E9b21',
     joined: '2 hours ago',
     status: 'Active · Trading',
     tier: 'Level 4',
-    xpEarned: '+36,250 XP',
+    xpEarned: 36250,
   },
   {
     id: 2,
     wallet: '0x34f1...12ab',
+    fullAddress: '0x34f191C8392F865eE824A1054E5F3642312ab',
     joined: 'Yesterday',
     status: 'Active · AI Ops',
     tier: 'Level 3',
-    xpEarned: '+62,500 XP',
+    xpEarned: 62500,
   },
   {
     id: 3,
     wallet: '0x77c2...891e',
+    fullAddress: '0x77c238291054E5F36423c9E3c76A1054891e',
     joined: '1 day ago',
-    status: 'Active',
+    status: 'Active · Trading',
     tier: 'Level 3',
-    xpEarned: '+20,000 XP',
+    xpEarned: 20000,
   },
   {
     id: 4,
     wallet: '0x12a9...a80c',
+    fullAddress: '0x12a93b8291054E5F36423c9E3c76A1054a80c',
     joined: '3 days ago',
-    status: 'Active · Deep Research',
+    status: 'Active · Research',
     tier: 'Level 3',
-    xpEarned: '+81,250 XP',
+    xpEarned: 81250,
   },
   {
     id: 5,
     wallet: '0x56d3...338a',
+    fullAddress: '0x56d31054E5F36423c9E3c76A105444Fe338a',
     joined: '1 week ago',
     status: 'Active',
     tier: 'Level 2',
-    xpEarned: '+12,500 XP',
+    xpEarned: 12500,
   },
   {
     id: 6,
     wallet: '0x88e1...4419',
+    fullAddress: '0x88e191C8392F865eE824A1054E5F364234419',
     joined: '2 weeks ago',
     status: 'Active',
     tier: 'Level 2',
-    xpEarned: '+45,000 XP',
+    xpEarned: 45000,
+  },
+  {
+    id: 7,
+    wallet: '0x29ac...01b5',
+    fullAddress: '0x29ac4231865eE824A1054E5F36423c9E01b5',
+    joined: '3 weeks ago',
+    status: 'Active · Trading',
+    tier: 'Level 2',
+    xpEarned: 32000,
+  },
+  {
+    id: 8,
+    wallet: '0x6e84...77fa',
+    fullAddress: '0x6e8438291054E5F36423c9E3c76A105477fa',
+    joined: '1 month ago',
+    status: 'Active',
+    tier: 'Level 1',
+    xpEarned: 18500,
+  },
+];
+
+const TIERS = [
+  {
+    tier: 1,
+    name: 'Scout',
+    range: '1–5 Referrals',
+    rate: '10% XP',
+    completed: true,
+    perks: 'Standard referral attribution',
+  },
+  {
+    tier: 2,
+    name: 'Ambassador',
+    range: '6–20 Referrals',
+    rate: '20% XP',
+    current: true,
+    perks: 'Priority processing · 20% commission',
+  },
+  {
+    tier: 3,
+    name: 'Pioneer',
+    range: '21–50 Referrals',
+    rate: '25% XP',
+    perks: '25% commission · Early feature access',
+  },
+  {
+    tier: 4,
+    name: 'Partner',
+    range: '50+ Referrals',
+    rate: '30% XP',
+    perks: '30% commission · Custom revshare channel',
+  },
+];
+
+const FAQS = [
+  {
+    id: 'how-it-works',
+    q: 'How does the 20% lifetime XP commission work?',
+    a: 'Every time an invited user executes a swap, triggers an AI agent research task, or interacts on-chain, 20% of their earned XP is automatically minted and credited to your account. This commission is perpetual and has no expiration date.',
+  },
+  {
+    id: 'welcome-bonus',
+    q: 'What welcome reward do my invitees receive?',
+    a: 'When someone connects using your referral link or inputs your code, they immediately receive an instant +5,000 XP welcome boost credited directly to their profile to kickstart their ranking on the leaderboard.',
+  },
+  {
+    id: 'attribution',
+    q: 'How are referrals tracked and attributed?',
+    a: 'Referrals are permanently tied to your wallet address via on-chain event attribution upon wallet connection. You can review all real-time activity and XP contributions in the ledger below.',
   },
 ];
 
 export const ReferEarnPage: React.FC = () => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
-  const [claimedBonus, setClaimedBonus] = useState(false);
+  const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [openFaq, setOpenFaq] = useState<string | null>('how-it-works');
 
-  const referralCode = 'DOPAMINT-71C8';
+  const userProfile = useCryptoStore((s) => s.userProfile);
+
+  // Dynamic referral code based on connected wallet
+  const referralCode = useMemo(() => {
+    if (userProfile.walletAddress && userProfile.walletAddress.length >= 8) {
+      return `DOPAMINT-${userProfile.walletAddress.slice(2, 6).toUpperCase()}`;
+    }
+    return 'DOPAMINT-71C8';
+  }, [userProfile.walletAddress]);
+
   const referralLink = `https://dopamint.ai/ref/${referralCode}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
     setCopiedLink(true);
+    triggerConfetti();
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(referralCode);
     setCopiedCode(true);
+    triggerConfetti();
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const handleClaim = () => {
-    if (!claimedBonus) {
-      setClaimedBonus(true);
-      triggerConfetti();
-    }
+  const handleCopyWallet = (address: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(address);
+    setCopiedWallet(address);
+    setTimeout(() => setCopiedWallet(null), 1800);
   };
 
   const handleShare = () => {
@@ -117,414 +207,360 @@ export const ReferEarnPage: React.FC = () => {
     }
   };
 
+  const filteredReferrals = useMemo(() => {
+    if (!searchQuery.trim()) return REFERRALS_DATA;
+    const q = searchQuery.toLowerCase();
+    return REFERRALS_DATA.filter(
+      (item) =>
+        item.wallet.toLowerCase().includes(q) ||
+        item.fullAddress.toLowerCase().includes(q) ||
+        item.status.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  const totalReferrals = 18;
+  const currentReferralCount = 18;
+  const nextTierTarget = 20;
+  const progressToNextTier = Math.min(100, Math.round((currentReferralCount / nextTierTarget) * 100));
+
   return (
     <div className="flex-1 h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-4 sm:px-8 md:px-12 py-6 scroll-smooth transition-colors duration-200">
-      <div className="max-w-[920px] mx-auto space-y-6 pb-20">
+      <div className="max-w-[920px] mx-auto space-y-7 pb-20">
         {/* ═══════════════════════════════════════════════════════════
-         *  1. TOP BAR HEADER
+         *  1. TOP BAR HEADER — REFINED & FOCUSED
          * ═══════════════════════════════════════════════════════════ */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0 shadow-2xs">
-              <Gift className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center flex-shrink-0">
+              <Gift className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
                 Refer & Earn
               </h1>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                Invite friends. Grow the network. Earn lifetime rewards.
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+                Invite friends and researchers to earn a perpetual 20% XP commission.
               </p>
             </div>
           </div>
 
-          <button
-            onClick={handleCopyLink}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-app)] text-xs font-bold rounded-xl transition-all shadow-button-primary cursor-pointer self-start sm:self-auto"
-          >
-            {copiedLink ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Link Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Copy Referral Link</span>
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] text-xs font-semibold text-[var(--text-primary)] rounded-xl transition-all cursor-pointer shadow-2xs"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <span>Share Invite</span>
+            </button>
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  2. HERO SECTION CARD (LIFETIME REWARDS + VECTOR ILLUSTRATION)
+         *  2. HERO SECTION — THE REFERRAL ENGINE (REFINED ARCHITECTURE)
          * ═══════════════════════════════════════════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[24px] p-6 sm:p-8 shadow-card relative overflow-hidden"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Left Content Column */}
-            <div className="md:col-span-7 space-y-4">
-              <div className="space-y-2">
-                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)] leading-tight">
-                  Earn{' '}
-                  <span className="text-[var(--primary)] bg-clip-text">
-                    lifetime rewards
-                  </span>{' '}
-                  by inviting friends
-                </h2>
-                <p className="text-xs sm:text-[13.5px] text-[var(--text-muted)] leading-relaxed">
-                  Every friend who signs up gets a <strong className="text-[var(--text-primary)] font-semibold">+5,000 XP</strong> welcome bonus. You earn <strong className="text-[var(--text-primary)] font-semibold">20%</strong> of all their activity XP forever.
-                </p>
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[22px] p-6 sm:p-8 shadow-card space-y-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--primary)]/20 uppercase tracking-wider">
+              <Crown className="w-3 h-3 stroke-[2.2]" />
+              Lifetime Commission Program
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)] leading-snug">
+              Your network. Your edge.
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">
+              Give invited peers an instant <span className="font-semibold text-[var(--text-primary)]">+5,000 XP</span> welcome bonus. You receive <span className="font-semibold text-[var(--text-primary)]">20% lifetime XP</span> on every swap, agent research, and on-chain action they perform.
+            </p>
+          </div>
+
+          {/* Unified Invite Link & Code Module */}
+          <div className="p-4 sm:p-5 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-2xl space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+              {/* Left: Referral Link Input Bar */}
+              <div className="md:col-span-8 space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                  Your Referral Link
+                </label>
+                <div className="flex items-center justify-between gap-2 px-3.5 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] focus-within:border-[var(--primary)] rounded-xl transition-colors">
+                  <span className="font-mono text-xs sm:text-[13px] text-[var(--text-primary)] font-medium truncate select-all">
+                    {referralLink}
+                  </span>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-1.5 px-3 py-1 bg-[var(--primary)] hover:opacity-90 text-white dark:text-[#ECECEC] text-xs font-semibold rounded-lg transition-all flex-shrink-0 cursor-pointer shadow-2xs"
+                  >
+                    {copiedLink ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Link</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* Dual Copy Boxes (Link + Code) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {/* Referral Link Box */}
-                <div className="p-3 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl space-y-1">
-                  <span className="text-[10.5px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                    Your Referral Link
+              {/* Right: Referral Code Chip */}
+              <div className="md:col-span-4 space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                  Referral Code
+                </label>
+                <div className="flex items-center justify-between gap-2 px-3.5 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl">
+                  <span className="font-mono text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tracking-wide">
+                    {referralCode}
                   </span>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono font-medium text-[var(--text-primary)] truncate">
-                      {referralLink}
-                    </span>
-                    <button
-                      onClick={handleCopyLink}
-                      title="Copy Link"
-                      className="flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline flex-shrink-0 cursor-pointer"
-                    >
-                      {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedLink ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Referral Code Box */}
-                <div className="p-3 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl space-y-1">
-                  <span className="text-[10.5px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
-                    Your Code
-                  </span>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-mono font-bold text-[var(--text-primary)] tracking-wide">
-                      {referralCode}
-                    </span>
-                    <button
-                      onClick={handleCopyCode}
-                      title="Copy Code"
-                      className="flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline flex-shrink-0 cursor-pointer"
-                    >
-                      {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedCode ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleCopyCode}
+                    className="flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline cursor-pointer flex-shrink-0"
+                  >
+                    {copiedCode ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Right Vector Illustration (Connected Network Nodes) */}
-            <div className="md:col-span-5 flex items-center justify-center py-2">
-              <div className="relative w-full max-w-[280px] h-[160px] flex items-center justify-center">
-                {/* Background Glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-emerald-500/10 to-transparent rounded-full filter blur-xl" />
-
-                {/* Left Node (Purple User) */}
-                <div className="absolute left-2 sm:left-6 flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-b from-purple-400 to-indigo-600 p-0.5 shadow-lg flex items-center justify-center">
-                    <div className="w-full h-full rounded-full bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center text-purple-600 dark:text-purple-300">
-                      <Users className="w-7 h-7 sm:w-8 sm:h-8" />
-                    </div>
-                  </div>
-                  <div className="w-14 h-2 rounded-full bg-purple-500/20 filter blur-xs mt-1" />
-                </div>
-
-                {/* Connecting Chain Link Vector */}
-                <div className="relative z-10 flex items-center gap-1 px-2">
-                  <div className="w-6 h-3 rounded-full border-2 border-dashed border-[var(--primary)]/60" />
-                  <div className="w-7 h-7 rounded-full bg-[var(--bg-card)] border-2 border-[var(--primary)] flex items-center justify-center shadow-md">
-                    <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" />
-                  </div>
-                  <div className="w-6 h-3 rounded-full border-2 border-dashed border-emerald-500/60" />
-                </div>
-
-                {/* Right Node (Green User) */}
-                <div className="absolute right-2 sm:right-6 flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-b from-emerald-400 to-teal-600 p-0.5 shadow-lg flex items-center justify-center">
-                    <div className="w-full h-full rounded-full bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
-                      <Users className="w-7 h-7 sm:w-8 sm:h-8" />
-                    </div>
-                  </div>
-                  <div className="w-14 h-2 rounded-full bg-emerald-500/20 filter blur-xs mt-1" />
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-[11px] text-[var(--text-muted)] border-t border-[var(--border-color)]">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--primary)]" />
+                <span>On-chain attribution · Instant attribution on wallet connect</span>
               </div>
+              <span className="font-medium text-[var(--text-secondary)]">
+                {totalReferrals} active referrals linked
+              </span>
             </div>
           </div>
-        </motion.div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  3. 4-COLUMN STATS BAR
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-5 shadow-card">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-color)]">
-            {/* Stat 1: Friends Invited */}
-            <div className="flex flex-col justify-between pt-3 sm:pt-0 sm:px-3 first:pt-0 first:px-0">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <Users className="w-4 h-4" />
+          {/* How It Works — 3 Clean Sequential Steps (Linear/Stripe Style) */}
+          <div className="pt-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+              How Attribution Works
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Step 1 */}
+              <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[11px] font-bold text-[var(--primary)]">
+                    01
+                  </span>
+                  <Share2 className="w-4 h-4 text-[var(--primary)]" />
                 </div>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">
-                  Friends Invited
-                </span>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">
-                  18
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                  Share Your Link
+                </h4>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  Send your unique URL or invite code to fellow traders and community members.
                 </p>
-                <span className="text-[11px] font-bold text-emerald-500 flex items-center gap-0.5 mt-0.5">
-                  <TrendingUp className="w-3 h-3" />
-                  4 this week
-                </span>
               </div>
-            </div>
 
-            {/* Stat 2: Referral XP Earned */}
-            <div className="flex flex-col justify-between pt-3 sm:pt-0 sm:px-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                  <Zap className="w-4 h-4 fill-amber-500" />
+              {/* Step 2 */}
+              <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[11px] font-bold text-[var(--primary)]">
+                    02
+                  </span>
+                  <Zap className="w-4 h-4 text-[var(--primary)]" />
                 </div>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">
-                  Referral XP Earned
-                </span>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-amber-500 tabular-nums">
-                  450,000 XP
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                  Friends Receive +5,000 XP
+                </h4>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  New users receive an instant welcome boost upon their first wallet connection.
                 </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium mt-0.5 block">
-                  20% lifetime commission
-                </span>
               </div>
-            </div>
 
-            {/* Stat 3: Testnet Volume Referred */}
-            <div className="flex flex-col justify-between pt-3 sm:pt-0 sm:px-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-xl flex items-center justify-center">
-                  <TokenIcon symbol="ETH" size={20} />
+              {/* Step 3 */}
+              <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[11px] font-bold text-[var(--primary)]">
+                    03
+                  </span>
+                  <Crown className="w-4 h-4 text-[var(--primary)]" />
                 </div>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">
-                  Testnet Volume Referred
-                </span>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">
-                  103.0 ETH
+                <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                  Earn 20% Lifetime XP
+                </h4>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  Automatically receive 20% of all activity XP generated by your network forever.
                 </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium mt-0.5 block">
-                  Sepolia Testnet
-                </span>
-              </div>
-            </div>
-
-            {/* Stat 4: Pending Bonus */}
-            <div className="flex flex-col justify-between pt-3 sm:pt-0 sm:pl-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                  <Wallet className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">
-                  Pending Bonus
-                </span>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">
-                  {claimedBonus ? '0.00 ETH' : '0.45 ETH'}
-                </p>
-                <button
-                  onClick={handleClaim}
-                  disabled={claimedBonus}
-                  className="mt-2 w-full py-1.5 px-3 bg-[var(--bg-app)] hover:bg-[var(--bg-hover)] border border-[var(--border-color)] disabled:opacity-60 text-xs font-bold text-[var(--text-primary)] rounded-xl transition-all shadow-2xs cursor-pointer text-center"
-                >
-                  {claimedBonus ? 'Claimed to Wallet' : 'Claim to Wallet'}
-                </button>
               </div>
             </div>
           </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  4. REFERRAL TIER PROGRESSION CARD
+         *  3. 4-COLUMN STATS BAR — CORE THEME PALETTE ONLY
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-card space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Stat 1: Friends Invited */}
+          <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Friends Invited
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center">
+                <Users className="w-4 h-4" />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums">
+                18
+              </div>
+              <div className="text-xs font-semibold text-[var(--primary)] flex items-center gap-1 mt-1">
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>+4 this week</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stat 2: Referral XP Earned */}
+          <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Referral XP Earned
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center">
+                <Crown className="w-4 h-4" />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums">
+                450,000
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                20% perpetual share
+              </p>
+            </div>
+          </div>
+
+          {/* Stat 3: Active Network Traders */}
+          <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Active Traders
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center">
+                <Zap className="w-4 h-4" />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums">
+                14 <span className="text-sm font-normal text-[var(--text-muted)]">/ 18</span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                78% network activity
+              </p>
+            </div>
+          </div>
+
+          {/* Stat 4: Current Commission Tier */}
+          <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                Commission Tier
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold text-[var(--primary)] font-mono">
+                20% XP
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Ambassador · Tier 2
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+         *  4. TIER PROGRESSION ROADMAP (REFINED EXECUTIVE DESIGN)
+         * ═══════════════════════════════════════════════════════════ */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-card space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">
                 Referral Tier Progression
               </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Invite more to unlock higher commission rates and exclusive perks.
+                Reach community referral milestones to unlock higher commission multipliers.
               </p>
             </div>
 
-            <span className="text-xs font-bold px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full self-start sm:self-auto">
-              Next: Whale Pioneer at 21 invites (3 to go)
-            </span>
-          </div>
-
-          {/* 4 Tier Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Tier 1 (Completed) */}
-            <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                  Tier 1
-                </span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-[var(--text-primary)]">Scout</h3>
-                <p className="text-base font-extrabold text-[var(--text-primary)] mt-1">
-                  10% XP
-                </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium">
-                  1 – 5 Referrals
-                </span>
-              </div>
-            </div>
-
-            {/* Tier 2 (CURRENT TIER HIGHLIGHTED) */}
-            <div className="p-4 bg-[var(--bg-app)] border-2 border-purple-500 dark:border-purple-400 rounded-2xl space-y-2 relative shadow-2xs">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
-                  Tier 2
-                </span>
-                <span className="text-[9.5px] font-extrabold px-1.5 py-0.2 bg-purple-600 text-white rounded-md uppercase tracking-wider">
-                  Current Tier
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-[var(--text-primary)]">Ambassador</h3>
-                <p className="text-base font-extrabold text-purple-600 dark:text-purple-400 mt-1">
-                  20% XP + Perks
-                </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium">
-                  6 – 20 Referrals
-                </span>
-              </div>
-            </div>
-
-            {/* Tier 3 (Next Target) */}
-            <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                  Tier 3
-                </span>
-                <span className="text-[10px] font-extrabold text-amber-500">
-                  3 LEFT
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-[var(--text-primary)]">Whale Pioneer</h3>
-                <p className="text-base font-extrabold text-[var(--text-primary)] mt-1">
-                  30% XP + Pro Free
-                </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium">
-                  21 – 50 Referrals
-                </span>
-              </div>
-            </div>
-
-            {/* Tier 4 (VIP) */}
-            <div className="p-4 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                  Tier 4
-                </span>
-                <span className="text-[10px] font-extrabold text-purple-500">
-                  VIP
-                </span>
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-[var(--text-primary)]">Whale Partner</h3>
-                <p className="text-base font-extrabold text-[var(--text-primary)] mt-1">
-                  Custom RevShare
-                </p>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium">
-                  50+ Referrals
-                </span>
-              </div>
+            <div className="text-xs font-semibold px-3 py-1 bg-[var(--primary-light)] text-[var(--primary)] border border-[var(--primary)]/25 rounded-full self-start sm:self-auto">
+              2 more referrals to unlock Tier 3 (25%)
             </div>
           </div>
-        </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-         *  5. REFERRED FRIENDS & TRADERS TABLE
-         * ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card overflow-hidden">
-          {/* Card Header */}
-          <div className="flex items-center justify-between px-6 py-4.5 border-b border-[var(--border-color)]">
-            <div>
-              <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">
-                Referred Friends & Traders
-              </h2>
-              <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Real-time activity and XP commission tracking
-              </p>
+          {/* Progress Bar */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-medium">
+              <span>Current Progress: 18 Referrals</span>
+              <span>Target: 20 Referrals (Tier 3)</span>
             </div>
-
-            <span className="text-xs font-semibold px-3 py-1 bg-[var(--bg-app)] text-[var(--text-secondary)] rounded-full border border-[var(--border-color)]">
-              Showing {REFERRALS_DATA.length} of 18 referrals
-            </span>
-          </div>
-
-          {/* Table Header Row */}
-          <div className="grid grid-cols-12 px-6 py-2.5 bg-[var(--bg-app)] text-[10.5px] font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border-color)]">
-            <div className="col-span-4 sm:col-span-4">Referral Wallet</div>
-            <div className="col-span-3 sm:col-span-3">Joined</div>
-            <div className="col-span-3 sm:col-span-3">Status / Tier</div>
-            <div className="col-span-2 sm:col-span-2 text-right">XP Earned (20%)</div>
-          </div>
-
-          {/* Table Rows */}
-          <div className="divide-y divide-[var(--border-color)]">
-            {REFERRALS_DATA.map((row) => (
+            <div className="w-full h-2 bg-[var(--bg-app)] border border-[var(--border-color)] rounded-full overflow-hidden p-0.5">
               <div
-                key={row.id}
-                className="grid grid-cols-12 items-center px-6 py-3.5 hover:bg-[var(--bg-hover)] transition-colors text-xs"
+                className="h-full bg-[var(--primary)] rounded-full transition-all duration-500"
+                style={{ width: `${progressToNextTier}%` }}
+              />
+            </div>
+          </div>
+
+          {/* 4 Tier Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {TIERS.map((t) => (
+              <div
+                key={t.tier}
+                className={`p-4 rounded-xl transition-all space-y-2.5 ${
+                  t.current
+                    ? 'bg-[var(--primary-light)] border-2 border-[var(--primary)] shadow-2xs'
+                    : 'bg-[var(--bg-app)] border border-[var(--border-color)]'
+                }`}
               >
-                {/* Referral Wallet Column */}
-                <div className="col-span-4 sm:col-span-4 flex items-center gap-3 min-w-0">
-                  <span className="font-mono text-xs font-bold text-[var(--text-muted)] w-4 flex-shrink-0">
-                    {row.id}
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`text-[11px] font-bold uppercase tracking-wider ${
+                      t.current ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'
+                    }`}
+                  >
+                    Tier {t.tier}
                   </span>
-                  <span className="font-mono font-bold text-xs sm:text-[13px] text-[var(--text-primary)] truncate">
-                    {row.wallet}
+                  {t.completed && <Check className="w-3.5 h-3.5 text-[var(--primary)] stroke-[2.5]" />}
+                  {t.current && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[var(--primary)] text-white dark:text-[#ECECEC] rounded uppercase tracking-wider">
+                      Current
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-bold text-[var(--text-primary)]">
+                    {t.name}
+                  </h3>
+                  <p className="text-base font-extrabold text-[var(--text-primary)] mt-0.5 font-mono">
+                    {t.rate}
+                  </p>
+                  <span className="text-[11px] text-[var(--text-muted)] font-medium block mt-0.5">
+                    {t.range}
                   </span>
                 </div>
 
-                {/* Joined Column */}
-                <div className="col-span-3 sm:col-span-3 text-[var(--text-muted)] truncate">
-                  {row.joined}
-                </div>
-
-                {/* Status / Tier Column */}
-                <div className="col-span-3 sm:col-span-3 flex items-center gap-2 truncate">
-                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold rounded-md border border-emerald-500/20 text-[10.5px] truncate">
-                    {row.status}
-                  </span>
-                  <span className="text-[11px] text-[var(--text-muted)] hidden sm:inline">
-                    {row.tier}
-                  </span>
-                </div>
-
-                {/* XP Earned Column */}
-                <div className="col-span-2 sm:col-span-2 text-right font-bold text-xs sm:text-[13px] text-amber-500 font-mono tabular-nums flex items-center justify-end gap-1">
-                  <Zap className="w-3 h-3 fill-amber-500 flex-shrink-0" />
-                  <span>{row.xpEarned}</span>
+                <div className="pt-2 border-t border-[var(--border-color)]/60 text-[11px] text-[var(--text-muted)] leading-tight">
+                  {t.perks}
                 </div>
               </div>
             ))}
@@ -532,42 +568,164 @@ export const ReferEarnPage: React.FC = () => {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  6. MORE FRIENDS. MORE REWARDS. BOTTOM BANNER
+         *  5. REFERRAL NETWORK LEDGER (DATA-DENSE TABLE)
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="p-5 sm:p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-card overflow-hidden">
+          {/* Table Header Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4.5 border-b border-[var(--border-color)]">
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
-                More friends. More rewards.
-              </h3>
+              <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">
+                Referral Network Ledger
+              </h2>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                The more active your referrals, the more you earn.
+                Real-time activity log and 20% commission breakdown
               </p>
+            </div>
+
+            {/* Filter Search */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-app)] border border-[var(--border-color)] focus-within:border-[var(--primary)] rounded-xl text-xs w-full sm:w-64 transition-colors">
+              <Search className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search wallet or status..."
+                className="w-full bg-transparent text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
             </div>
           </div>
 
-          <button
-            onClick={handleShare}
-            className="flex items-center justify-center gap-1.5 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-button-primary cursor-pointer self-start sm:self-auto flex-shrink-0"
-          >
-            <span>Invite Friends</span>
-            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-          </button>
+          {/* Table Column Headers */}
+          <div className="grid grid-cols-12 px-6 py-2.5 bg-[var(--bg-app)] text-[10.5px] font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border-color)]">
+            <div className="col-span-5 sm:col-span-4">Referral Wallet</div>
+            <div className="col-span-3 sm:col-span-3">Joined</div>
+            <div className="col-span-4 sm:col-span-3">Activity Status</div>
+            <div className="hidden sm:block sm:col-span-2 text-right">XP Earned (20%)</div>
+          </div>
+
+          {/* Table Rows */}
+          <div className="divide-y divide-[var(--border-color)]">
+            {filteredReferrals.length > 0 ? (
+              filteredReferrals.map((row) => (
+                <div
+                  key={row.id}
+                  className="grid grid-cols-12 items-center px-6 py-3.5 hover:bg-[var(--bg-hover)] transition-colors text-xs"
+                >
+                  {/* Referral Wallet Column */}
+                  <div className="col-span-5 sm:col-span-4 flex items-center gap-2.5 min-w-0">
+                    <span className="font-mono text-[11px] font-bold text-[var(--text-muted)] w-4 flex-shrink-0">
+                      {row.id}
+                    </span>
+                    <span className="font-mono font-bold text-xs sm:text-[13px] text-[var(--text-primary)] truncate">
+                      {row.wallet}
+                    </span>
+                    <button
+                      onClick={(e) => handleCopyWallet(row.fullAddress, e)}
+                      title="Copy full wallet address"
+                      className="text-[var(--text-muted)] hover:text-[var(--primary)] p-0.5 rounded cursor-pointer transition-colors"
+                    >
+                      {copiedWallet === row.fullAddress ? (
+                        <Check className="w-3 h-3 text-[var(--primary)]" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Joined Date Column */}
+                  <div className="col-span-3 sm:col-span-3 text-[var(--text-muted)] text-xs truncate">
+                    {row.joined}
+                  </div>
+
+                  {/* Activity Status Column */}
+                  <div className="col-span-4 sm:col-span-3 flex items-center gap-2 truncate">
+                    <span className="px-2 py-0.5 bg-[var(--primary-light)] text-[var(--primary)] font-semibold rounded-md border border-[var(--primary)]/20 text-[10.5px] truncate">
+                      {row.status}
+                    </span>
+                    <span className="text-[11px] text-[var(--text-muted)] hidden md:inline">
+                      {row.tier}
+                    </span>
+                  </div>
+
+                  {/* XP Earned Column */}
+                  <div className="hidden sm:block sm:col-span-2 text-right font-bold text-xs sm:text-[13px] text-[var(--text-primary)] font-mono tabular-nums">
+                    +{row.xpEarned.toLocaleString()} XP
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-xs text-[var(--text-muted)] space-y-1">
+                <p className="font-semibold text-[var(--text-secondary)]">No referrals match your search.</p>
+                <p>Try searching for a different wallet prefix or activity keyword.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="px-6 py-3 bg-[var(--bg-app)] border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+            <span>Showing {filteredReferrals.length} of {REFERRALS_DATA.length} recorded referrals</span>
+            <span className="font-medium text-[var(--text-secondary)]">All on-chain events synced</span>
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-         *  7. SECURE & TRANSPARENT FOOTER
+         *  6. FAQ ACCORDION — TRANSPARENT & PRECISE
          * ═══════════════════════════════════════════════════════════ */}
-        <div className="flex items-center justify-center gap-2 pt-2 text-center text-xs text-[var(--text-muted)]">
-          <ShieldCheck className="w-4 h-4 text-emerald-500" />
-          <span className="font-semibold text-[var(--text-secondary)]">
-            Secure & Transparent
-          </span>
-          <span>·</span>
-          <span>All referrals and rewards are tracked on-chain.</span>
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-card space-y-4">
+          <div>
+            <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+              Program Rules & FAQ
+            </h3>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Clear terms, zero ambiguities. Everything you need to know about rewards.
+            </p>
+          </div>
+
+          <div className="divide-y divide-[var(--border-color)]">
+            {FAQS.map((faq) => {
+              const isOpen = openFaq === faq.id;
+              return (
+                <div key={faq.id} className="py-3 first:pt-0 last:pb-0">
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : faq.id)}
+                    className="w-full flex items-center justify-between gap-4 text-left cursor-pointer group py-1"
+                  >
+                    <span className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-transform duration-200 flex-shrink-0 ${
+                        isOpen ? 'rotate-180 text-[var(--primary)]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed pt-2 pb-1">
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
